@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Achievement Management System{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="{{ url_for('home') }}" class="nav-logo">
+                <span class="logo-icon">🎓</span> AMS
+            </a>
+
+            <div class="nav-links">
+                {% if session.get('logged_in') %}
+                {% if session.get('student_id') %}
+                <a href="{{ url_for('student-dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('student-achievements') }}">Achivements</a>
+                {% elif session.get('teacher_id') %}
+                <a href="{{ url_for('teacher-dashboard') }}">Dashboard</a>
+                {% endif %}
+                <a href="{{ url_for('logout') }}" class="nav-btn-logout">Logout</a>
+                {% else %}
+                <a href="{{ url_for('student') }}">Student</a>
+                <a href="{{ url_for('teacher') }}">Teacher</a>
+                {% endif %}
+                <button id="mode-toggle" class="theme-toggle" aria-label="Toggle Dark Mode">
+                    <span class="toggle-icon">🌙</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2026 Achievement Management System. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Contact Support</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>

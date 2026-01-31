@@ -1,27 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Submit Achievements</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
-</head>
-<body>
-  <div class="toggle-container">
-    <button id="mode-toggle">Dark Mode 🌙</button>
-  </div>
+{% extends "base.html" %}
 
-  <div class="container">
-    <div class="title">Achievement Submission</div>
-    <div class="content">
-      <div class="welcome-text">
-        <p>Congratulations! <br> {{ success }}</p>
-      </div>
-      <div class="button">
-        <a href="/teacher-dashboard" style="text-decoration: none; display: block; width: 100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: 500; cursor: pointer; text-align: center;">Back to Dashboard</a>
-      </div>
+{% block title %}Achievement Submission - Achievement Management System{% endblock %}
+
+{% block content %}
+<div class="container success-container">
+  <div class="title">Achievement Submission</div>
+  <div class="content">
+    <div class="success-message">
+      <div class="success-icon">✓</div>
+      <p class="success-text">Congratulations!</p>
+      <p class="success-details">{{ success }}</p>
+    </div>
+    <div class="button">
+      <a href="{{ url_for('teacher-dashboard') }}" class="back-button">Back to Dashboard</a>
     </div>
   </div>
-</body>
-</html>
+</div>
+{% endblock %}

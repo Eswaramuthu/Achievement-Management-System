@@ -1,43 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Teacher Login - Achievement Management System</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
-</head>
-<body>
-  <div class="toggle-container">
-    <button id="mode-toggle">Dark Mode 🌙</button>
-  </div>
+{% extends "base.html" %}
 
-  <div class="container login-container">
-    <div class="title">Teacher Login</div>
-    <div class="content">
-      <form action="/teacher" method="post">
-        <div class="user-details">
-          <div class="input-box full-width">
-            <span class="details">Teacher ID</span>
-            <input type="text" name="tname" placeholder="Enter your Teacher ID" required />
-          </div>
-          <div class="input-box full-width">
-            <span class="details">Password</span>
-            <input type="password" name="password" placeholder="Enter your password" required />
-          </div>
-        </div>
+{% block title %}Teacher Login - Achievement Management System{% endblock %}
 
-        <div class="button">
-          <input type="submit" value="Login" />
+{% block content %}
+<div class="container login-container">
+  <div class="title">Teacher Login</div>
+  <div class="content">
+    <form action="/teacher" method="post">
+      <div class="user-details">
+        <div class="input-box full-width">
+          <span class="details">Teacher ID</span>
+          <input autocomplete="off" autofocus type="text" name="tname" placeholder="Enter your Teacher ID" required />
         </div>
-      </form>
-      <div class="register-link">
-        <p>New teacher? <a href="{{ url_for('teacher-new') }}">Register here</a></p>
+        <div class="input-box full-width">
+          <span class="details">Password</span>
+          <input autocomplete="off" type="password" name="password" placeholder="Enter your password" required />
+        </div>
       </div>
-      <div class="back-link">
-        <a href="{{ url_for('home') }}">Back to Home</a>
+
+      {% if error %}
+      <div class="error-message">
+        {{ error }}
       </div>
+      {% endif %}
+
+      <div class="button">
+        <input type="submit" value="Login" />
+      </div>
+    </form>
+    <div class="register-link">
+      <p>New teacher? <a href="{{ url_for('teacher-new') }}">Register here</a></p>
+    </div>
+    <div class="back-link">
+      <a href="{{ url_for('home') }}">Back to Home</a>
     </div>
   </div>
-</body>
-</html>
+</div>
+{% endblock %}

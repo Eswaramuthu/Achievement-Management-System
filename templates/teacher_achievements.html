@@ -1,304 +1,229 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Achievement Entry - Achievement Management System</title>
-  
-  <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+{% extends "base.html" %}
 
-  <style>
+{% block title %}Achievement Entry - Achievement Management System{% endblock %}
 
-    body.form-page {
-      height: auto;
-      min-height: 100vh;
-      padding-top: 80px;
-      padding-bottom: 40px;
-    }
-    .achievement-container {
-      max-width: 800px;
-    }
-    
-    .achievement-type {
-      margin-bottom: 15px;
-    }
-    
-    .achievement-details textarea {
-      width: 100%;
-      min-height: 100px;
-      padding: 10px;
-      border-radius: 10px;
-      background-color: rgba(255, 255, 255, 0.1);
-      color: var(--text-color);
-      border: 1px solid #ccc;
-    }
-    
-    .student-search {
-      margin-bottom: 25px;
-      position: relative;
-    }
-    
-    .search-results {
-      position: absolute;
-      width: 100%;
-      max-height: 200px;
-      overflow-y: auto;
-      background: var(--glass-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      z-index: 10;
-      display: none;
-    }
-    
-    .search-results div {
-      padding: 10px;
-      cursor: pointer;
-    }
-    
-    .search-results div:hover {
-      background-color: rgba(255, 0, 0, 0.1);
-    }
-    
-    .date-picker {
-      width: 100%;
-      height: 45px;
-      padding-left: 15px;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      background-color: rgba(255, 255, 255, 0.1);
-      color: var(--text-color);
-    }
-    
-    .file-upload {
-      margin-top: 15px;
-    }
-    
-    .file-upload input {
-      width: 100%;
-      padding: 10px;
-      background-color: rgba(255, 255, 255, 0.1);
-      color: var(--text-color);
-      border-radius: 10px;
-      border: 1px solid #ccc;
-    }
-  </style>
-  <script>
-    function toggleAchievementFields() {
-      const achievementType = document.getElementById("achievement-type").value;
-      const allFields = document.querySelectorAll('.achievement-specific-field');
-      
-      // Hide all specific fields first
-      allFields.forEach(field => {
-        field.style.display = 'none';
-      });
-      
-      // Show fields relevant to the selected achievement type
-      if (achievementType) {
-        const fieldsToShow = document.querySelectorAll(`.${achievementType}-field`);
-        fieldsToShow.forEach(field => {
-          field.style.display = 'block';
-        });
-      }
-    }
-    
-    function simulateSearch() {
-      const searchInput = document.getElementById("student-search").value;
-      const searchResults = document.getElementById("search-results");
-      
-      if (searchInput.length > 2) {
-        // This would be replaced with actual API call in production
-        searchResults.style.display = 'block';
-        // Clear previous results
-        searchResults.innerHTML = '';
-        
-        // Sample data for demonstration
-        const students = [
-          {id: "STU001", name: "John Doe", dept: "CSE"},
-          {id: "STU002", name: "Jane Smith", dept: "ECE"},
-          {id: "STU003", name: "Alex Johnson", dept: "MECH"},
-          {id: "STU004", name: "Sarah Williams", dept: "CSE (ETech)"}
-        ];
-        
-        // Filter based on search input
-        const filteredStudents = students.filter(student => 
-          student.name.toLowerCase().includes(searchInput.toLowerCase()) || 
-          student.id.toLowerCase().includes(searchInput.toLowerCase())
-        );
-        
-        // Display results
-        filteredStudents.forEach(student => {
-          const resultDiv = document.createElement('div');
-          resultDiv.textContent = `${student.name} (${student.id}) - ${student.dept}`;
-          resultDiv.onclick = function() {
-            document.getElementById("student-search").value = student.name;
-            document.getElementById("student-id").value = student.id;
-            searchResults.style.display = 'none';
-          };
-          searchResults.appendChild(resultDiv);
-        });
-      } else {
-        searchResults.style.display = 'none';
-      }
-    }
-    
-    document.addEventListener("click", function(event) {
-      const searchResults = document.getElementById("search-results");
-      const searchInput = document.getElementById("student-search");
-      
-      if (event.target !== searchInput && event.target !== searchResults) {
-        searchResults.style.display = 'none';
-      }
-    });
-  </script>
-</head>
-<body class="form-page">
-  <div class="toggle-container">
-    <button id="mode-toggle">Dark Mode 🌙</button>
-  </div>
+{% block head %}
+<style>
+  .achievement-container {
+    max-width: 800px;
+  }
 
-  <div class="container achievement-container">
-    <div class="title">Enter Student Achievement</div>
-    <div class="content">
-      <form>
-        <div class="student-search">
-          <div class="input-box full-width">
-            <span class="details">Search Student</span>
-            <input type="text" id="student-search" placeholder="Enter student name or ID" oninput="simulateSearch()" />
-            <input type="hidden" id="student-id" name="student_id" />
-            <div id="search-results" class="search-results"></div>
-          </div>
+  .student-search {
+    margin-bottom: 25px;
+    position: relative;
+  }
+
+  .search-results {
+    position: absolute;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    background: var(--glass-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    z-index: 10;
+    display: none;
+    margin-top: 5px;
+  }
+
+  .search-results div {
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .search-results div:hover {
+    background-color: rgba(239, 68, 68, 0.1);
+  }
+
+  .achievement-specific-field {
+    display: none;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container achievement-container">
+  <div class="title">Enter Student Achievement</div>
+  <div class="content">
+    <form action="{{ url_for('submit_achievements') }}" method="post" enctype="multipart/form-data">
+      <div class="student-search">
+        <div class="input-box full-width">
+          <span class="details">Search Student</span>
+          <input type="text" id="student-search" placeholder="Enter student name or ID" oninput="simulateSearch()" />
+          <input type="hidden" id="student-id" name="student_id" />
+          <div id="search-results" class="search-results"></div>
         </div>
-        
-        <div class="achievement-type">
-          <div class="input-box full-width">
-            <span class="details">Achievement Type</span>
-            <select id="achievement-type" onchange="toggleAchievementFields()" required>
-              <option value="">Select Achievement Type</option>
-              <option value="symposium">Symposium</option>
-              <option value="coding">Coding Competition</option>
-              <option value="paper">Paper Presentation</option>
-              <option value="conference">Conference</option>
-              <option value="hackathon">Hackathon</option>
-              <option value="sql">SQL Query Event</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-        </div>
-        
-        <div class="user-details">
-          <div class="input-box">
-            <span class="details">Event Name</span>
-            <input type="text" placeholder="Enter event name" required />
-          </div>
-          <div class="input-box">
-            <span class="details">Date of Achievement</span>
-            <input type="date" class="date-picker" required />
-          </div>
-          <div class="input-box">
-            <span class="details">Organizer/Institution</span>
-            <input type="text" placeholder="Enter organizing institution" required />
-          </div>
-          <div class="input-box">
-            <span class="details">Position/Award</span>
-            <input type="text" placeholder="e.g., First Place, Participant" required />
-          </div>
-          
-          <!-- Symposium specific fields -->
-          <div class="input-box full-width achievement-specific-field symposium-field" style="display: none;">
-            <span class="details">Symposium Theme</span>
-            <input type="text" placeholder="Enter symposium theme" />
-          </div>
-          
-          <!-- Coding competition specific fields -->
-          <div class="input-box achievement-specific-field coding-field" style="display: none;">
-            <span class="details">Programming Language</span>
-            <input type="text" placeholder="Enter programming language" />
-          </div>
-          <div class="input-box achievement-specific-field coding-field" style="display: none;">
-            <span class="details">Platform</span>
-            <input type="text" placeholder="Enter platform (e.g., HackerRank)" />
-          </div>
-          
-          <!-- Paper presentation specific fields -->
-          <div class="input-box full-width achievement-specific-field paper-field" style="display: none;">
-            <span class="details">Paper Title</span>
-            <input type="text" placeholder="Enter paper title" />
-          </div>
-          <div class="input-box full-width achievement-specific-field paper-field" style="display: none;">
-            <span class="details">Journal/Conference Name</span>
-            <input type="text" placeholder="Enter journal or conference name" />
-          </div>
-          
-          <!-- Conference specific fields -->
-          <div class="input-box achievement-specific-field conference-field" style="display: none;">
-            <span class="details">Conference Level</span>
-            <select>
-              <option value="">Select Level</option>
-              <option value="international">International</option>
-              <option value="national">National</option>
-              <option value="state">State</option>
-              <option value="university">University</option>
-              <option value="college">College</option>
-            </select>
-          </div>
-          <div class="input-box achievement-specific-field conference-field" style="display: none;">
-            <span class="details">Role</span>
-            <input type="text" placeholder="Enter role (presenter, attendee)" />
-          </div>
-          
-          <!-- Hackathon specific fields -->
-          <div class="input-box achievement-specific-field hackathon-field" style="display: none;">
-            <span class="details">Team Size</span>
-            <input type="number" placeholder="Enter team size" min="1" />
-          </div>
-          <div class="input-box achievement-specific-field hackathon-field" style="display: none;">
-            <span class="details">Project Title</span>
-            <input type="text" placeholder="Enter project title" />
-          </div>
-          
-          <!-- SQL specific fields -->
-          <div class="input-box achievement-specific-field sql-field" style="display: none;">
-            <span class="details">Database Type</span>
-            <input type="text" placeholder="Enter database type (MySQL, Oracle)" />
-          </div>
-          <div class="input-box achievement-specific-field sql-field" style="display: none;">
-            <span class="details">Difficulty Level</span>
-            <select>
-              <option value="">Select Level</option>
-              <option value="beginner">Beginner</option>
-              <option value="intermediate">Intermediate</option>
-              <option value="advanced">Advanced</option>
-              <option value="expert">Expert</option>
-            </select>
-          </div>
-          
-          <!-- Other achievement type field -->
-          <div class="input-box full-width achievement-specific-field other-field" style="display: none;">
-            <span class="details">Achievement Type Description</span>
-            <input type="text" placeholder="Describe achievement type" />
-          </div>
-          
-          <div class="input-box full-width">
-            <span class="details">Achievement Description</span>
-            <textarea placeholder="Enter detailed description of the achievement"></textarea>
-          </div>
-        </div>
-        
-        <div class="file-upload">
-          <span class="details">Upload Certificate/Proof</span>
-          <input type="file" accept=".pdf,.jpg,.jpeg,.png" />
-        </div>
-        
-        <div class="button">
-          <input type="submit" value="Submit Achievement" />
-        </div>
-      </form>
-      
-      <div class="back-link">
-        <a href="{{ url_for('teacher-dashboard') }}">Back to Dashboard</a>
       </div>
+
+      <div class="achievement-type">
+        <div class="input-box full-width">
+          <span class="details">Achievement Type</span>
+          <select id="achievement-type" name="achievement_type" onchange="toggleAchievementFields()" required>
+            <option value="">Select Achievement Type</option>
+            <option value="symposium">Symposium</option>
+            <option value="coding">Coding Competition</option>
+            <option value="paper">Paper Presentation</option>
+            <option value="conference">Conference</option>
+            <option value="hackathon">Hackathon</option>
+            <option value="sql">SQL Query Event</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="user-details">
+        <div class="input-box">
+          <span class="details">Event Name</span>
+          <input type="text" name="event_name" placeholder="Enter event name" required />
+        </div>
+        <div class="input-box">
+          <span class="details">Date of Achievement</span>
+          <input type="date" name="achievement_date" required />
+        </div>
+        <div class="input-box">
+          <span class="details">Organizer/Institution</span>
+          <input type="text" name="organizer" placeholder="Enter organizing institution" required />
+        </div>
+        <div class="input-box">
+          <span class="details">Position/Award</span>
+          <input type="text" name="position" placeholder="e.g., First Place, Participant" required />
+        </div>
+
+        <!-- Symposium specific fields -->
+        <div class="input-box full-width achievement-specific-field symposium-field">
+          <span class="details">Symposium Theme</span>
+          <input type="text" name="symposium_theme" placeholder="Enter symposium theme" />
+        </div>
+
+        <!-- Coding competition specific fields -->
+        <div class="input-box achievement-specific-field coding-field">
+          <span class="details">Programming Language</span>
+          <input type="text" name="programming_language" placeholder="Enter programming language" />
+        </div>
+        <div class="input-box achievement-specific-field coding-field">
+          <span class="details">Platform</span>
+          <input type="text" name="platform" placeholder="Enter platform (e.g., HackerRank)" />
+        </div>
+
+        <!-- Paper presentation specific fields -->
+        <div class="input-box full-width achievement-specific-field paper-field">
+          <span class="details">Paper Title</span>
+          <input type="text" name="paper_title" placeholder="Enter paper title" />
+        </div>
+        <div class="input-box full-width achievement-specific-field paper-field">
+          <span class="details">Journal/Conference Name</span>
+          <input type="text" name="journal_name" placeholder="Enter journal or conference name" />
+        </div>
+
+        <!-- Hackathon specific fields -->
+        <div class="input-box achievement-specific-field hackathon-field">
+          <span class="details">Team Size</span>
+          <input type="number" name="team_size" placeholder="Enter team size" min="1" />
+        </div>
+        <div class="input-box achievement-specific-field hackathon-field">
+          <span class="details">Project Title</span>
+          <input type="text" name="project_title" placeholder="Enter project title" />
+        </div>
+
+        <!-- Other achievement type field -->
+        <div class="input-box full-width achievement-specific-field other-field">
+          <span class="details">Achievement Type Description</span>
+          <input type="text" name="other_description" placeholder="Describe achievement type" />
+        </div>
+
+        <div class="input-box full-width">
+          <span class="details">Achievement Description</span>
+          <textarea name="description" placeholder="Enter detailed description of the achievement" rows="4"></textarea>
+        </div>
+      </div>
+
+      <div class="file-upload">
+        <span class="details">Upload Certificate/Proof</span>
+        <input type="file" name="certificate" accept=".pdf,.jpg,.jpeg,.png" />
+      </div>
+
+      <div class="button">
+        <input type="submit" value="Submit Achievement" />
+      </div>
+    </form>
+
+    <div class="back-link">
+      <a href="{{ url_for('teacher-dashboard') }}">Back to Dashboard</a>
     </div>
   </div>
-</body>
-</html>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function toggleAchievementFields() {
+    const achievementType = document.getElementById("achievement-type").value;
+    const allFields = document.querySelectorAll('.achievement-specific-field');
+
+    // Hide all specific fields first
+    allFields.forEach(field => {
+      field.style.display = 'none';
+    });
+
+    // Show fields relevant to the selected achievement type
+    if (achievementType) {
+      const fieldsToShow = document.querySelectorAll(`.${achievementType}-field`);
+      fieldsToShow.forEach(field => {
+        field.style.display = 'block';
+      });
+    }
+  }
+
+  function simulateSearch() {
+    const searchInput = document.getElementById("student-search").value;
+    const searchResults = document.getElementById("search-results");
+
+    if (searchInput.length > 2) {
+      searchResults.style.display = 'block';
+      searchResults.innerHTML = '';
+
+      // Sample data for demonstration
+      const students = [
+        { id: "STU001", name: "John Doe", dept: "CSE" },
+        { id: "STU002", name: "Jane Smith", dept: "ECE" },
+        { id: "STU003", name: "Alex Johnson", dept: "MECH" },
+        { id: "STU004", name: "Sarah Williams", dept: "CSE (ETech)" }
+      ];
+
+      // Filter based on search input
+      const filteredStudents = students.filter(student =>
+        student.name.toLowerCase().includes(searchInput.toLowerCase()) ||
+        student.id.toLowerCase().includes(searchInput.toLowerCase())
+      );
+
+      // Display results
+      filteredStudents.forEach(student => {
+        const resultDiv = document.createElement('div');
+        resultDiv.textContent = `${student.name} (${student.id}) - ${student.dept}`;
+        resultDiv.onclick = function () {
+          document.getElementById("student-search").value = student.name;
+          document.getElementById("student-id").value = student.id;
+          searchResults.style.display = 'none';
+        };
+        searchResults.appendChild(resultDiv);
+      });
+
+      if (filteredStudents.length === 0) {
+        searchResults.innerHTML = '<div style="padding: 12px; text-align: center; color: var(--text-muted);">No students found</div>';
+      }
+    } else {
+      searchResults.style.display = 'none';
+    }
+  }
+
+  document.addEventListener("click", function (event) {
+    const searchResults = document.getElementById("search-results");
+    const searchInput = document.getElementById("student-search");
+
+    if (event.target !== searchInput && !searchResults.contains(event.target)) {
+      searchResults.style.display = 'none';
+    }
+  });
+</script>
+{% endblock %}

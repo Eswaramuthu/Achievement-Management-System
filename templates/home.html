@@ -1,28 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Achievement Management System</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
-</head>
-<body>
-  <div class="toggle-container">
-    <button id="mode-toggle">Dark Mode 🌙</button>
-  </div>
+{% extends "base.html" %}
 
-  <div class="container home-container">
-    <div class="title">Achievement Management System</div>
-    <div class="content">
-      <div class="welcome-text">
-        <p>Welcome to the Achievement Management System. Please select your role to continue.</p>
-      </div>
-      <div class="login-options">
-        <a href="{{ url_for('student') }}" class="login-button student">Student Login</a>
-        <a href="{{ url_for('teacher') }}" class="login-button teacher">Teacher Login</a>
-      </div>
+{% block title %}Home - Achievement Management System{% endblock %}
+
+{% block content %}
+<div class="container home-container">
+  <div class="title">Achievement Management System</div>
+  <div class="content">
+    <div class="welcome-text">
+      <p>Welcome to the Achievement Management System. Please select your role to continue.</p>
+    </div>
+    <div class="login-options">
+      <a href="{{ url_for('student') }}" class="login-button student">Student Login</a>
+      <a href="{{ url_for('teacher') }}" class="login-button teacher">Teacher Login</a>
     </div>
   </div>
-</body>
-</html>
+</div>
+{% endblock %}

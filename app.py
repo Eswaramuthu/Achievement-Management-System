@@ -11,7 +11,7 @@ app.secret_key = secrets.token_hex(16)
 
 
 # Define database path consistently
-DB_PATH = "C:\\Users\\Dell\\Downloads\\AMS-Achievement-Management-System-main\\AMS-Achievement-Management-System-main\\Achievement-Management-System\\ams.db"
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ams.db")
 
 # Add this function to your code
 def add_teacher_id_column():
@@ -245,6 +245,12 @@ init_db()
 @app.route("/")
 def home():
     return render_template("home.html")
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for('home'))
 
 
 @app.route("/student", methods=["GET", "POST"])
@@ -588,6 +594,22 @@ def student_achievements():
         'dept': session.get('student_dept')
     }
     return render_template("student_achievements_1.html", student=student_data)
+
+
+@app.route("/student-analytics", endpoint="student-analytics")
+def student_analytics():
+    # Check if user is logged in
+    if not session.get('logged_in'):
+        return redirect(url_for('student'))
+
+    # Get the current user data from session
+    student_data = {
+        'id': session.get('student_id'),
+        'name': session.get('student_name'),
+        'dept': session.get('student_dept')
+    }
+    return render_template("student_analytics.html", student=student_data)
+
 
 
 @app.route("/student-dashboard", endpoint="student-dashboard")
