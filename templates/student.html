@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {% extends "base.html" %}
 
 {% block title %}Student Login - Achievement Management System{% endblock %}
@@ -38,54 +37,3 @@
   </div>
 </div>
 {% endblock %}
-=======
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Student Login - Achievement Management System</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
-</head>
-<body>
-  <div class="toggle-container">
-    <button id="mode-toggle">Dark Mode 🌙</button>
-  </div>
-
-  <div class="container login-container">
-    <div class="title">Student Login</div>
-    <div class="content">
-      <form action="/student" method="post">
-        <div class="user-details">
-          <div class="input-box full-width">
-            <span class="details">Student ID</span>
-            <input autocomplete="off" autofocus type="text" name="sname" placeholder="Enter your Student ID" required />
-          </div>
-          <div class="input-box full-width">
-            <span class="details">Password</span>
-            <input autocomplete="off" autofocus type="password" name="password" placeholder="Enter your password" required />
-          </div>
-        </div>
-
-        {% if error %}
-        <div class="error-message" style="color: red; text-align: center; margin-bottom: 15px;">
-          {{ error }}
-        </div>
-        {% endif %}
-
-        <div class="button">
-          <input type="submit" value="Login" />
-        </div>
-      </form>
-      <div class="register-link">
-        <p>New student? <a href="{{ url_for('student_new') }}">Register here</a></p>
-      </div>
-      <div class="back-link">
-        <a href="{{ url_for('home') }}">Back to Home</a>
-      </div>
-    </div>
-  </div>
-</body>
-</html>
->>>>>>> 05bcd4224e6648901d30b5fa940b287a11bf27a7
