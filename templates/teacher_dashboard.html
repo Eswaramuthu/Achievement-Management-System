@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Teacher Dashboard - Achievement Management System{% endblock %}
+
+{% block content %}
+<div class="container dashboard-container">
+  <div class="title">Teacher Dashboard</div>
+  <div class="content">
+    <!-- Teacher Info -->
+    <div class="student-info">
+      <div class="student-avatar">{{ teacher.name[0] }}</div>
+      <div class="student-details">
+        <h2>{{ teacher.name }}</h2>
+        <p>Teacher ID: {{ teacher.id }} • {{ teacher.dept }} Department</p>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="dashboard-stats">
+      <div class="stat-card">
+        <div class="stat-number">{{ stats.total_achievements }}</div>
+        <div class="stat-label">Achievements Recorded</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ stats.students_managed }}</div>
+        <div class="stat-label">Students Managed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ stats.this_week }}</div>
+        <div class="stat-label">This Week</div>
+      </div>
+    </div>
+
+    <!-- Dashboard Actions -->
+    <div class="dashboard-actions">
+      <a href="{{ url_for('teacher-achievements') }}" class="dashboard-action">
+        <div class="action-icon">➕</div>
+        <div class="action-title">Record Achievement</div>
+        <div class="action-description">Add a new student achievement</div>
+      </a>
+      <a href="#" class="dashboard-action">
+        <div class="action-icon">📋</div>
+        <div class="action-title">Manage Students</div>
+        <div class="action-description">View and manage students</div>
+      </a>
+      <a href="#" class="dashboard-action">
+        <div class="action-icon">📊</div>
+        <div class="action-title">Reports</div>
+        <div class="action-description">Generate achievement reports</div>
+      </a>
+    </div>
+
+    <!-- Recent Entries -->
+    <div class="recent-section">
+      <div class="section-header">
+        <div class="section-title">Recent Entries</div>
+        <a href="#" class="view-all">View All Entries</a>
+      </div>
+
+      <div class="recent-entries">
+        {% if recent_entries %}
+        {% for entry in recent_entries %}
+        <div class="entry-item">
+          <div class="entry-details">
+            <span class="student-name">{{ entry.student_name }}</span>
+            <span class="achievement-type">{{ entry.achievement_type }}</span>
+          </div>
+          <div class="entry-date">{{ entry.achievement_date }}</div>
+          <div class="entry-action">
+            <a href="#">View Details</a>
+          </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="entry-item" style="text-align: center;">
+          <p>No Achievements have been recorded yet.</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

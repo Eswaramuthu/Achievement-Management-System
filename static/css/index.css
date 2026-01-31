@@ -1,0 +1,25 @@
+* {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    margin-left: 20px;
+    margin-top: 20px;
+    font-family: "Poppins", sans-serif;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-image: url("../images/background_1.jpg");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+.student-row {
+    width: 200px;
+    height: 200px;
+    
+}

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard - Achievement Management System{% endblock %}
+
+{% block content %}
+<div class="container dashboard-container">
+  <div class="title">Student Dashboard</div>
+  <div class="content">
+    <!-- Student Info -->
+    <div class="student-info">
+      <div class="student-avatar">{{ student.name[0] }}</div>
+      <div class="student-details">
+        <h2>{{ student.name }}</h2>
+        <p>Student ID: {{ student.id }} • {{ student.dept }} Department</p>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="dashboard-stats">
+      <div class="stat-card">
+        <div class="stat-number">12</div>
+        <div class="stat-label">Total Achievements</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">5</div>
+        <div class="stat-label">First Positions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">4</div>
+        <div class="stat-label">This Semester</div>
+      </div>
+    </div>
+
+    <!-- Dashboard Actions -->
+    <div class="dashboard-actions">
+      <a href="{{ url_for('student-achievements') }}" class="dashboard-action">
+        <div class="action-icon">🏆</div>
+        <div class="action-title">My Achievements</div>
+        <div class="action-description">View and manage all your achievements</div>
+      </a>
+      <a href="{{ url_for('student-analytics') }}" class="dashboard-action">
+        <div class="action-icon">📊</div>
+        <div class="action-title">Analytics</div>
+        <div class="action-description">Track your achievement progress over time</div>
+      </a>
+      <a href="#" class="dashboard-action">
+        <div class="action-icon">👤</div>
+        <div class="action-title">Profile</div>
+        <div class="action-description">Update your personal information</div>
+      </a>
+    </div>
+
+    <!-- Recent Achievements -->
+    <div class="recent-section">
+      <div class="section-header">
+        <div class="section-title">Recent Achievements</div>
+        <a href="{{ url_for('student-achievements') }}" class="view-all">View All</a>
+      </div>
+
+      <div class="recent-achievements">
+        <div class="recent-achievement">
+          <div class="achievement-tag">Hackathon</div>
+          <div class="achievement-name">National Code Challenge</div>
+          <div class="achievement-date">March 15, 2025</div>
+        </div>
+
+        <div class="recent-achievement">
+          <div class="achievement-tag">Paper</div>
+          <div class="achievement-name">Medical Informatics Conference</div>
+          <div class="achievement-date">February 22, 2025</div>
+        </div>
+
+        <div class="recent-achievement">
+          <div class="achievement-tag">Coding</div>
+          <div class="achievement-name">CodeFest 2025</div>
+          <div class="achievement-date">January 10, 2025</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+<!-- templates/manage_students.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Student Achievements</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</head>
+<body class="form-page">
+  <div class="toggle-container">
+    <button id="mode-toggle">Dark Mode 🌙</button>
+  </div>
+
+  <div class="container dashboard-box">
+    <div class="title">Manage Student Achievements</div>
+
+    <table class="table table-bordered" style="width: 100%; border-collapse: collapse; color: var(--text-color);">
+      <thead>
+        <tr style="background-color: var(--glass-bg);">
+          <th>ID</th>
+          <th>Name</th>
+          <th>Event</th>
+          <th>Type</th>
+          <th>Date</th>
+          <th>Institution</th>
+          <th>Award</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ach in achievements %}
+        <tr>
+          <form method="POST" action="{{ url_for('update_achievement', id=ach.id) }}">
+            <td>{{ ach.student_id }}</td>
+            <td><input type="text" name="student_name" value="{{ ach.student_name }}" class="form-control" required></td>
+            <td><input type="text" name="event_name" value="{{ ach.event_name }}" class="form-control" required></td>
+            <td><input type="text" name="achievement_type" value="{{ ach.achievement_type }}" class="form-control"></td>
+            <td><input type="date" name="achievement_date" value="{{ ach.achievement_date }}" class="form-control" required></td>
+            <td><input type="text" name="institution" value="{{ ach.institution }}" class="form-control"></td>
+            <td><input type="text" name="award" value="{{ ach.award }}" class="form-control"></td>
+            <td>
+              <button type="submit" class="btn btn-success btn-sm">Update</button>
+          </form>
+              <form method="POST" action="{{ url_for('delete_achievement', id=ach.id) }}" style="display:inline;">
+                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+              </form>
+            </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="mt-3">
+      <a href="{{ url_for('teacher_achievement_entry') }}" class="login-button">Add New Achievement</a>
+      <a href="{{ url_for('teacher_dashboard') }}" class="login-button">Back to Dashboard</a>
+    </div>
+  </div>
+</body>
+</html>

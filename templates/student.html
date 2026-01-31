@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Student Login - Achievement Management System{% endblock %}
+
+{% block content %}
+<div class="container login-container">
+  <div class="title">Student Login</div>
+  <div class="content">
+    <form action="/student" method="post">
+      <div class="user-details">
+        <div class="input-box full-width">
+          <span class="details">Student ID</span>
+          <input autocomplete="off" autofocus type="text" name="sname" placeholder="Enter your Student ID" required />
+        </div>
+        <div class="input-box full-width">
+          <span class="details">Password</span>
+          <input autocomplete="off" type="password" name="password" placeholder="Enter your password" required />
+        </div>
+      </div>
+
+      {% if error %}
+      <div class="error-message">
+        {{ error }}
+      </div>
+      {% endif %}
+
+      <div class="button">
+        <input type="submit" value="Login" />
+      </div>
+    </form>
+    <div class="register-link">
+      <p>New student? <a href="{{ url_for('student_new') }}">Register here</a></p>
+    </div>
+    <div class="back-link">
+      <a href="{{ url_for('home') }}">Back to Home</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

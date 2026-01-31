@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Teacher Registration</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
+  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+  <script>
+    function validatePasswords(event) {
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirm-password").value;
+      const message = document.getElementById("password-message");
+
+      if (password !== confirmPassword) {
+        event.preventDefault();
+        message.textContent = "❌ Passwords do not match!";
+        message.style.color = "red";
+      } else {
+        message.textContent = "✅ Passwords match!";
+        message.style.color = "limegreen";
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="toggle-container">
+    <button id="mode-toggle">Dark Mode 🌙</button>
+  </div>
+
+  <div class="container">
+    <div class="title">Teacher Registration</div>
+    <div class="content">
+      <form onsubmit="validatePasswords(event)">
+        <div class="user-details">
+          <div class="input-box">
+            <span class="details">Full Name</span>
+            <input type="text" placeholder="Enter your name" required />
+          </div>
+          <div class="input-box">
+            <span class="details">Teacher ID</span>
+            <input type="text" placeholder="Enter your Teacher ID" required />
+          </div>
+          <div class="input-box">
+            <span class="details">Email</span>
+            <input type="email" placeholder="Enter your email" required />
+          </div>
+          <div class="input-box">
+            <span class="details">Phone Number</span>
+            <input type="tel" placeholder="Enter your number" required />
+          </div>
+          <div class="input-box">
+            <span class="details">Password</span>
+            <input type="password" id="password" placeholder="Enter your password" required />
+          </div>
+          <div class="input-box">
+            <span class="details">Confirm Password</span>
+            <input type="password" id="confirm-password" placeholder="Confirm your password" required />
+            <small id="password-message" style="font-size: 14px;"></small>
+          </div>
+        </div>
+
+        <div class="gender-details">
+          <input type="radio" name="gender" id="dot-1" />
+          <input type="radio" name="gender" id="dot-2" />
+          <input type="radio" name="gender" id="dot-3" />
+          <span class="gender-title">Gender</span>
+          <div class="category">
+            <label for="dot-1">
+              <span class="dot one"></span>
+              <span class="gender">Male</span>
+            </label>
+            <label for="dot-2">
+              <span class="dot two"></span>
+              <span class="gender">Female</span>
+            </label>
+            <label for="dot-3">
+              <span class="dot three"></span>
+              <span class="gender">Other</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="dept-details">
+          <input type="radio" name="dept" id="dot-4" />
+          <input type="radio" name="dept" id="dot-5" />
+          <input type="radio" name="dept" id="dot-6" />
+          <input type="radio" name="dept" id="dot-7" />
+          <span class="dept-title">Department</span>
+          <div class="category">
+            <label for="dot-4">
+              <span class="dot four"></span>
+              <span class="dept">CSE</span>
+            </label>
+            <label for="dot-5">
+              <span class="dot five"></span>
+              <span class="dept">CSE (ETech)</span>
+            </label>
+            <label for="dot-6">
+              <span class="dot six"></span>
+              <span class="dept">ECE</span>
+            </label>
+            <label for="dot-7">
+              <span class="dot seven"></span>
+              <span class="dept">MECH</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="button">
+          <input type="submit" value="Register" />
+        </div>
+      </form>
+      <div class="back-link">
+        <a href="{{ url_for('teacher') }}">Back to Login</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

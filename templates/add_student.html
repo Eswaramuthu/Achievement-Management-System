@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Add Student</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="form-page">
+  <div class="container">
+    <div class="title">Add New Student</div>
+    <form method="POST">
+      <div class="user-details">
+        <div class="input-box">
+          <span class="details">Name</span>
+          <input type="text" name="student_name" required>
+        </div>
+        <div class="input-box">
+          <span class="details">Student ID</span>
+          <input type="text" name="student_id" required>
+        </div>
+        <div class="input-box">
+          <span class="details">Email</span>
+          <input type="email" name="email" required>
+        </div>
+        <div class="input-box">
+          <span class="details">Phone Number</span>
+          <input type="text" name="phone_number">
+        </div>
+        <div class="input-box">
+          <span class="details">Password</span>
+          <input type="password" name="password" required>
+        </div>
+        <div class="input-box">
+          <span class="details">Gender</span>
+          <input type="text" name="student_gender">
+        </div>
+        <div class="input-box">
+          <span class="details">Department</span>
+          <input type="text" name="student_dept">
+        </div>
+      </div>
+      <div class="button">
+        <input type="submit" value="Add Student">
+      </div>
+      <div class="back-link">
+        <a href="{{ url_for('manage_students') }}">Back to Students</a>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

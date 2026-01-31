@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Edit Student</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="form-page">
+  <div class="container">
+    <div class="title">Edit Student</div>
+    <form method="POST">
+      <div class="user-details">
+        <div class="input-box">
+          <span class="details">Name</span>
+          <input type="text" name="student_name" value="{{ student[0] }}" required>
+        </div>
+        <div class="input-box">
+          <span class="details">Student ID</span>
+          <input type="text" name="student_id" value="{{ student[1] }}" readonly>
+        </div>
+        <div class="input-box">
+          <span class="details">Email</span>
+          <input type="email" name="email" value="{{ student[2] }}">
+        </div>
+        <div class="input-box">
+          <span class="details">Phone Number</span>
+          <input type="text" name="phone_number" value="{{ student[3] }}">
+        </div>
+        <div class="input-box">
+          <span class="details">Gender</span>
+          <input type="text" name="student_gender" value="{{ student[5] }}">
+        </div>
+        <div class="input-box">
+          <span class="details">Department</span>
+          <input type="text" name="student_dept" value="{{ student[6] }}">
+        </div>
+      </div>
+      <div class="button">
+        <input type="submit" value="Update Student">
+      </div>
+      <div class="back-link">
+        <a href="{{ url_for('manage_students') }}">Back to Students</a>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

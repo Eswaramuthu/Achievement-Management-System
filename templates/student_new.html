@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Registration</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
+  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+  <script>
+    function validatePasswords(event) {
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirm-password").value;
+    const message = document.getElementById("password-message");
+
+    console.log("Validating passwords...");
+
+    if (password !== confirmPassword) {
+      event.preventDefault(); // This stops form submission
+      message.textContent = "❌ Passwords do not match!";
+      message.style.color = "red";
+      console.log("Password validation failed - preventing submission");
+      return false;
+    } else {
+      message.textContent = "✅ Passwords match!";
+      message.style.color = "limegreen";
+      console.log("Password validation passed - allowing submission");
+      // Don't return anything here to allow form submission
+    }
+  }
+  </script>
+</head>
+<body>
+  <div class="toggle-container">
+    <button id="mode-toggle">Dark Mode 🌙</button>
+  </div>
+
+  <div class="container">
+    <div class="title">Student Registration</div>
+    <div class="content">
+      <form action="/student-new" method="POST">
+        <div class="user-details">
+          <div class="input-box">
+            <span class="details">Full Name</span>
+            <input type="text" name="student_name" placeholder="Enter your name" required />
+          </div>
+          <div class="input-box">
+            <span class="details">Student ID</span>
+            <input type="text" name="student_id" placeholder="Enter your Student ID" required />
+          </div>
+          <div class="input-box">
+            <span class="details">Email</span>
+            <input type="email" name="email" placeholder="Enter your email" required />
+          </div>
+          <div class="input-box">
+            <span class="details">Phone Number</span>
+            <input type="tel" name="phone_number" placeholder="Enter your number" required />
+          </div>
+          <div class="input-box">
+            <span class="details">Password</span>
+            <input type="password" name="password" id="password" placeholder="Enter your password" required />
+          </div>
+          <div class="input-box">
+            <span class="details">Confirm Password</span>
+            <input type="password" id="confirm-password" placeholder="Confirm your password" required />
+            <small id="password-message" style="font-size: 14px;"></small>
+          </div>
+          <!-- Put these fields inside the user-details div -->
+          <div class="input-box">
+            <span class="details">Gender</span>
+            <input type="text" name="student_gender" placeholder="Enter your gender" required />
+          </div>
+          <div class="input-box">
+            <span class="details">Department</span>
+            <input type="text" name="student_dept" placeholder="Enter your department" required />
+          </div>
+        </div>
+
+        <div class="button">
+          <input type="submit" value="Register" />
+        </div>
+      </form>
+      <div class="back-link">
+        <a href="{{ url_for('student') }}">Back to Login</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

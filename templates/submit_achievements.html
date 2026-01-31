@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Achievement Submission - Achievement Management System{% endblock %}
+
+{% block content %}
+<div class="container success-container">
+  <div class="title">Achievement Submission</div>
+  <div class="content">
+    <div class="success-message">
+      <div class="success-icon">✓</div>
+      <p class="success-text">Congratulations!</p>
+      <p class="success-details">{{ success }}</p>
+    </div>
+    <div class="button">
+      <a href="{{ url_for('teacher-dashboard') }}" class="back-button">Back to Dashboard</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Achievement Management System{% endblock %}
+
+{% block content %}
+<div class="container home-container">
+  <div class="title">Achievement Management System</div>
+  <div class="content">
+    <div class="welcome-text">
+      <p>Welcome to the Achievement Management System. Please select your role to continue.</p>
+    </div>
+    <div class="login-options">
+      <a href="{{ url_for('student') }}" class="login-button student">Student Login</a>
+      <a href="{{ url_for('teacher') }}" class="login-button teacher">Teacher Login</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

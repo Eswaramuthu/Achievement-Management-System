@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Achievements - Achievement Management System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
+  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+  <style>
+
+    body {
+    min-height: 100vh !important; 
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    background-color: var(--bg-color);
+    transition: background-color 0.3s ease;
+    color: var(--text-color);
+    padding: 20px;
+    overflow-y: auto; 
+    }
+
+    .achievement-container {
+      max-width: 1000px; 
+      margin-top: 80px; 
+      margin-bottom: 40px;
+    }
+    
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .student-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    
+    .student-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background-color: var(--primary-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 32px;
+      font-weight: bold;
+    }
+    
+    .student-details h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+    
+    .student-stats {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .stat-card {
+      flex: 1;
+      background: rgba(255, 0, 0, 0.1);
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+      border: 1px solid var(--border-color);
+    }
+    
+    .stat-number {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+    
+    .stat-label {
+      font-size: 14px;
+    }
+    
+    .filter-options {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .filter-options select, .filter-options input {
+      padding: 8px 15px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--text-color);
+    }
+    
+    .achievement-list {
+      margin-top: 20px;
+    }
+    
+    .achievement-card {
+      background: var(--glass-bg);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 15px;
+      border: 1px solid var(--border-color);
+      transition: transform 0.3s ease;
+    }
+    
+    .achievement-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .achievement-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .achievement-type {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    
+    .achievement-date {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+    
+    .achievement-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    
+    .achievement-org {
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    
+    .achievement-position {
+      font-weight: 500;
+      margin-bottom: 15px;
+    }
+    
+    .achievement-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .action-button {
+      padding: 8px 12px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .download-btn {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .download-btn:hover {
+      background-color: #cc0000;
+    }
+    
+    .view-btn {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+    }
+    
+    .view-btn:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .no-achievements {
+      text-align: center;
+      padding: 30px;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+    
+    @media (max-width: 768px) {
+      .student-stats {
+        flex-direction: column;
+      }
+      
+      .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+    }
+
+    .toggle-container {
+      position: fixed; 
+      top: 20px;
+      right: 20px;
+      z-index: 1000; 
+    }
+    
+  </style>
+</head>
+<body>
+  <div class="toggle-container">
+    <button id="mode-toggle">Dark Mode 🌙</button>
+  </div>
+
+  <div class="container achievement-container">
+    <div class="dashboard-header">
+      <div class="title">My Achievements</div>
+      <div class="action-buttons">
+        <button class="action-button view-btn">Export All Achievements</button>
+      </div>
+    </div>
+    
+    <div class="content">
+      <div class="student-info">
+        <div class="student-avatar">J</div>
+        <div class="student-details">
+          <h2>{{ student.name }}</h2>
+          <p>Student ID: {{ student.id }} • {{ student.dept }} Department</p>
+        </div>
+      </div>
+      
+      <div class="student-stats">
+        <div class="stat-card">
+          <div class="stat-number">12</div>
+          <div class="stat-label">Total Achievements</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">5</div>
+          <div class="stat-label">First Positions</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">3</div>
+          <div class="stat-label">Paper Presentations</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">4</div>
+          <div class="stat-label">Hackathons</div>
+        </div>
+      </div>
+      
+      <div class="filter-options">
+        <select id="filter-type">
+          <option value="">All Achievement Types</option>
+          <option value="symposium">Symposium</option>
+          <option value="coding">Coding Competition</option>
+          <option value="paper">Paper Presentation</option>
+          <option value="conference">Conference</option>
+          <option value="hackathon">Hackathon</option>
+          <option value="sql">SQL Query Event</option>
+          <option value="other">Other</option>
+        </select>
+        
+        <select id="filter-year">
+          <option value="">All Years</option>
+          <option value="2025">2025</option>
+          <option value="2024">2024</option>
+          <option value="2023">2023</option>
+        </select>
+        
+        <select id="filter-position">
+          <option value="">All Positions</option>
+          <option value="first">First Place</option>
+          <option value="second">Second Place</option>
+          <option value="third">Third Place</option>
+          <option value="participation">Participation</option>
+        </select>
+        
+        <input type="text" id="search-achievement" placeholder="Search achievements..." />
+      </div>
+      
+      <div class="achievement-list">
+        <!-- Achievement 1 -->
+        <div class="achievement-card">
+          <div class="achievement-header">
+            <span class="achievement-type">Hackathon</span>
+            <span class="achievement-date">March 15, 2025</span>
+          </div>
+          <div class="achievement-title">National Code Challenge - Web Innovation</div>
+          <div class="achievement-org">Organized by: TechMinds Solutions</div>
+          <div class="achievement-position">Position: First Place</div>
+          <p>Developed an innovative web application that helps students track and manage their academic achievements automatically from university portals.</p>
+          <div class="achievement-actions">
+            <a href="#" class="action-button download-btn">Download Certificate</a>
+            <button class="action-button view-btn">View Details</button>
+          </div>
+        </div>
+        
+        <!-- Achievement 2 -->
+        <div class="achievement-card">
+          <div class="achievement-header">
+            <span class="achievement-type">Paper Presentation</span>
+            <span class="achievement-date">February 22, 2025</span>
+          </div>
+          <div class="achievement-title">Advancements in Machine Learning for Medical Diagnostics</div>
+          <div class="achievement-org">Organized by: International Conference on Medical Informatics</div>
+          <div class="achievement-position">Position: Best Paper Award</div>
+          <p>Presented a research paper on utilizing deep learning models to improve accuracy in early-stage disease detection through medical imaging analysis.</p>
+          <div class="achievement-actions">
+            <a href="#" class="action-button download-btn">Download Certificate</a>
+            <button class="action-button view-btn">View Details</button>
+          </div>
+        </div>
+        
+        <!-- Achievement 3 -->
+        <div class="achievement-card">
+          <div class="achievement-header">
+            <span class="achievement-type">Coding Competition</span>
+            <span class="achievement-date">January 10, 2025</span>
+          </div>
+          <div class="achievement-title">CodeFest 2025</div>
+          <div class="achievement-org">Organized by: TechHub University</div>
+          <div class="achievement-position">Position: Second Place</div>
+          <p>Implemented efficient algorithms to solve complex computational problems in the competitive coding challenge.</p>
+          <div class="achievement-actions">
+            <a href="#" class="action-button download-btn">Download Certificate</a>
+            <button class="action-button view-btn">View Details</button>
+          </div>
+        </div>
+        
+        <!-- Achievement 4 -->
+        <div class="achievement-card">
+          <div class="achievement-header">
+            <span class="achievement-type">Symposium</span>
+            <span class="achievement-date">December 5, 2024</span>
+          </div>
+          <div class="achievement-title">NextGen Computing Technologies</div>
+          <div class="achievement-org">Organized by: Department of Computer Science, State University</div>
+          <div class="achievement-position">Position: Participant</div>
+          <p>Participated in the technical symposium focusing on quantum computing, blockchain and IoT integration in modern computing systems.</p>
+          <div class="achievement-actions">
+            <a href="#" class="action-button download-btn">Download Certificate</a>
+            <button class="action-button view-btn">View Details</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- No achievements state (hidden by default) -->
+      <div class="no-achievements" style="display: none;">
+        <p>You haven't recorded any achievements yet.</p>
+        <p>Start by participating in events and having your teacher record your achievements!</p>
+      </div>
+      
+      <div class="back-link">
+        <a href="{{ url_for('student-dashboard') }}">Back to Dashboard</a>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Filter functionality
+      const filterType = document.getElementById('filter-type');
+      const filterYear = document.getElementById('filter-year');
+      const filterPosition = document.getElementById('filter-position');
+      const searchField = document.getElementById('search-achievement');
+      const achievementCards = document.querySelectorAll('.achievement-card');
+      const noAchievements = document.querySelector('.no-achievements');
+      
+      function filterAchievements() {
+        const typeValue = filterType.value.toLowerCase();
+        const yearValue = filterYear.value;
+        const positionValue = filterPosition.value.toLowerCase();
+        const searchValue = searchField.value.toLowerCase();
+        
+        let visibleCount = 0;
+        
+        achievementCards.forEach(card => {
+          const type = card.querySelector('.achievement-type').textContent.toLowerCase();
+          const date = card.querySelector('.achievement-date').textContent;
+          const year = date.split(',')[1].trim();
+          const position = card.querySelector('.achievement-position').textContent.toLowerCase();
+          const title = card.querySelector('.achievement-title').textContent.toLowerCase();
+          const org = card.querySelector('.achievement-org').textContent.toLowerCase();
+          const description = card.querySelector('p').textContent.toLowerCase();
+          
+          // Check if the card matches all filters
+          const matchesType = typeValue === '' || type.includes(typeValue);
+          const matchesYear = yearValue === '' || year.includes(yearValue);
+          const matchesPosition = positionValue === '' || position.includes(positionValue);
+          const matchesSearch = searchValue === '' || 
+                               title.includes(searchValue) || 
+                               description.includes(searchValue) ||
+                               org.includes(searchValue);
+          
+          if (matchesType && matchesYear && matchesPosition && matchesSearch) {
+            card.style.display = 'block';
+            visibleCount++;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+        
+        // Show "no achievements" message if no results
+        noAchievements.style.display = visibleCount === 0 ? 'block' : 'none';
+      }
+      
+      // Add event listeners to filters
+      filterType.addEventListener('change', filterAchievements);
+      filterYear.addEventListener('change', filterAchievements);
+      filterPosition.addEventListener('change', filterAchievements);
+      searchField.addEventListener('input', filterAchievements);
+    });
+  </script>
+</body>
+</html>

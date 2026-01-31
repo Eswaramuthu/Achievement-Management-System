@@ -1,0 +1,301 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics - Achievement Management System{% endblock %}
+
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container analytics-container">
+    <div class="title">Analytics Dashboard</div>
+    <div class="content">
+
+        <!-- Student Info -->
+        <div class="student-info">
+            <div class="student-avatar">{{ student.name[0] }}</div>
+            <div class="student-details">
+                <h2>{{ student.name }}</h2>
+                <p>Student ID: {{ student.id }} • {{ student.dept }} Department</p>
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="analytics-metrics">
+            <div class="metric-card">
+                <div class="metric-icon">🏆</div>
+                <div class="metric-value">12</div>
+                <div class="metric-label">Total Achievements</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">🥇</div>
+                <div class="metric-value">5</div>
+                <div class="metric-label">First Positions</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">📈</div>
+                <div class="metric-value">+3</div>
+                <div class="metric-label">This Month</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">⭐</div>
+                <div class="metric-value">4.2</div>
+                <div class="metric-label">Avg. Per Semester</div>
+            </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+
+            <!-- Achievement by Type -->
+            <div class="chart-card">
+                <h3 class="chart-title">Achievements by Type</h3>
+                <div class="chart-container">
+                    <canvas id="typeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Achievement by Year -->
+            <div class="chart-card">
+                <h3 class="chart-title">Achievements by Year</h3>
+                <div class="chart-container">
+                    <canvas id="yearChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Achievement by Position -->
+            <div class="chart-card">
+                <h3 class="chart-title">Achievements by Position</h3>
+                <div class="chart-container">
+                    <canvas id="positionChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Progress Over Time -->
+            <div class="chart-card chart-card-wide">
+                <h3 class="chart-title">Progress Over Time</h3>
+                <div class="chart-container">
+                    <canvas id="progressChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Insights Section -->
+        <div class="insights-section">
+            <h3 class="insights-title">📊 Key Insights</h3>
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <div class="insight-icon">🎯</div>
+                    <div class="insight-content">
+                        <div class="insight-label">Most Active Category</div>
+                        <div class="insight-value">Hackathons (4 achievements)</div>
+                    </div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon">📅</div>
+                    <div class="insight-content">
+                        <div class="insight-label">Best Year</div>
+                        <div class="insight-value">2025 (7 achievements)</div>
+                    </div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon">🏅</div>
+                    <div class="insight-content">
+                        <div class="insight-label">Success Rate</div>
+                        <div class="insight-value">41.7% First Positions</div>
+                    </div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon">📈</div>
+                    <div class="insight-content">
+                        <div class="insight-label">Growth Trend</div>
+                        <div class="insight-value">+25% vs Last Semester</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="back-link">
+            <a href="{{ url_for('student-dashboard') }}">Back to Dashboard</a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Chart.js default configuration
+    Chart.defaults.color = getComputedStyle(document.body).getPropertyValue('--text-color').trim();
+    Chart.defaults.borderColor = getComputedStyle(document.body).getPropertyValue('--border-color').trim();
+
+    const chartColors = {
+        primary: '#ef4444',
+        secondary: '#f97316',
+        success: '#22c55e',
+        info: '#3b82f6',
+        warning: '#eab308',
+        purple: '#a855f7',
+        pink: '#ec4899',
+        teal: '#14b8a6'
+    };
+
+    // Achievement by Type Chart (Doughnut)
+    const typeCtx = document.getElementById('typeChart').getContext('2d');
+    new Chart(typeCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Hackathons', 'Paper Presentations', 'Coding Competitions', 'Symposiums', 'Conferences'],
+            datasets: [{
+                data: [4, 3, 2, 2, 1],
+                backgroundColor: [
+                    chartColors.primary,
+                    chartColors.secondary,
+                    chartColors.info,
+                    chartColors.success,
+                    chartColors.purple
+                ],
+                borderWidth: 2,
+                borderColor: getComputedStyle(document.body).getPropertyValue('--card-bg').trim()
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 15,
+                        font: { size: 12 }
+                    }
+                }
+            }
+        }
+    });
+
+    // Achievement by Year Chart (Bar)
+    const yearCtx = document.getElementById('yearChart').getContext('2d');
+    new Chart(yearCtx, {
+        type: 'bar',
+        data: {
+            labels: ['2023', '2024', '2025'],
+            datasets: [{
+                label: 'Achievements',
+                data: [2, 3, 7],
+                backgroundColor: chartColors.primary,
+                borderRadius: 8,
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 },
+                    grid: { color: getComputedStyle(document.body).getPropertyValue('--border-color').trim() }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+
+    // Achievement by Position Chart (Pie)
+    const positionCtx = document.getElementById('positionChart').getContext('2d');
+    new Chart(positionCtx, {
+        type: 'pie',
+        data: {
+            labels: ['First Place', 'Second Place', 'Third Place', 'Participation'],
+            datasets: [{
+                data: [5, 3, 2, 2],
+                backgroundColor: [
+                    chartColors.success,
+                    chartColors.info,
+                    chartColors.warning,
+                    chartColors.secondary
+                ],
+                borderWidth: 2,
+                borderColor: getComputedStyle(document.body).getPropertyValue('--card-bg').trim()
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 15,
+                        font: { size: 12 }
+                    }
+                }
+            }
+        }
+    });
+
+    // Progress Over Time Chart (Line)
+    const progressCtx = document.getElementById('progressChart').getContext('2d');
+    new Chart(progressCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            datasets: [{
+                label: '2025',
+                data: [1, 2, 3, 3, 4, 5, 7, null, null, null, null, null],
+                borderColor: chartColors.primary,
+                backgroundColor: chartColors.primary + '20',
+                tension: 0.4,
+                fill: true,
+                borderWidth: 3,
+                pointRadius: 5,
+                pointHoverRadius: 7
+            }, {
+                label: '2024',
+                data: [0, 0, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3],
+                borderColor: chartColors.info,
+                backgroundColor: chartColors.info + '20',
+                tension: 0.4,
+                fill: true,
+                borderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        padding: 15,
+                        font: { size: 12 }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 },
+                    grid: { color: getComputedStyle(document.body).getPropertyValue('--border-color').trim() }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

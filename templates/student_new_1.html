@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>Student Registration</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
+        <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log("Form method: " + document.querySelector('form').method);
+                console.log("Form action: " + document.querySelector('form').action);
+                
+                document.querySelector('form').addEventListener('submit', function(event) {
+                    console.log("Form is being submitted");
+                });
+            });
+
+            function validatePasswords(event) {
+                const password = document.getElementById("password").value;
+                const confirmPassword = document.getElementById("confirm-password").value;
+                const message = document.getElementById("password-message");
+            
+                console.log("Validating passwords...");
+            
+                if (password !== confirmPassword) {
+                    event.preventDefault(); // This stops form submission
+                    message.textContent = "❌ Passwords do not match!";
+                    message.style.color = "red";
+                    console.log("Password validation failed - preventing submission");
+                    return false;
+                } else {
+                    message.textContent = "✅ Passwords match!";
+                    message.style.color = "limegreen";
+                    console.log("Password validation passed - allowing submission");
+                    return true; // Explicitly return true to allow form submission
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div class="toggle-container">
+            <button id="mode-toggle">Dark Mode 🌙</button>
+        </div>
+
+        <div class="container">
+            <div class="title">Student Registration</div>
+            <div class="content">
+                <form action="/student-new" method="POST" onsubmit="return validatePasswords(event)">
+                    <div class="user-details">
+                        <div class="input-box">
+                            <span class="details">Full Name</span>
+                            <input autocomplete="off" autofocus type="text" name="student_name" placeholder="Enter your full name" required>
+                        </div>
+
+                        <div class="input-box">
+                            <span class="details">Student ID</span>
+                            <input autocomplete="off" type="text" name="student_id" placeholder="Enter your Student ID" required>
+                        </div>
+
+                        <div class="input-box">
+                            <span class="details">Email</span>
+                            <input autocomplete="off" type="email" name="email" placeholder="Enter your email" required>
+                        </div>
+
+                        <div class="input-box">
+                            <span class="details">Phone Number</span>
+                            <input autocomplete="off" type="tel" name="phone_number" placeholder="Enter your phone number" required>
+                        </div>
+
+                        <div class="input-box">
+                            <span class="details">Password</span>
+                            <input autocomplete="off" type="password" id="password" name="password" placeholder="Enter your Password" required>
+                        </div>
+
+                        <div class="input-box">
+                            <span class="details">Confirm Password</span>
+                            <input type="password" id="confirm-password" placeholder="Confirm your password" required>
+                            <small id="password-message" style="font-size: 14px;"></small>
+                        </div>
+
+                        <div class="input-box">
+                            <span class="details">Gender</span>
+                            <select name="student_gender" required>
+                                <option disabled selected value="">Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="input-box">
+                            <span class="details">Department</span>
+                            <select name="student_dept" required>
+                                <option disabled selected value="">Department</option>
+                                <option value="CSE">CSE</option>
+                                <option value="CSE(E Tech)">CSE(E Tech)</option>
+                                <option value="ECE">ECE</option>
+                                <option value="MECH">MECH</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="button">
+                        <input type="submit" value="Register">
+                    </div>
+                </form>
+
+                <div class="back-link">
+                    <a href="{{ url_for('student') }}">Back to Login</a>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
