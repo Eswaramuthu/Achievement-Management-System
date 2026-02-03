@@ -10,6 +10,9 @@ Academic achievements are scattered everywhere — certificates in folders, emai
 
 Achievement Management System centralizes everything. Students see all their achievements in one dashboard with analytics. Teachers input achievements through simple forms with auto-complete. The system tracks hackathons, coding competitions, paper presentations, conferences, and symposiums — complete with certificates, dates, positions, and detailed descriptions. Clean, fast, and organized.
 
+> [!IMPORTANT]
+> **Database Setup Required**: Before running the application for the first time, you **must** run `init_db.py` to create the database and tables. This is a one-time setup step.
+
 ## Quick Start (Windows PowerShell)
 
 ```powershell
