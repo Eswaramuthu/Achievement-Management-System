@@ -1,40 +1,110 @@
 # Achievement Management System
 
-A web-based platform where students and teachers track academic achievements in one place. Students view their accomplishments, teachers record them, and everyone gets a clear picture of academic progress — all automated and organized.
+A web-based platform that helps academic institutions centrally manage and track student achievements.  
+Students can view and analyze their accomplishments, while teachers can easily record and manage them — all in one organized system.
 
-## Problem
+---
 
-Academic achievements are scattered everywhere — certificates in folders, emails buried in inboxes, paper records collecting dust. Students struggle to showcase their accomplishments during placements or applications. Teachers waste time managing spreadsheets and physical documents. Nobody has a clear, organized view of what students have actually achieved.
+## Overview
 
-## Solution
+Academic achievements are often scattered across certificates, spreadsheets, emails, and physical records. This makes it difficult for students to showcase their work during placements or applications and time-consuming for teachers to manage records.
 
-Achievement Management System centralizes everything. Students see all their achievements in one dashboard with analytics. Teachers input achievements through simple forms with auto-complete. The system tracks hackathons, coding competitions, paper presentations, conferences, and symposiums — complete with certificates, dates, positions, and detailed descriptions. Clean, fast, and organized.
+The **Achievement Management System** solves this by providing a centralized dashboard where:
+- Students can view, filter, and analyze their achievements
+- Teachers can efficiently record and manage student accomplishments
+- Institutions get a structured, reliable record of academic progress
 
-## Quick Start (Windows PowerShell)
+This project is intended for **academic institutions**, students, and faculty members.
+
+---
+
+## Features
+
+- Centralized achievement tracking
+- Role-based dashboards for students and teachers
+- Certificate upload and access
+- Advanced filtering and analytics
+- Clean and responsive user interface
+- Dark / light mode support
+
+---
+
+## Tech Stack
+
+- **Flask** – Python web framework
+- **SQLite** – Lightweight relational database
+- **JavaScript** – Client-side interactivity
+- **HTML / CSS** – Responsive UI
+- **Jinja2** – Server-side templating
+
+---
+
+
+## Project Structure
+
+``` text
+achievement-management-system/
+├── app.py              # Main Flask application and routes
+├── init_db.py          # Database initialization script
+├── requirements.txt    # Python dependencies
+├── static/
+│   ├── css/            # Styles and themes
+│   ├── js/             # Client-side scripts
+│   └── certificates/   # Uploaded certificate files
+├── templates/          # HTML templates
+├── database/           # SQLite database files
+├── README.md
+└── CONTRIBUTING.md
+
+```
+
+## Prerequisites
+
+Before setting up the project, ensure you have:
+
+• Python 3.9 or later
+
+• pip
+
+• git
+
+Note: No environment variables are required for local development by default.
+
+## Quick Start
+
+### Windows (PowerShell)
 
 ```powershell
+
 # Clone repository
-git clone https://github.com/yourusername/achievement-management-system.git
+
+git clone https://github.com/<org-or-username>/achievement-management-system.git
 cd achievement-management-system
 
 # Create virtual environment
+
 python -m venv venv
 venv\Scripts\activate
 
+
 # Install dependencies
+
 pip install -r requirements.txt
 
 # Initialize database
+
 python init_db.py
 
 # Run application
+
 python app.py
+
 ```
 
-
-## Quick Start (macOS/Linux)
+### macOS / Linux
 
 ```bash
+
 # Clone repository
 git clone https://github.com/yourusername/achievement-management-system.git
 cd achievement-management-system
@@ -51,125 +121,131 @@ python init_db.py
 
 # Run application
 python app.py
-```
-
-Now open → **http://localhost:5000**
-
-## Tech Stack
-
-- **Flask** (Python web framework)
-- **SQLite** (database)
-- **JavaScript** (vanilla JS for interactivity)
-- **HTML/CSS** (responsive UI with dark/light mode)
-- **Jinja2** (templating)
-
-## Core Features
-
-### For Students
-- **Personal Dashboard** → View all achievements at a glance
-- **Achievement Analytics** → Track progress over time
-- **Advanced Filtering** → Search by type, year, position
-- **Certificate Access** → Download proof instantly
-- **Profile Management** → Update details anytime
-
-### For Teachers
-- **Quick Entry Forms** → Record achievements in seconds
-- **Student Search** → Auto-complete for easy lookup
-- **Certificate Upload** → Attach digital proofs
-- **Batch Management** → Handle multiple entries efficiently
-- **Dashboard Analytics** → View entry statistics
-
-### Achievement Types Supported
-✓ Hackathons  
-✓ Coding Competitions  
-✓ Paper Presentations  
-✓ Conferences  
-✓ Symposiums  
-✓ Custom Events  
-
-## Core Pages
-
-| Page | Link |
-|------|------|
-| Home | `/` |
-| Student Login | `/student-login` |
-| Teacher Login | `/teacher-login` |
-| Student Dashboard | `/student-dashboard` |
-| Teacher Dashboard | `/teacher-dashboard` |
-| View Achievements | `/view-achievements` |
-| Add Achievement | `/add-achievement` |
-| GitHub Repo | **https://github.com/yourusername/achievement-management-system** |
-| Contributing Guide | `CONTRIBUTING.md` |
-
-## Project Structure
 
 ```
-achievement-management-system/
-├── app.py              → main flask app + routes
-├── init_db.py          → database initialization
-├── requirements.txt    → python dependencies
-├── static/
-│   ├── css/           → styles + themes
-│   ├── js/            → client-side logic
-│   └── certificates/  → uploaded files
-├── templates/         → HTML pages
-├── database/          → SQLite database
-├── README.md
-└── CONTRIBUTING.md
+Once running, open:
+
+👉 http://localhost:5000
+
+
+## Core Functionality
+
+### Student Features
+
+• Personal dashboard with all achievements
+
+• Achievement analytics and progress tracking
+
+• Search and filter by type, year, or position
+
+• Download uploaded certificates
+
+• Profile management
+
+### Teacher Features
+
+• Quick achievement entry forms
+
+• Student search with auto-complete
+
+• Certificate uploads (PDF, JPG, PNG up to 5MB)
+
+• Batch management of records
+ 
+• Basic analytics for recorded entries
+
+### Supported Achievement Types
+
+• Hackathons
+
+• Coding competitions
+
+• Paper presentations
+
+• Conferences
+
+• Symposiums
+
+• Custom academic events
+
+Each category supports structured metadata such as event name, date, position, and descriptions.
+
+
+## Database Design
+
+```mermaid
+
+erDiagram
+    STUDENT ||--o{ ACHIEVEMENT : has
+    TEACHER ||--o{ ACHIEVEMENT : verifies
+
+    STUDENT {
+        int student_id PK
+        string name
+        string email
+        string dept
+    }
+
+    ACHIEVEMENT {
+        int id PK
+        int student_id FK
+        string type
+        string event
+        date date
+        string position
+        string certificate
+    }
+
+    TEACHER {
+        int teacher_id PK
+        string name
+        string email
+        string dept
+    }
 ```
 
-## Database Schema
+## Running Tests
 
-**Students** ↔ **Achievements** ↔ **Teachers**
-
-```
-Student (student_id PK, name, email, password, dept, ...)
-  ↓ 1:N
-Achievement (id PK, student_id FK, type, event, date, position, certificate, ...)
-  ↓ N:1
-Teacher (teacher_id PK, name, email, password, dept, ...)
-```
-## Key Features Explained
-
-### Dark/Light Mode
-Toggle between themes with persistent preference storage using localStorage. Smooth transitions and optimized color schemes for both modes.
-
-### Student Search with Auto-Complete
-Teachers can quickly find students by typing student ID or name. Results appear instantly as you type.
-
-### Achievement Categories
-Each achievement type has custom fields:
-- **Hackathons**: team size, project title, difficulty level
-- **Coding Competitions**: programming language, platform, problem difficulty
-- **Paper Presentations**: paper title, journal name, conference level
-- **Conferences**: role, conference level, presentation type
-- **Symposiums**: theme, event scope, participation type
-
-### Certificate Management
-Upload certificates (PDF, JPG, PNG) up to 5MB. Access and download anytime from achievement records.
-
-### Analytics Dashboard
-Visual representation of achievement metrics by type, year, and position. Track progress trends over time.
+Automated tests are not yet configured.
+Contributions adding test coverage are welcome.
 
 ## Contributing
 
-PRs and ideas are welcome! Please check → `CONTRIBUTING.md` before submitting.
+Contributions are welcome and encouraged!
 
-## Future Roadmap
+Please read CONTRIBUTING.md before submitting a pull request.
 
-- [ ] Mobile app (iOS + Android)
-- [ ] LinkedIn integration
-- [ ] AI-powered certificate validation
-- [ ] Email notifications
-- [ ] Multi-language support
-- [ ] Advanced analytics with predictive insights
-- [ ] Export achievements as PDF portfolio
+If you’re new to the project, starting with documentation or small issues is a great way to get involved.
+
+## Roadmap
+
+## 🛣️ Project Roadmap
+
+```mermaid
+flowchart TD
+    A[Core Web Platform] --> B[Mobile App - iOS and Android]
+    A --> C[LinkedIn Profile Integration]
+    B --> D[Email Notifications]
+    C --> E[AI Powered Certificate Validation]
+    D --> F[Multi-language Support]
+    E --> F
+
+```
 
 ## License
 
-Academic project developed at SRM Institute of Science and Technology.
+This project is developed for academic purposes at
+SRM Institute of Science and Technology.
 
-## Contact
+License details will be added in the future.
 
-For questions or collaboration:
-- GitHub Issues: **https://github.com/yourusername/achievement-management-system/issues**
+## Contact & Support
+
+• Report issues or request features via GitHub Issues
+
+• Contributions and discussions are always welcome
+
+
+
+
+
