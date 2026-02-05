@@ -1,0 +1,9 @@
+venv/
+venv1/
+__pycache__/
+*.pyc
+instance/
+.pytest_cache/
+.env
+ams.db
+static/uploads/
