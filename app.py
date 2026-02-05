@@ -11,7 +11,7 @@ app.secret_key = secrets.token_hex(16)
 
 
 # Define database path consistently
-DB_PATH = "C:\\Users\\Dell\\Downloads\\AMS-Achievement-Management-System-main\\AMS-Achievement-Management-System-main\\Achievement-Management-System\\ams.db"
+DB_PATH = os.path.join(os.path.dirname(__file__), 'ams.db')
 
 # Add this function to your code
 def add_teacher_id_column():
@@ -226,7 +226,7 @@ def init_db():
                 
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (student_id) REFERENCES student(student_id),
-                FOREIGN KEY teacher_id REFERENCES teacher(teacher_id)
+                FOREIGN KEY (teacher_id) REFERENCES teacher(teacher_id)
             )
             ''')
 
@@ -677,15 +677,15 @@ def all_achievements():
         return redirect(url_for('teacher'))
 
     teacher_id = session.get('teacher_id')
-    
+
     # Connect to database
     connection = sqlite3.connect(DB_PATH)
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
-    
+
     # Get all achievements by this teacher
     cursor.execute("""
-        SELECT a.id, a.student_id, s.student_name, a.achievement_type, 
+        SELECT a.id, a.student_id, s.student_name, a.achievement_type,
                a.event_name, a.achievement_date, a.position, a.organizer,
                a.certificate_path
         FROM achievements a
@@ -693,11 +693,17 @@ def all_achievements():
         WHERE a.teacher_id = ?
         ORDER BY a.achievement_date DESC
     """, (teacher_id,))
-    
+
     achievements = cursor.fetchall()
     connection.close()
-    
+
     return render_template("all_achievements.html", achievements=achievements)
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for('home'))
 
     
 if __name__ == "__main__":

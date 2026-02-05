@@ -285,7 +285,7 @@ input[type="radio"] {
 }
 .achievement-box {
   max-width: 1000px;
-  margin-top:800px;
+  margin-top:20px;
   padding: 40px;
   background-color: #1c1c1c;
   border-radius: 15px;
