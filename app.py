@@ -4,6 +4,9 @@ import os
 import secrets
 from werkzeug.utils import secure_filename
 import datetime
+import csv
+import io
+from flask import Flask, render_template, request, redirect, url_for, session, make_response
 
 
 app = Flask(__name__)
@@ -11,7 +14,8 @@ app.secret_key = secrets.token_hex(16)
 
 
 # Define database path consistently
-DB_PATH = "C:\\Users\\Dell\\Downloads\\AMS-Achievement-Management-System-main\\AMS-Achievement-Management-System-main\\Achievement-Management-System\\ams.db"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "ams.db")
 
 # Add this function to your code
 def add_teacher_id_column():
@@ -698,6 +702,51 @@ def all_achievements():
     connection.close()
     
     return render_template("all_achievements.html", achievements=achievements)
+
+
+@app.route("/export_report")
+def export_report():
+    # Check if user is logged in
+    if not session.get('logged_in') or not session.get('teacher_id'):
+        return redirect(url_for('teacher'))
+
+    teacher_id = session.get('teacher_id')
+
+    # Connect to database
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
+
+    # Query all achievements for this teacher
+    cursor.execute("""
+        SELECT s.student_name, s.student_id, s.student_dept, 
+               a.achievement_type, a.event_name, a.achievement_date, 
+               a.organizer, a.position
+        FROM achievements a
+        JOIN student s ON a.student_id = s.student_id
+        WHERE a.teacher_id = ?
+        ORDER BY a.achievement_date DESC
+    """, (teacher_id,))
+    
+    achievements = cursor.fetchall()
+    connection.close()
+
+    # Create CSV in memory
+    si = io.StringIO()
+    cw = csv.writer(si)
+    
+    # Write Header
+    cw.writerow(['Student Name', 'Student ID', 'Department', 'Achievement Type', 
+                 'Event Name', 'Date', 'Organizer', 'Position'])
+    
+    # Write Data
+    cw.writerows(achievements)
+    
+    # Create response
+    output = make_response(si.getvalue())
+    output.headers["Content-Disposition"] = "attachment; filename=achievement_report.csv"
+    output.headers["Content-type"] = "text/csv"
+    
+    return output
 
     
 if __name__ == "__main__":
