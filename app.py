@@ -5,13 +5,22 @@ import secrets
 from werkzeug.utils import secure_filename
 import datetime
 
+import os
+import sqlite3
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "instance", "achievement.db")
+
+# ensure instance folder exists
+os.makedirs(os.path.join(BASE_DIR, "instance"), exist_ok=True)
+
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
 
 
-# Define database path consistently
-DB_PATH = "C:\\Users\\Dell\\Downloads\\AMS-Achievement-Management-System-main\\AMS-Achievement-Management-System-main\\Achievement-Management-System\\ams.db"
+# # Define database path consistently
+# DB_PATH = "C:\\Users\\Dell\\Downloads\\AMS-Achievement-Management-System-main\\AMS-Achievement-Management-System-main\\Achievement-Management-System\\ams.db"
 
 # Add this function to your code
 def add_teacher_id_column():
