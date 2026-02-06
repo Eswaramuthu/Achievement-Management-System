@@ -1,14 +1,16 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
-import os
 import secrets
 from werkzeug.utils import secure_filename
 import datetime
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = secrets.token_hex(16)
-
+app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key")
 
 # Define database path consistently
 DB_PATH = os.path.join(os.path.dirname(__file__), "ams.db")
