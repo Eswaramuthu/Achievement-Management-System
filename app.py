@@ -3,6 +3,7 @@ import sqlite3
 import os
 import secrets
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 
 
@@ -11,7 +12,8 @@ app.secret_key = secrets.token_hex(16)
 
 
 # Define database path consistently
-DB_PATH = os.path.join(os.path.dirname(__file__), "ams.db")
+# Define database path consistently
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ams.db')
 
 # Add this function to your code
 def add_teacher_id_column():
@@ -259,13 +261,12 @@ def student():
         connection = sqlite3.connect(DB_PATH)
         cursor = connection.cursor()
 
-        # Query the database for the student
-        cursor.execute("SELECT * FROM student WHERE student_id = ? AND password = ?", 
-                      (student_id, password))
+        # Query the database for the student by ID only
+        cursor.execute("SELECT * FROM student WHERE student_id = ?", (student_id,))
         student_data = cursor.fetchone()
         connection.close()
 
-        if student_data:
+        if student_data and check_password_hash(student_data[4], password):
             # Store user information in session
             session['logged_in'] = True
             session['student_id'] = student_data[1]
@@ -292,13 +293,12 @@ def teacher():
         connection = sqlite3.connect(DB_PATH)
         cursor = connection.cursor()
 
-        # Query for the teacher data
-        cursor.execute("SELECT * FROM teacher WHERE teacher_id = ? AND password = ?", 
-                       (teacher_id, password))
+        # Query for the teacher data by ID only
+        cursor.execute("SELECT * FROM teacher WHERE teacher_id = ?", (teacher_id,))
         teacher_data = cursor.fetchone()
         connection.close()
 
-        if teacher_data:
+        if teacher_data and check_password_hash(teacher_data[4], password):
             # Store user information in session
             session['logged_in'] = True
             session['teacher_id'] = teacher_data[1]
@@ -355,10 +355,11 @@ def student_new():
         
         try:
             # Inserting the values into the student table
+            hashed_password = generate_password_hash(password, method='scrypt')
             cursor.execute("""
                 INSERT INTO student (student_name, student_id, email, phone_number, password, student_gender, student_dept)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
-                """, (student_name, student_id, email, phone_number, password, student_gender, student_dept))
+                """, (student_name, student_id, email, phone_number, hashed_password, student_gender, student_dept))
             
             # Committing changes
             connection.commit()
@@ -409,10 +410,11 @@ def teacher_new():
             connection.commit()
 
         try:
+            hashed_password = generate_password_hash(password, method='scrypt')
             cursor.execute("""
             INSERT INTO teacher (teacher_name, teacher_id, email, phone_number, password, teacher_gender, teacher_dept)
             VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (teacher_name, teacher_id, email, phone_number, password, teacher_gender, teacher_dept))
+            """, (teacher_name, teacher_id, email, phone_number, hashed_password, teacher_gender, teacher_dept))
 
             # Committing changes
             connection.commit()

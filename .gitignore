@@ -1,0 +1,4 @@
+- [/] Repository Cleanup and Push
+    - [x] Configure .gitignore (exclude venv_new, __pycache__) <!-- id: 0 -->
+    - [ ] Remove tracked garbage (pycache) <!-- id: 1 -->
+    - [ ] Commit and Push changes <!-- id: 2 -->
