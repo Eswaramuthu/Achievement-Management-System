@@ -11,7 +11,8 @@ app.secret_key = secrets.token_hex(16)
 
 
 # Define database path consistently
-DB_PATH = os.path.join(os.path.dirname(__file__), "ams.db")
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+DB_PATH = os.path.join(BASE_DIR, "ams.db")
 
 # Add this function to your code
 def add_teacher_id_column():
