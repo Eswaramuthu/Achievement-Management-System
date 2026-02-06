@@ -14,7 +14,7 @@ Achievement Management System centralizes everything. Students see all their ach
 
 ```powershell
 # Clone repository
-git clone https://github.com/yourusername/achievement-management-system.git
+git clone https://github.com/Manu95021/Achievement-Management-System.git
 cd achievement-management-system
 
 # Create virtual environment
@@ -36,8 +36,8 @@ python app.py
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/achievement-management-system.git
-cd achievement-management-system
+git clone https://github.com/Manu95021/Achievement-Management-System.git
+cd Achievement-Management-System
 
 # Create virtual environment
 python3 -m venv venv
@@ -98,7 +98,7 @@ Now open → **http://localhost:5000**
 | Teacher Dashboard | `/teacher-dashboard` |
 | View Achievements | `/view-achievements` |
 | Add Achievement | `/add-achievement` |
-| GitHub Repo | **https://github.com/yourusername/achievement-management-system** |
+| GitHub Repo | **https://github.com/Manu95021/Achievement-Management-System** |
 | Contributing Guide | `CONTRIBUTING.md` |
 
 ## Project Structure
@@ -172,4 +172,4 @@ Academic project developed at SRM Institute of Science and Technology.
 ## Contact
 
 For questions or collaboration:
-- GitHub Issues: **https://github.com/yourusername/achievement-management-system/issues**
+- GitHub Issues: **https://github.com/Manu95021/Achievement-Management-System/issues**

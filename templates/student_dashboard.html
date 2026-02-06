@@ -8,7 +8,8 @@
   <script src="{{ url_for('static', filename = 'script.js') }}"></script>
   <style>
     .dashboard-container {
-      max-width: 900px !important;
+      max-width: 1400px !important;
+      width: 95%;
     }
     
     .dashboard-stats {
@@ -183,9 +184,71 @@
   right: 20px;
   z-index: 100;
   }
+  
+  .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    padding: 20px;
+    text-align: center;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    z-index: 50;
+  }
+  
+  .header-text {
+    color: var(--text-color);
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+  }
+  
+  .header-text strong {
+    color: var(--primary-color);
+  }
+  
+  .footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    padding: 20px;
+    text-align: center;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.2);
+    z-index: 50;
+  }
+  
+  .footer-text {
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0;
+  }
+  
+  .footer-text strong {
+    color: var(--primary-color);
+    font-weight: 600;
+  }
   </style>
 </head>
-<body style="height: auto; align-items: flex-start; padding-top: 80px;">
+<body style="height: auto; align-items: flex-start; padding-top: 120px; padding-bottom: 80px;">
+  <!-- Header -->
+  <header class="header">
+    <h1 class="header-text">
+      <strong>Achievement-Management-System</strong>
+    </h1>
+  </header>
+  
   <div class="toggle-container">
     <button id="mode-toggle">Dark Mode 🌙</button>
   </div>
@@ -270,5 +333,12 @@
       </div>
     </div>
   </div>
+  
+  <!-- Footer -->
+  <footer class="footer">
+    <p class="footer-text">
+      <strong>OSCG</strong> open source
+    </p>
+  </footer>
 </body>
 </html>
