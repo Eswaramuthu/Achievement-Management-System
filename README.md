@@ -173,3 +173,7 @@ Academic project developed at SRM Institute of Science and Technology.
 
 For questions or collaboration:
 - GitHub Issues: **https://github.com/yourusername/achievement-management-system/issues**
+
+## Contributor Note
+This documentation update was added as part of an open-source contribution.
+
