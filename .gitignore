@@ -5,5 +5,5 @@ __pycache__/
 instance/
 .pytest_cache/
 .env
-ams.db
-static/uploads/
+# ams.db (User requested inclusion)
+# static/uploads/ (User requested inclusion)
