@@ -714,11 +714,17 @@ def all_achievements():
 
     
 # Auto-initialize database on import (Required for Vercel ephemeral filesystem)
-init_db()
-add_teacher_id_column()
+try:
+    init_db()
+    add_teacher_id_column()
+except Exception as e:
+    print(f"Error initializing database: {e}")
 
 @app.route('/db-status')
 def db_status():
+    if not session.get('logged_in'):
+        return "Access Denied", 403
+
     if os.path.exists(DB_PATH):
         try:
             conn = sqlite3.connect(DB_PATH)
