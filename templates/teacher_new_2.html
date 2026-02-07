@@ -204,6 +204,13 @@
     <div class="container">
         <div class="title">Teacher Registration</div>
         <div class="content">
+            
+            {% if error %}
+            <div style="color: #ff4757; text-align: center; margin-bottom: 15px; font-weight: bold; background: rgba(255, 71, 87, 0.1); padding: 10px; border-radius: 5px;">
+                {{ error }}
+            </div>
+            {% endif %}
+
             <form action="/teacher-new" method="POST" novalidate>
                 <div class="user-details">
                     
