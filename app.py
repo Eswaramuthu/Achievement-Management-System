@@ -713,8 +713,23 @@ def all_achievements():
     return render_template("all_achievements.html", achievements=achievements)
 
     
+# Auto-initialize database on import (Required for Vercel ephemeral filesystem)
+init_db()
+add_teacher_id_column()
+
+@app.route('/db-status')
+def db_status():
+    if os.path.exists(DB_PATH):
+        try:
+            conn = sqlite3.connect(DB_PATH)
+            cursor = conn.cursor()
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+            tables = cursor.fetchall()
+            conn.close()
+            return f"Database exists at {DB_PATH}. Tables: {tables}"
+        except Exception as e:
+            return f"Database exists but error: {e}"
+    return f"Database NOT found at {DB_PATH}"
+
 if __name__ == "__main__":
-    init_db()
-    # migrate_achievements_table()
-    add_teacher_id_column()
     app.run(debug=True)
