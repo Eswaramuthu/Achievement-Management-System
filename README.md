@@ -1,21 +1,37 @@
 # Achievement Management System
 
-A web-based platform where students and teachers track academic achievements in one place. Students view their accomplishments, teachers record them, and everyone gets a clear picture of academic progress — all automated and organized.
+A web-based platform for tracking academic achievements. Students can view their accomplishments, teachers can record them, and everyone gains a clear, organized picture of academic progress — all automated and centralized.
+> 🔁 This project is a fork of [Eswaramuthu/Achievement-Management-System](https://github.com/Eswaramuthu/Achievement-Management-System) with improvements and documentation enhancements by [divyakrishnaraj0806-maker](https://github.com/divyakrishnaraj0806-maker).
+
 
 ## Problem
 
-Academic achievements are scattered everywhere — certificates in folders, emails buried in inboxes, paper records collecting dust. Students struggle to showcase their accomplishments during placements or applications. Teachers waste time managing spreadsheets and physical documents. Nobody has a clear, organized view of what students have actually achieved.
+- Academic achievements are scattered across folders, emails, and paper records.
+
+- Students struggle to showcase accomplishments during placements or applications.
+
+- Teachers waste time managing spreadsheets and physical documents.
+
+- No unified, organized view of student achievements exists.
 
 ## Solution
 
-Achievement Management System centralizes everything. Students see all their achievements in one dashboard with analytics. Teachers input achievements through simple forms with auto-complete. The system tracks hackathons, coding competitions, paper presentations, conferences, and symposiums — complete with certificates, dates, positions, and detailed descriptions. Clean, fast, and organized.
+- Achievement Management System centralizes all achievements in one platform:
+
+- Students see all achievements on a personal dashboard with analytics.
+
+- Teachers input achievements through simple, auto-complete forms.
+
+- Tracks hackathons, coding competitions, paper presentations, conferences, symposiums, including certificates, dates, positions, and detailed descriptions.
+
+- Fast, clean, and fully organized system for academic tracking.
 
 ## Quick Start (Windows PowerShell)
 
 ```powershell
 # Clone repository
-git clone https://github.com/Manu95021/Achievement-Management-System.git
-cd achievement-management-system
+git clone https://github.com/divyakrishnaraj0806-maker/Achievement-Management-System.git
+cd Achievement-Management-System
 
 # Create virtual environment
 python -m venv venv
@@ -36,7 +52,7 @@ python app.py
 
 ```bash
 # Clone repository
-git clone https://github.com/Manu95021/Achievement-Management-System.git
+git clone https://github.com/divyakrishnaraj0806-maker/Achievement-Management-System.git
 cd Achievement-Management-System
 
 # Create virtual environment
@@ -98,8 +114,7 @@ Now open → **http://localhost:5000**
 | Teacher Dashboard | `/teacher-dashboard` |
 | View Achievements | `/view-achievements` |
 | Add Achievement | `/add-achievement` |
-| GitHub Repo | **https://github.com/Manu95021/Achievement-Management-System** |
-| Contributing Guide | `CONTRIBUTING.md` |
+
 
 ## Project Structure
 
@@ -132,10 +147,14 @@ Teacher (teacher_id PK, name, email, password, dept, ...)
 ## Key Features Explained
 
 ### Dark/Light Mode
-Toggle between themes with persistent preference storage using localStorage. Smooth transitions and optimized color schemes for both modes.
+Toggle themes with persistent preference using localStorage
+
+Smooth transitions with optimized color schemes
 
 ### Student Search with Auto-Complete
-Teachers can quickly find students by typing student ID or name. Results appear instantly as you type.
+Teachers can quickly find students by typing student ID or name
+
+Results appear instantly as you type
 
 ### Achievement Categories
 Each achievement type has custom fields:
@@ -146,10 +165,12 @@ Each achievement type has custom fields:
 - **Symposiums**: theme, event scope, participation type
 
 ### Certificate Management
-Upload certificates (PDF, JPG, PNG) up to 5MB. Access and download anytime from achievement records.
+Upload certificates (PDF, JPG, PNG) up to 5MB. 
+Access and download anytime from achievement records.
 
 ### Analytics Dashboard
-Visual representation of achievement metrics by type, year, and position. Track progress trends over time.
+Visual representation of achievement metrics by type, year, and position.
+Track progress trends over time.
 
 ## Contributing
 
@@ -171,5 +192,8 @@ Academic project developed at SRM Institute of Science and Technology.
 
 ## Contact
 
-For questions or collaboration:
-- GitHub Issues: **https://github.com/Manu95021/Achievement-Management-System/issues**
+GitHub Repository:  
+https://github.com/divyakrishnaraj0806-maker/Achievement-Management-System  
+
+Issues & Suggestions:  
+https://github.com/divyakrishnaraj0806-maker/Achievement-Management-System/issues
