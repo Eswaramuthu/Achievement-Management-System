@@ -146,7 +146,7 @@
                 <td>{{ achievement.position }}</td>
                 <td>
                   {% if achievement.certificate_path %}
-                    <a href="{{ url_for('static', filename=achievement.certificate_path) }}" class="certificate-link" target="_blank">View</a>
+                    <a href="{{ url_for('uploaded_file', filename=achievement.certificate_path.replace('uploads/', '')) }}" class="certificate-link" target="_blank">View</a>
                   {% else %}
                     -
                   {% endif %}

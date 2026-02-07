@@ -65,7 +65,9 @@ def submit_achievements():
                         
                         file_path = os.path.join(upload_folder, secure_name)
                         file.save(file_path)
-                        certificate_path = f"uploads/{secure_name}"
+                        file.save(file_path)
+                        # Store only the filename, not "uploads/" prefix
+                        certificate_path = secure_name
                     else:
                         return render_template("submit_achievements.html", error="Invalid file type.")
             

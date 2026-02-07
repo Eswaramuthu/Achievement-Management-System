@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory
 import sqlite3
 import os
 import secrets
@@ -10,7 +10,6 @@ app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
 
 
-# Define database path consistently
 # Define database path consistently
 # Use /tmp for Vercel's read-only filesystem
 if os.environ.get('VERCEL'):
@@ -132,6 +131,10 @@ else:
 
 # Create the upload directory if it doesn't exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+@app.route('/uploads/<path:filename>')
+def uploaded_file(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename)
 
 
 # Initialize database on startup
@@ -503,7 +506,9 @@ def submit_achievements():
                             secure_name = f"{timestamp}_{secure_filename(file.filename)}"
                             file_path = os.path.join(UPLOAD_FOLDER, secure_name)
                             file.save(file_path)
-                            certificate_path = f"uploads/{secure_name}"
+                            file.save(file_path)
+                            # Store only the filename, not "uploads/" prefix
+                            certificate_path = secure_name
                         else:
                             connection.close()
                             return render_template("submit_achievements.html", error="Invalid file type. Please upload PDF, PNG, JPG, or JPEG files.")
