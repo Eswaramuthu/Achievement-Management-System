@@ -1,152 +1,293 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>Student Registration</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-        <script src="{{ url_for('static', filename = 'script.js') }}"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                console.log("Form method: " + document.querySelector('form').method);
-                console.log("Form action: " + document.querySelector('form').action);
-                
-                document.querySelector('form').addEventListener('submit', function(event) {
-                    console.log("Form is being submitted");
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Student Registration</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
+    
+    <style>
+        /* --- Layout & Scrolling --- */
+        body {
+            min-height: 100vh;
+            height: auto;
+            overflow-y: auto;
+            padding-bottom: 50px;
+            padding-top: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        /* --- UI MATCH: Toggle Container (Fixed Position) --- */
+        .toggle-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        /* Style the button with less rounding */
+        #mode-toggle {
+            background-color: #ff4757;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            /* Changed from 999px to 8px for less rounding */
+            border-radius: 8px; 
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            font-family: inherit;
+            transition: transform 0.2s ease;
+        }
+
+        #mode-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        /* --- Input & Dropdown Styling --- */
+        .input-box input, 
+        .input-box select {
+            height: 50px;
+            width: 100%;
+            outline: none;
+            font-size: 16px;
+            border-radius: 5px;
+            padding-left: 15px;
+            border: 1px solid #ccc;
+            border-bottom-width: 2px;
+            transition: all 0.3s ease;
+            background-color: transparent;
+            color: inherit;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        /* Custom Arrow for Dropdown */
+        .input-box select {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+
+        /* --- FIX: DROPDOWN OPTIONS VISIBILITY --- */
+        .input-box select option {
+            background-color: #ffffff;
+            color: #333333;
+            padding: 10px;
+        }
+
+        /* --- Validation Styles --- */
+        .error-message {
+            color: #ff4757;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .input-box input.invalid ~ .error-message,
+        .input-box select.invalid ~ .error-message {
+            display: block;
+        }
+
+        .input-box input.invalid,
+        .input-box select.invalid {
+            border-color: #ff4757 !important;
+        }
+
+        .input-box input.valid,
+        .input-box select.valid {
+            border-color: #2ed573 !important;
+        }
+
+        .container {
+            margin-bottom: 50px;
+            max-width: 700px;
+            width: 100%;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const inputs = form.querySelectorAll('input, select');
+
+            inputs.forEach(input => {
+                input.addEventListener('blur', () => validateField(input));
+                input.addEventListener('input', () => {
+                    if (input.classList.contains('invalid')) input.classList.remove('invalid');
+                    if (input.id === 'confirm-password' || input.id === 'password') validatePasswords();
                 });
             });
 
-            function validatePasswords(event) {
-                const password = document.getElementById("password").value;
-                const confirmPassword = document.getElementById("confirm-password").value;
-                const message = document.getElementById("password-message");
-            
-                console.log("Validating passwords...");
-            
-                if (password !== confirmPassword) {
-                    event.preventDefault(); // This stops form submission
-                    message.textContent = "❌ Passwords do not match!";
-                    message.style.color = "red";
-                    console.log("Password validation failed - preventing submission");
+            form.addEventListener('submit', function(event) {
+                let isValid = true;
+                inputs.forEach(input => {
+                    if (!validateField(input)) isValid = false;
+                });
+                if (!validatePasswords()) isValid = false;
+
+                if (!isValid) {
+                    event.preventDefault();
+                    const firstError = document.querySelector('.invalid');
+                    if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+
+            function validateField(field) {
+                if (field.id === 'confirm-password' || field.type === 'submit') return true;
+
+                const errorSpan = field.parentElement.querySelector('.error-message');
+                
+                if (field.validity.valueMissing || (field.tagName === 'SELECT' && field.value === "")) {
+                    field.classList.add('invalid');
+                    field.classList.remove('valid');
+                    if(errorSpan) errorSpan.textContent = "⚠️ This field is required";
+                    return false;
+                }
+
+                if (field.validity.patternMismatch || field.validity.typeMismatch || field.validity.tooShort) {
+                    field.classList.add('invalid');
+                    field.classList.remove('valid');
+                    const customMsg = field.getAttribute('data-error');
+                    if(errorSpan) errorSpan.textContent = customMsg || "Invalid format";
+                    return false;
+                }
+
+                field.classList.remove('invalid');
+                if(field.value.trim() !== "") field.classList.add('valid');
+                return true;
+            }
+
+            function validatePasswords() {
+                const password = document.getElementById("password");
+                const confirm = document.getElementById("confirm-password");
+                const msg = document.getElementById("password-message");
+
+                if (password.value === "") {
+                    confirm.classList.remove('valid', 'invalid');
+                    msg.textContent = "";
+                    return false;
+                }
+
+                if (password.value !== confirm.value) {
+                    confirm.classList.add('invalid');
+                    confirm.classList.remove('valid');
+                    msg.textContent = "❌ Passwords do not match!";
+                    msg.style.color = "#ff4757";
                     return false;
                 } else {
-                    message.textContent = "✅ Passwords match!";
-                    message.style.color = "limegreen";
-                    console.log("Password validation passed - allowing submission");
-                    return true; // Explicitly return true to allow form submission
+                    confirm.classList.remove('invalid');
+                    confirm.classList.add('valid');
+                    msg.textContent = "✅ Passwords match!";
+                    msg.style.color = "#2ed573";
+                    return true;
                 }
             }
-        </script>
-        <style>
-            /* Additional styles to make select elements match input styling */
-            .input-box select {
-                width: 100%;
-                height: 45px;
-                padding-left: 15px;
-                border: 1px solid #ccc;
-                border-radius: 10px;
-                background-color: rgba(255, 255, 255, 0.1);
-                color: var(--text-color);
-                transition: all 0.3s ease;
-                /* Remove default styling */
-                appearance: none;
-                -webkit-appearance: none;
-                -moz-appearance: none;
-                /* Add custom dropdown arrow for dark mode */
-                background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
-                background-repeat: no-repeat;
-                background-position: right 10px center;
-            }
+        });
+    </script>
+</head>
 
-            .input-box select:focus {
-                border-color: var(--primary-color);
-            }
+<body>
+    <div class="toggle-container">
+        <button id="mode-toggle">Dark Mode 🌙</button>
+    </div>
 
-            /* Change dropdown arrow color in light mode */
-            body.light-mode .input-box select {
-                background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
-            }
-
-            /* Style for dropdown options */
-            .input-box select option {
-                background-color: var(--bg-color);
-                color: var(--text-color);
-                padding: 10px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="toggle-container">
-            <button id="mode-toggle">Dark Mode 🌙</button>
-        </div>
-
-        <div class="container">
-            <div class="title">Student Registration</div>
-            <div class="content">
-                <form action="/student-new" method="POST" onsubmit="return validatePasswords(event)">
-                    <div class="user-details">
-                        <div class="input-box">
-                            <span class="details">Full Name</span>
-                            <input autocomplete="off" autofocus type="text" name="student_name" placeholder="Enter your full name" required>
-                        </div>
-
-                        <div class="input-box">
-                            <span class="details">Student ID</span>
-                            <input autocomplete="off" type="text" name="student_id" placeholder="Enter your Student ID" required>
-                        </div>
-
-                        <div class="input-box">
-                            <span class="details">Email</span>
-                            <input autocomplete="off" type="email" name="email" placeholder="Enter your email" required>
-                        </div>
-
-                        <div class="input-box">
-                            <span class="details">Phone Number</span>
-                            <input autocomplete="off" type="tel" name="phone_number" placeholder="Enter your phone number" required>
-                        </div>
-
-                        <div class="input-box">
-                            <span class="details">Password</span>
-                            <input autocomplete="off" type="password" id="password" name="password" placeholder="Enter your Password" required>
-                        </div>
-
-                        <div class="input-box">
-                            <span class="details">Confirm Password</span>
-                            <input type="password" id="confirm-password" placeholder="Confirm your password" required>
-                            <small id="password-message" style="font-size: 14px;"></small>
-                        </div>
-
-                        <div class="input-box">
-                            <span class="details">Gender</span>
-                            <select name="student_gender" required>
-                                <option disabled selected value="">Gender</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-
-                        <div class="input-box">
-                            <span class="details">Department</span>
-                            <select name="student_dept" required>
-                                <option disabled selected value="">Department</option>
-                                <option value="CSE">CSE</option>
-                                <option value="CSE(E Tech)">CSE(E Tech)</option>
-                                <option value="ECE">ECE</option>
-                                <option value="MECH">MECH</option>
-                            </select>
-                        </div>
-                    </div>
+    <div class="container">
+        <div class="title">Student Registration</div>
+        <div class="content">
+            <form action="/student-new" method="POST" novalidate>
+                <div class="user-details">
                     
-                    <div class="button">
-                        <input type="submit" value="Register">
+                    <div class="input-box">
+                        <span class="details">Full Name</span>
+                        <input type="text" name="student_name" placeholder="Enter your full name" 
+                            pattern="[A-Za-z\s]+" 
+                            data-error="Name cannot contain numbers or symbols."
+                            required>
+                        <span class="error-message"></span>
                     </div>
-                </form>
 
-                <div class="back-link">
-                    <a href="{{ url_for('student') }}">Back to Login</a>
+                    <div class="input-box">
+                        <span class="details">Student ID</span>
+                        <input type="text" name="student_id" placeholder="Enter your Student ID" 
+                            pattern="[A-Za-z0-9]+" 
+                            data-error="ID must be alphanumeric (no special chars)."
+                            required>
+                        <span class="error-message"></span>
+                    </div>
+
+                    <div class="input-box">
+                        <span class="details">Email</span>
+                        <input type="email" name="email" placeholder="Enter your email" 
+                            data-error="Please enter a valid email address."
+                            required>
+                        <span class="error-message"></span>
+                    </div>
+
+                    <div class="input-box">
+                        <span class="details">Phone Number</span>
+                        <input type="tel" name="phone_number" placeholder="Enter 10-digit phone number" 
+                            pattern="[0-9]{10}" maxlength="10" 
+                            data-error="Phone number must be exactly 10 digits."
+                            required>
+                        <span class="error-message"></span>
+                    </div>
+
+                    <div class="input-box">
+                        <span class="details">Password</span>
+                        <input type="password" id="password" name="password" 
+                            placeholder="Enter Password (min 6 chars)" minlength="6" 
+                            data-error="Password must be at least 6 characters."
+                            required>
+                        <span class="error-message"></span>
+                    </div>
+
+                    <div class="input-box">
+                        <span class="details">Confirm Password</span>
+                        <input type="password" id="confirm-password" placeholder="Confirm your password" required>
+                        <small id="password-message" style="display:block; margin-top:5px; font-weight:bold;"></small>
+                    </div>
+
+                    <div class="input-box">
+                        <span class="details">Gender</span>
+                        <select name="student_gender" required>
+                            <option value="" disabled selected>Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <span class="error-message">Please select a gender.</span>
+                    </div>
+
+                    <div class="input-box">
+                        <span class="details">Department</span>
+                        <select name="student_dept" required>
+                            <option value="" disabled selected>Select Department</option>
+                            <option value="CSE">CSE</option>
+                            <option value="CSE(E Tech)">CSE(E Tech)</option>
+                            <option value="ECE">ECE</option>
+                            <option value="MECH">MECH</option>
+                        </select>
+                        <span class="error-message">Please select a department.</span>
+                    </div>
                 </div>
+                
+                <div class="button">
+                    <input type="submit" value="Register">
+                </div>
+            </form>
+
+            <div class="back-link">
+                <a href="{{ url_for('student') }}">Back to Login</a>
             </div>
         </div>
-    </body>
+    </div>
+    
+    <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+</body>
 </html>
