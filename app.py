@@ -4,10 +4,14 @@ import os
 import secrets
 from werkzeug.utils import secure_filename
 import datetime
+from dotenv import load_dotenv
 
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = secrets.token_hex(16)
+app.secret_key = os.getenv("SECRET_KEY")
+if not app.secret_key:
+    raise ValueError("NO SECRET KEY set for this flask application")
 
 
 # Define database path consistently
