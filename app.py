@@ -11,7 +11,12 @@ app.secret_key = secrets.token_hex(16)
 
 
 # Define database path consistently
-DB_PATH = os.path.join(os.path.dirname(__file__), "ams.db")
+# Define database path consistently
+# Use /tmp for Vercel's read-only filesystem
+if os.environ.get('VERCEL'):
+    DB_PATH = os.path.join('/tmp', 'ams.db')
+else:
+    DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ams.db")
 
 # Add this function to your code
 def add_teacher_id_column():
@@ -120,7 +125,10 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Define upload folder path for certificates
-UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'uploads')
+if os.environ.get('VERCEL'):
+    UPLOAD_FOLDER = os.path.join('/tmp', 'uploads')
+else:
+    UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'uploads')
 
 # Create the upload directory if it doesn't exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
