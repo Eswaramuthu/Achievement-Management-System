@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Teacher Login - Achievement Management System</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </head>
 <body>
   <div class="toggle-container">
@@ -14,29 +14,43 @@
 
   <div class="container login-container">
     <div class="title">Teacher Login</div>
+
     <div class="content">
       <form action="/teacher" method="post">
         <div class="user-details">
+
           <div class="input-box full-width">
             <span class="details">Teacher ID</span>
             <input type="text" name="tname" placeholder="Enter your Teacher ID" required />
           </div>
+
           <div class="input-box full-width">
             <span class="details">Password</span>
             <input type="password" name="password" placeholder="Enter your password" required />
           </div>
+
+        </div>
+
+        <!-- NEW: Forgot Password Link -->
+        <div style="text-align:right; margin-top:5px;">
+          <a href="#" style="color:#ff1c1c; font-size:14px; text-decoration:none;">
+            Forgot Password?
+          </a>
         </div>
 
         <div class="button">
           <input type="submit" value="Login" />
         </div>
       </form>
+
       <div class="register-link">
         <p>New teacher? <a href="{{ url_for('teacher-new') }}">Register here</a></p>
       </div>
+
       <div class="back-link">
         <a href="{{ url_for('home') }}">Back to Home</a>
       </div>
+
     </div>
   </div>
 </body>
