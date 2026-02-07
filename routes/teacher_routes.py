@@ -112,7 +112,7 @@ def submit_achievements():
             return render_template("submit_achievements.html", error=f"An error occurred: {str(e)}")
         
 
-    return redirect(url_for("teacher_bp.teacher_dashboard", success="Achievement submitted successfully!"))
+    return redirect(url_for("teacher_bp.teacher-dashboard", success="Achievement submitted successfully!"))
 
 @teacher_bp.route("/teacher-dashboard", endpoint="teacher-dashboard")
 def teacher_dashboard():
