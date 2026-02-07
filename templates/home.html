@@ -5,9 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Achievement Management System</title>
   <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+  <script src="{{ url_for('static', filename = 'script.js') }}">
+   
+
+  </script>
+  <style>
+    .faq-answer {
+  display: none;
+}
+.faq-answer.open {
+  display: block;
+}
+
+  </style>
 </head>
 <body>
+  <header>
+  <nav>
+    <ul>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section id="faq">
+  <h2>Frequently Asked Questions</h2>
+
+  <div class="faq-item">
+    <button class="faq-question">What is this project about?</button>
+    <div class="faq-answer">
+      <p>This project helps users understand and navigate the platform easily.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-question">How can I contribute?</button>
+    <div class="faq-answer">
+      <p>You can contribute via issues, pull requests, or documentation.</p>
+    </div>
+  </div>
+</section>
+
+
+
   <div class="toggle-container">
     <button id="mode-toggle">Dark Mode 🌙</button>
   </div>
