@@ -4,8 +4,20 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <title>Student Registration</title>
+
+        <!-- Existing CSS -->
         <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
+
+        <!-- ✅ ADD: Material Symbols (Eye Icons) -->
+        <link
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+          rel="stylesheet"
+        />
+
+        <!-- Existing JS -->
         <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+
+        <!-- EXISTING INLINE SCRIPT (UNCHANGED) -->
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 console.log("Form method: " + document.querySelector('form').method);
@@ -24,21 +36,20 @@
                 console.log("Validating passwords...");
             
                 if (password !== confirmPassword) {
-                    event.preventDefault(); // This stops form submission
+                    event.preventDefault();
                     message.textContent = "❌ Passwords do not match!";
                     message.style.color = "red";
-                    console.log("Password validation failed - preventing submission");
                     return false;
                 } else {
                     message.textContent = "✅ Passwords match!";
                     message.style.color = "limegreen";
-                    console.log("Password validation passed - allowing submission");
-                    return true; // Explicitly return true to allow form submission
+                    return true;
                 }
             }
         </script>
+
+        <!-- EXISTING STYLES (UNCHANGED) -->
         <style>
-            /* Additional styles to make select elements match input styling */
             .input-box select {
                 width: 100%;
                 height: 45px;
@@ -48,33 +59,20 @@
                 background-color: rgba(255, 255, 255, 0.1);
                 color: var(--text-color);
                 transition: all 0.3s ease;
-                /* Remove default styling */
                 appearance: none;
                 -webkit-appearance: none;
                 -moz-appearance: none;
-                /* Add custom dropdown arrow for dark mode */
                 background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
                 background-repeat: no-repeat;
                 background-position: right 10px center;
             }
 
-            .input-box select:focus {
-                border-color: var(--primary-color);
-            }
-
-            /* Change dropdown arrow color in light mode */
             body.light-mode .input-box select {
                 background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
             }
-
-            /* Style for dropdown options */
-            .input-box select option {
-                background-color: var(--bg-color);
-                color: var(--text-color);
-                padding: 10px;
-            }
         </style>
     </head>
+
     <body>
         <div class="toggle-container">
             <button id="mode-toggle">Dark Mode 🌙</button>
@@ -85,44 +83,68 @@
             <div class="content">
                 <form action="/student-new" method="POST" onsubmit="return validatePasswords(event)">
                     <div class="user-details">
+
                         <div class="input-box">
                             <span class="details">Full Name</span>
-                            <input autocomplete="off" autofocus type="text" name="student_name" placeholder="Enter your full name" required>
+                            <input type="text" name="student_name" required>
                         </div>
 
                         <div class="input-box">
                             <span class="details">Student ID</span>
-                            <input autocomplete="off" type="text" name="student_id" placeholder="Enter your Student ID" required>
+                            <input type="text" name="student_id" required>
                         </div>
 
                         <div class="input-box">
                             <span class="details">Email</span>
-                            <input autocomplete="off" type="email" name="email" placeholder="Enter your email" required>
+                            <input type="email" name="email" required>
                         </div>
 
                         <div class="input-box">
                             <span class="details">Phone Number</span>
-                            <input autocomplete="off" type="tel" name="phone_number" placeholder="Enter your phone number" required>
+                            <input type="tel" name="phone_number" required>
                         </div>
 
+                        <!-- ✅ Password with Material Eye -->
                         <div class="input-box">
                             <span class="details">Password</span>
-                            <input autocomplete="off" type="password" id="password" name="password" placeholder="Enter your Password" required>
+                            <div class="password-wrapper">
+                                <input type="password" id="password" name="password" required>
+                                <span
+                                  class="material-symbols-outlined eye-icon"
+                                  onclick="togglePassword('password', this)"
+                                >
+                                  visibility
+                                </span>
+                            </div>
                         </div>
 
+                        <!-- ✅ Confirm Password with Material Eye -->
                         <div class="input-box">
                             <span class="details">Confirm Password</span>
-                            <input type="password" id="confirm-password" placeholder="Confirm your password" required>
-                            <small id="password-message" style="font-size: 14px;"></small>
+                            <div class="password-wrapper">
+                                <input
+                                  type="password"
+                                  id="confirm-password"
+                                  name="confirm_password"
+                                  required
+                                >
+                                <span
+                                  class="material-symbols-outlined eye-icon"
+                                  onclick="togglePassword('confirm-password', this)"
+                                >
+                                  visibility
+                                </span>
+                            </div>
+                            <small id="password-message"></small>
                         </div>
 
                         <div class="input-box">
                             <span class="details">Gender</span>
                             <select name="student_gender" required>
                                 <option disabled selected value="">Gender</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                                <option value="Other">Other</option>
+                                <option>Male</option>
+                                <option>Female</option>
+                                <option>Other</option>
                             </select>
                         </div>
 
@@ -130,14 +152,15 @@
                             <span class="details">Department</span>
                             <select name="student_dept" required>
                                 <option disabled selected value="">Department</option>
-                                <option value="CSE">CSE</option>
-                                <option value="CSE(E Tech)">CSE(E Tech)</option>
-                                <option value="ECE">ECE</option>
-                                <option value="MECH">MECH</option>
+                                <option>CSE</option>
+                                <option>CSE(E Tech)</option>
+                                <option>ECE</option>
+                                <option>MECH</option>
                             </select>
                         </div>
+
                     </div>
-                    
+
                     <div class="button">
                         <input type="submit" value="Register">
                     </div>

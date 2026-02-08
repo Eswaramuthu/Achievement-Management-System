@@ -44,8 +44,8 @@ source venv/bin/activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Initialize database
-python init_db.py
+# Database is auto-created on first run
+python app.py
 
 # Run application
 python app.py

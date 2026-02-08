@@ -4,9 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Student Login - Achievement Management System</title>
+
+  <!-- Existing CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
+
+  <!-- ✅ ADD: Material Symbols for eye icon -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    rel="stylesheet"
+  />
+
+  <!-- Existing JS -->
   <script src="{{ url_for('static', filename = 'script.js') }}"></script>
 </head>
+
 <body>
   <div class="toggle-container">
     <button id="mode-toggle">Dark Mode 🌙</button>
@@ -17,14 +28,42 @@
     <div class="content">
       <form action="/student" method="post">
         <div class="user-details">
+
           <div class="input-box full-width">
             <span class="details">Student ID</span>
-            <input autocomplete="off" autofocus type="text" name="sname" placeholder="Enter your Student ID" required />
+            <input
+              autocomplete="off"
+              autofocus
+              type="text"
+              name="sname"
+              placeholder="Enter your Student ID"
+              required
+            />
           </div>
+
+          <!-- ✅ Password with Material Eye Icon -->
           <div class="input-box full-width">
             <span class="details">Password</span>
-            <input autocomplete="off" autofocus type="password" name="password" placeholder="Enter your password" required />
+
+            <!-- ONLY WRAPPED, NOT REMOVED -->
+            <div class="password-wrapper">
+              <input
+                autocomplete="off"
+                type="password"
+                id="student-login-password"
+                name="password"
+                placeholder="Enter your password"
+                required
+              />
+              <span
+                class="material-symbols-outlined eye-icon"
+                onclick="togglePassword('student-login-password', this)"
+              >
+                visibility
+              </span>
+            </div>
           </div>
+
         </div>
 
         {% if error %}
@@ -37,9 +76,11 @@
           <input type="submit" value="Login" />
         </div>
       </form>
+
       <div class="register-link">
         <p>New student? <a href="{{ url_for('student_new') }}">Register here</a></p>
       </div>
+
       <div class="back-link">
         <a href="{{ url_for('home') }}">Back to Home</a>
       </div>

@@ -352,3 +352,40 @@ input[type="radio"] {
   border: 1px solid #333;
   color: #fff;
 }
+
+/* Password input wrapper */
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Password input padding to make space for eye */
+.password-wrapper input {
+  width: 100%;
+  padding-right: 45px; /* space for eye icon */
+}
+
+/* Eye icon inside input */
+.password-wrapper .eye-icon {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  user-select: none;
+  color: #ccc;
+  font-size: 22px;
+}
+
+/* Hover effect */
+.password-wrapper .eye-icon:hover {
+  color: #fff;
+}
+
+/* Light mode support */
+body.light-mode .password-wrapper .eye-icon {
+  color: #555;
+}
+body.light-mode .password-wrapper .eye-icon:hover {
+  color: #000;
+}
