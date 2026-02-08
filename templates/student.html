@@ -6,6 +6,134 @@
   <title>Student Login - Achievement Management System</title>
   <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
   <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+  
+  <style>
+    /* --- Layout & Scrolling Fix --- */
+    body {
+        min-height: 100vh;
+        height: auto;
+        overflow-y: auto;        /* Enables scrolling on mobile */
+        padding-bottom: 50px;
+        padding-top: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start; /* Starts content at top */
+    }
+
+    /* --- Floating Dark Mode Button --- */
+    .toggle-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+
+    #mode-toggle {
+        background-color: #ff4757;
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 8px;      /* 8px rounding (Standard Vibe) */
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        font-family: inherit;
+        transition: transform 0.2s ease;
+    }
+
+    #mode-toggle:hover {
+        transform: scale(1.05);
+    }
+
+    /* --- Validation Styles --- */
+    .error-message {
+        color: #ff4757;
+        font-size: 0.8rem;
+        margin-top: 5px;
+        display: none;
+        font-weight: 500;
+        text-align: left;
+    }
+
+    /* Show error when input is invalid */
+    .input-box input.invalid ~ .error-message {
+        display: block;
+    }
+
+    /* Red border for error */
+    .input-box input.invalid {
+        border-color: #ff4757 !important;
+        background-color: rgba(255, 71, 87, 0.05);
+    }
+
+    /* Green border for valid */
+    .input-box input.valid {
+        border-color: #2ed573 !important;
+    }
+
+    /* Container Spacing */
+    .container {
+        margin-bottom: 50px;
+        max-width: 500px;
+        width: 100%;
+    }
+    
+    /* Smooth transition for border colors */
+    .input-box input {
+        transition: all 0.3s ease;
+        border: 1px solid #ccc;
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const inputs = form.querySelectorAll('input');
+
+        // 1. Real-time validation
+        inputs.forEach(input => {
+            input.addEventListener('blur', () => validateField(input));
+            input.addEventListener('input', () => {
+                // Clear error as soon as user types
+                if (input.classList.contains('invalid')) {
+                    input.classList.remove('invalid');
+                }
+            });
+        });
+
+        // 2. Form Submit Validation
+        form.addEventListener('submit', function(event) {
+            let isValid = true;
+            inputs.forEach(input => {
+                if (!validateField(input)) isValid = false;
+            });
+
+            if (!isValid) {
+                event.preventDefault(); // Stop submission if empty fields
+            }
+        });
+
+        function validateField(field) {
+            // Skip the submit button
+            if (field.type === 'submit') return true;
+
+            const errorSpan = field.parentElement.querySelector('.error-message');
+            
+            // Check if empty
+            if (field.validity.valueMissing) {
+                field.classList.add('invalid');
+                field.classList.remove('valid');
+                if(errorSpan) errorSpan.textContent = "⚠️ This field is required";
+                return false;
+            }
+            
+            // If valid
+            field.classList.remove('invalid');
+            if(field.value.trim() !== "") field.classList.add('valid');
+            return true;
+        }
+    });
+  </script>
 </head>
 <body>
   <div class="toggle-container">
@@ -15,20 +143,24 @@
   <div class="container login-container">
     <div class="title">Student Login</div>
     <div class="content">
-      <form action="/student" method="post">
+      <form action="/student" method="post" novalidate>
         <div class="user-details">
+          
           <div class="input-box full-width">
             <span class="details">Student ID</span>
             <input autocomplete="off" autofocus type="text" name="sname" placeholder="Enter your Student ID" required />
+            <span class="error-message"></span>
           </div>
+          
           <div class="input-box full-width">
             <span class="details">Password</span>
-            <input autocomplete="off" autofocus type="password" name="password" placeholder="Enter your password" required />
+            <input autocomplete="off" type="password" name="password" placeholder="Enter your password" required />
+            <span class="error-message"></span>
           </div>
         </div>
 
         {% if error %}
-        <div class="error-message" style="color: red; text-align: center; margin-bottom: 15px;">
+        <div class="error-message" style="color: #ff4757; text-align: center; margin-bottom: 15px; font-weight: 500;">
           {{ error }}
         </div>
         {% endif %}
@@ -37,6 +169,7 @@
           <input type="submit" value="Login" />
         </div>
       </form>
+      
       <div class="register-link">
         <p>New student? <a href="{{ url_for('student_new') }}">Register here</a></p>
       </div>
