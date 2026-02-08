@@ -169,3 +169,34 @@ body {
     width: 100%;
   }
 }
+
+.achievement-card {
+  background-color: #1e1e1e;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 15px;
+  box-shadow: 0 0 12px rgba(255, 0, 0, 0.3);
+  border: 1px solid #333;
+}
+.achievement-box {
+  max-width: 1000px;
+  margin-top:800px;
+  padding: 40px;
+  background-color: #1c1c1c;
+  border-radius: 15px;
+  box-shadow: 0 0 12px rgba(255, 0, 0, 0.3);
+  border: 1px solid #333;
+  color: #fff;
+}
+.dashboard-box{
+  max-width: 1000px;
+  margin-top:10px;
+  margin-bottom:20px;
+  padding:40px;
+  background-color: #1c1c1c;
+  border-radius: 15px;
+  box-shadow: 0 0 12px rgba(255, 0, 0, 0.3);
+  border: 1px solid #333;
+  color: #fff;
+}
+

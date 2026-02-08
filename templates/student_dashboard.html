@@ -239,6 +239,28 @@
     color: var(--primary-color);
     font-weight: 600;
   }
+
+.achievement-card--holographic {
+  position: relative;
+  transition: box-shadow 0.3s ease;
+}
+
+.achievement-card--holographic:hover {
+  box-shadow:
+    0 0 0 2px transparent,
+    0 0 20px rgba(255, 28, 28, 0.45);
+  border-image: linear-gradient(
+    120deg,
+    #ff1c1c,
+    #4f46e5,
+    #10b981,
+    #f59e0b,
+    #ff1c1c
+  ) 1;
+  border-width: 2px;
+  border-style: solid;
+}
+
   </style>
 </head>
 <body style="height: auto; align-items: flex-start; padding-top: 120px; padding-bottom: 80px;">
@@ -267,15 +289,15 @@
       
       <!-- Stats Cards -->
       <div class="dashboard-stats">
-        <div class="stat-card">
+        <div class="stat-card achievement-card--holographic">
           <div class="stat-number">12</div>
           <div class="stat-label">Total Achievements</div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card achievement-card--holographic">
           <div class="stat-number">5</div>
           <div class="stat-label">First Positions</div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card achievement-card--holographic">
           <div class="stat-number">4</div>
           <div class="stat-label">This Semester</div>
         </div>
