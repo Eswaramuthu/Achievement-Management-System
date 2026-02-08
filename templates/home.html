@@ -4,25 +4,64 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Achievement Management System</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </head>
 <body>
+
   <div class="toggle-container">
     <button id="mode-toggle">Dark Mode 🌙</button>
   </div>
 
+  <!-- Main Home Container -->
   <div class="container home-container">
     <div class="title">Achievement Management System</div>
+
     <div class="content">
       <div class="welcome-text">
-        <p>Welcome to the Achievement Management System. Please select your role to continue.</p>
+        <p>
+          Welcome to the Achievement Management System. 
+          Please select your role to continue.
+        </p>
       </div>
+
       <div class="login-options">
         <a href="{{ url_for('student') }}" class="login-button student">Student Login</a>
         <a href="{{ url_for('teacher') }}" class="login-button teacher">Teacher Login</a>
       </div>
     </div>
   </div>
-</body>
-</html>
+
+  <!-- FAQ SECTION ADDED -->
+  <div class="container" style="margin-top:40px;">
+    <div class="title">Frequently Asked Questions</div>
+
+    <div class="content" style="text-align:left; line-height:1.6;">
+      <p><strong>What is Achievement Management System?</strong></p>
+      <p>
+        It is a centralized platform designed to help students and teachers
+        track academic achievements efficiently.
+      </p>
+
+      <p><strong>Who can use this platform?</strong></p>
+      <p>
+        Both students and teachers can use this system for recording
+        and monitoring academic accomplishments.
+      </p>
+
+      <p><strong>Can certificates be uploaded?</strong></p>
+      <p>
+        Yes, users can upload digital certificates which remain
+        accessible anytime.
+      </p>
+
+      <p><strong>Is my data secure?</strong></p>
+      <p>
+        The system uses authentication and structured data storage
+        practices to keep information secure.
+      </p>
+    </div>
+  </div>
+
+  <!-- Firebase Configuration (Server-side Injection) -->
+
