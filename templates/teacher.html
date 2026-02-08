@@ -16,6 +16,7 @@
     <div class="title">Teacher Login</div>
     <div class="content">
       <form action="/teacher" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <div class="user-details">
           <div class="input-box full-width">
             <span class="details">Teacher ID</span>
