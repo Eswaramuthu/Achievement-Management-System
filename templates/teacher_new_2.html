@@ -91,6 +91,7 @@
             </div>
             {% endif %}
             <form action="/teacher-new" method="POST" onsubmit="return validatePasswords(event)">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <div class="user-details">
                     <div class="input-box">
                         <span class="details">Full Name</span>

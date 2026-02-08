@@ -84,6 +84,7 @@
             <div class="title">Student Registration</div>
             <div class="content">
                 <form action="/student-new" method="POST" onsubmit="return validatePasswords(event)">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <div class="user-details">
                         <div class="input-box">
                             <span class="details">Full Name</span>

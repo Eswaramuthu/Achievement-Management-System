@@ -4,7 +4,7 @@ import os
 import datetime
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from flask_wtf import CSRFProtect
 from config import DevelopmentConfig, ProductionConfig
 
 # ------------------------------------------------------------------
@@ -29,6 +29,8 @@ UPLOAD_FOLDER = app.config["UPLOAD_FOLDER"]
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+# CSRF Protection Enable
+csrf = CSRFProtect(app)
 
 # ------------------------------------------------------------------
 # Helpers

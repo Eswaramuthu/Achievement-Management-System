@@ -32,6 +32,7 @@
         {% for ach in achievements %}
         <tr>
           <form method="POST" action="{{ url_for('update_achievement', id=ach.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <td>{{ ach.student_id }}</td>
             <td><input type="text" name="student_name" value="{{ ach.student_name }}" class="form-control" required></td>
             <td><input type="text" name="event_name" value="{{ ach.event_name }}" class="form-control" required></td>
@@ -43,6 +44,7 @@
               <button type="submit" class="btn btn-success btn-sm">Update</button>
           </form>
               <form method="POST" action="{{ url_for('delete_achievement', id=ach.id) }}" style="display:inline;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <button type="submit" class="btn btn-danger btn-sm">Delete</button>
               </form>
             </td>

@@ -1,10 +1,12 @@
 import os
+from datetime import timedelta
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+
 class Config:
     # Security
-    # SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key")
+    SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key")
 
     # Database
     DB_PATH = os.environ.get(
@@ -24,7 +26,9 @@ class Config:
     # Max upload size (5 MB)
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024
 
-
+    # 🔥 SESSION FIX (Issue #22)
+    SESSION_PERMANENT = True
+    PERMANENT_SESSION_LIFETIME = timedelta(days=1)
 
 
 class DevelopmentConfig(Config):
@@ -42,4 +46,3 @@ class ProductionConfig(Config):
             raise RuntimeError(
                 "SECRET_KEY environment variable must be set in production"
             )
-

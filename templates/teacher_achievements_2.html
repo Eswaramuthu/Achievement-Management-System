@@ -124,6 +124,7 @@
     <div class="title">Enter Student Achievement</div>
     <div class="content">
       <form method="POST" action="{{ url_for('submit_achievements') }}" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <div class="user-details">
           <div class="input-box">
             <span class="details">Student ID</span>
