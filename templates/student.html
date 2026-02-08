@@ -65,12 +65,68 @@
       opacity: 0.6;
       pointer-events: none;
     }
+/* ===== Theme Toggle (Top Right) ===== */
+.theme-toggle {
+  position: fixed;
+  top: 16px;
+  right: 20px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  background: #ffffff;
+  color: #000;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 9999;
+}
+
+body:not(.light-mode) .theme-toggle {
+  background: #1f1f1f;
+  color: #fff;
+}
+
+/* ===== Auth Links Section ===== */
+.auth-links {
+  margin-top: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Register CTA (secondary action) */
+.register-cta {
+  font-size: 14px;
+  color: #d10000;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.register-cta:hover {
+  text-decoration: underline;
+}
+
+/* Back to Home (tertiary navigation) */
+.back-home {
+  font-size: 13px;
+  color: #666;
+  text-decoration: none;
+}
+
+.back-home:hover {
+  text-decoration: underline;
+}
+</style>
+
   </style>
 </head>
-<body>
-  <div class="toggle-container">
-    <button id="mode-toggle">Dark Mode 🌙</button>
-  </div>
+<button id="mode-toggle" class="theme-toggle" title="Toggle theme"></button>
+
 
   <div class="container login-container">
     <div class="title">Student Login</div>
@@ -109,12 +165,16 @@
         </button>
       </div>
 
-      <div class="register-link">
-        <p>New student? <a href="{{ url_for('student_new') }}">Register here</a></p>
-      </div>
-      <div class="back-link">
-        <a href="{{ url_for('home') }}">Back to Home</a>
-      </div>
+      <div class="auth-links">
+  <a class="register-cta" href="{{ url_for('student_new') }}">
+    New student? Register here
+  </a>
+
+  <a class="back-home" href="{{ url_for('home') }}">
+    ← Back to Home
+  </a>
+</div>
+
     </div>
   </div>
 
