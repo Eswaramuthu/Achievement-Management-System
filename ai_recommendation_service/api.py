@@ -191,15 +191,16 @@ async def list_all_alumni(career_path: Optional[str] = None):
 @app.get("/api/stats")
 async def get_system_stats():
     """Get overall statistics about the recommendation system"""
+    count = len(ALUMNI_PROFILES)
     return {
-        "total_alumni_profiles": len(ALUMNI_PROFILES),
+        "total_alumni_profiles": count,
         "career_paths": len(get_all_career_paths()),
         "average_placement_package": round(
-            sum(a["placement_package_lpa"] for a in ALUMNI_PROFILES) / len(ALUMNI_PROFILES), 1
-        ),
+            sum(a["placement_package_lpa"] for a in ALUMNI_PROFILES) / count, 1
+        ) if count > 0 else 0,
         "average_placement_time_months": round(
-            sum(a["time_to_placement_months"] for a in ALUMNI_PROFILES) / len(ALUMNI_PROFILES), 1
-        ),
+            sum(a["time_to_placement_months"] for a in ALUMNI_PROFILES) / count, 1
+        ) if count > 0 else 0,
         "top_career_paths": [
             {"path": path, "count": len(get_alumni_by_career_path(path))}
             for path in get_all_career_paths()
