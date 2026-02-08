@@ -254,6 +254,14 @@ def student():
         # Get user data
         student_id = request.form.get("sname")
         password = request.form.get("password")
+          
+        # Validate that password and confirm password match
+        confirm_password = request.form.get("confirm_password")
+        if password != confirm_password:
+            return render_template(
+                "student_new_2.html",
+                error="Passwords do not match"
+        )
 
         # Validate credentials against database
         connection = sqlite3.connect(DB_PATH)
