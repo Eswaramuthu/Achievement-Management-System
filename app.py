@@ -1,17 +1,28 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import sqlite3
 import os
 import datetime
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
+from dotenv import load_dotenv
 
 from config import DevelopmentConfig, ProductionConfig
+from firebase_config import get_firebase_config, validate_firebase_config
+
+# Load environment variables from .env file
+# load_dotenv()
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # ------------------------------------------------------------------
 # App setup
 # ------------------------------------------------------------------
 
 app = Flask(__name__)
+
+app.secret_key = os.getenv("SECRET_KEY")
 
 # Choose config based on environment
 env = os.environ.get("FLASK_ENV", "development")
@@ -22,7 +33,7 @@ if env == "production":
 else:
     app.config.from_object(DevelopmentConfig)
     
-app.config["MAX_CONTENT_LENGTH"] = app.config["MAX_CONTENT_LENGTH"]
+# app.config["MAX_CONTENT_LENGTH"] = app.config["MAX_CONTENT_LENGTH"]
 
 DB_PATH = app.config["DB_PATH"]
 UPLOAD_FOLDER = app.config["UPLOAD_FOLDER"]
@@ -138,71 +149,55 @@ def migrate_achievements_table():
 # ------------------------------------------------------------------
 
 def init_db():
-    if not os.path.exists(DB_PATH):
-        connection = sqlite3.connect(DB_PATH)
-        cursor = connection.cursor()
+    db_path = app.config["DB_PATH"]
 
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS student (
-            student_name TEXT NOT NULL,
-            student_id TEXT PRIMARY KEY,
-            email TEXT UNIQUE NOT NULL,
-            phone_number TEXT,
-            password TEXT NOT NULL,
-            student_gender TEXT,
-            student_dept TEXT
-        )
-        """)
+    connection = sqlite3.connect(db_path)
+    cursor = connection.cursor()
 
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS teacher (
-            teacher_name TEXT NOT NULL,
-            teacher_id TEXT PRIMARY KEY,
-            email TEXT UNIQUE NOT NULL,
-            phone_number TEXT,
-            password TEXT NOT NULL,
-            teacher_gender TEXT,
-            teacher_dept TEXT
-        )
-        """)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS student (
+        student_name TEXT NOT NULL,
+        student_id TEXT PRIMARY KEY,
+        email TEXT UNIQUE NOT NULL,
+        phone_number TEXT,
+        password TEXT NOT NULL,
+        student_gender TEXT,
+        student_dept TEXT
+    )
+    """)
 
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS achievements (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            teacher_id TEXT NOT NULL,
-            student_id TEXT NOT NULL,
-            achievement_type TEXT NOT NULL,
-            event_name TEXT NOT NULL,
-            achievement_date DATE NOT NULL,
-            organizer TEXT NOT NULL,
-            position TEXT NOT NULL,
-            achievement_description TEXT,
-            certificate_path TEXT,
-            symposium_theme TEXT,
-            programming_language TEXT,
-            coding_platform TEXT,
-            paper_title TEXT,
-            journal_name TEXT,
-            conference_level TEXT,
-            conference_role TEXT,
-            team_size INTEGER,
-            project_title TEXT,
-            database_type TEXT,
-            difficulty_level TEXT,
-            other_description TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (student_id) REFERENCES student(student_id),
-            FOREIGN KEY (teacher_id) REFERENCES teacher(teacher_id)
-        )
-        """)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS teacher (
+        teacher_name TEXT NOT NULL,
+        teacher_id TEXT PRIMARY KEY,
+        email TEXT UNIQUE NOT NULL,
+        phone_number TEXT,
+        password TEXT NOT NULL,
+        teacher_gender TEXT,
+        teacher_dept TEXT
+    )
+    """)
 
-        connection.commit()
-        connection.close()
-    else:
-        add_teacher_id_column()
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS achievements (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        teacher_id TEXT NOT NULL,
+        student_id TEXT NOT NULL,
+        achievement_type TEXT NOT NULL,
+        event_name TEXT NOT NULL,
+        achievement_date DATE NOT NULL,
+        organizer TEXT NOT NULL,
+        position TEXT NOT NULL,
+        achievement_description TEXT,
+        certificate_path TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (student_id) REFERENCES student(student_id),
+        FOREIGN KEY (teacher_id) REFERENCES teacher(teacher_id)
+    )
+    """)
 
-        
-
+    connection.commit()
+    connection.close()
 
 # Call initialization function
 init_db()
@@ -214,6 +209,8 @@ def home():
 
 @app.route("/student", methods=["GET", "POST"])
 def student():
+    firebase_config = get_firebase_config()
+    
     if request.method == "POST":
 
         # Get user data
@@ -241,8 +238,8 @@ def student():
             return redirect(url_for("student-dashboard"))
         else:
             # Authentication failed
-            return render_template("student.html", error="Invalid credentials. Please try again.")
-    return render_template("student.html")
+            return render_template("student.html", error="Invalid credentials. Please try again.", firebase_config=firebase_config)
+    return render_template("student.html", firebase_config=firebase_config)
 
 
 @app.route("/teacher", methods=["GET", "POST"])
@@ -280,8 +277,10 @@ def teacher():
     return render_template("teacher.html")
 
 
-@app.route("/student-new", methods=["GET", "POST"])
+# @app.route("/student-new", methods=["GET", "POST"])
+@app.route("/student_new", methods=["GET", "POST"])
 def student_new():
+    firebase_config = get_firebase_config()
 
     print(f"Request method: {request.method}")
     
@@ -336,7 +335,7 @@ def student_new():
             # Closing the connection
             connection.close()
     
-    return render_template("student_new_2.html")
+    return render_template("student_new.html", firebase_config=firebase_config)
 
 
 @app.route("/teacher-new", endpoint="teacher-new", methods=["GET", "POST"])
@@ -440,7 +439,7 @@ def submit_achievements():
 
             with sqlite3.connect(DB_PATH) as connection:
                 # First establish connection and cursor before using them
-                connection = sqlite3.connect(DB_PATH)
+                # connection = sqlite3.connect(DB_PATH)
                 cursor = connection.cursor()
 
                 # Debug: Check if achievements table exists
@@ -673,9 +672,116 @@ def all_achievements():
     
     return render_template("all_achievements.html", achievements=achievements)
 
+
+# ------------------------------------------------------------------
+# Firebase Authentication Routes
+# ------------------------------------------------------------------
+
+@app.route("/auth/firebase-config", methods=["GET"])
+def get_auth_firebase_config():
+    """
+    Returns Firebase configuration to frontend
+    This endpoint provides the config needed for Firebase initialization
+    IMPORTANT: apiKey is public and safe to expose, but never expose private keys
+    """
+    firebase_config = get_firebase_config()
+    return jsonify(firebase_config)
+
+
+@app.route("/auth/google-login", methods=["POST"])
+def google_login():
+    """
+    Handle Google Sign-In authentication
+    
+    Expected POST data:
+    {
+        "email": "user@example.com",
+        "displayName": "User Name",
+        "photoURL": "https://...",
+        "uid": "firebase_uid",
+        "idToken": "firebase_id_token"
+    }
+    
+    TODO: Developers should integrate with Firebase Admin SDK to verify idToken
+    For now, basic email validation is implemented
+    """
+    try:
+        data = request.get_json()
+        email = data.get("email")
+        display_name = data.get("displayName")
+        photo_url = data.get("photoURL")
+        firebase_uid = data.get("uid")
+        
+        # TODO: Verify idToken with Firebase Admin SDK
+        # import firebase_admin
+        # from firebase_admin import auth
+        # try:
+        #     decoded_token = auth.verify_id_token(data.get("idToken"))
+        #     uid = decoded_token['uid']
+        # except:
+        #     return jsonify({"success": False, "message": "Invalid token"}), 401
+        
+        if not email:
+            return jsonify({"success": False, "message": "Email is required"}), 400
+        
+        connection = sqlite3.connect(DB_PATH)
+        cursor = connection.cursor()
+        
+        # Check if student exists (students can login via Google)
+        cursor.execute("SELECT * FROM student WHERE email = ?", (email,))
+        student_data = cursor.fetchone()
+        
+        if student_data:
+            # Student exists - login via Google
+            session.permanent = True
+            session['logged_in'] = True
+            session['student_id'] = student_data[1]
+            session['student_name'] = student_data[0]
+            session['student_dept'] = student_data[6]
+            session['google_auth'] = True
+            session['firebase_uid'] = firebase_uid
+            
+            connection.close()
+            return jsonify({
+                "success": True, 
+                "message": "Student logged in successfully",
+                "redirectUrl": "/student-dashboard"
+            }), 200
+        else:
+            # TODO: Create new student account or ask to register
+            # For now, reject unknown users
+            connection.close()
+            return jsonify({
+                "success": False, 
+                "message": f"No student account found for {email}. Please register first."
+            }), 404
+            
+    except Exception as e:
+        return jsonify({
+            "success": False, 
+            "message": f"Login error: {str(e)}"
+        }), 500
+
+
+@app.route("/auth/logout", methods=["POST"])
+def logout():
+    """
+    Handle logout for both traditional and Google Sign-In users
+    Clears session data
+    """
+    session.clear()
+    return jsonify({
+        "success": True,
+        "message": "Logged out successfully"
+    }), 200
+
+
     
 if __name__ == "__main__":
     init_db()
     # migrate_achievements_table()
     add_teacher_id_column()
     app.run(debug=True)
+
+
+
