@@ -1,19 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
 
 :root {
-  --bg-color: #0d0d0d;
-  --glass-bg: rgba(255, 255, 255, 0.1);
-  --text-color: #fff;
-  --primary-color: #ff1c1c;
-  --border-color: rgba(255, 255, 255, 0.2);
-}
-
-body.light-mode {
   --bg-color: #f0f0f0;
   --glass-bg: rgba(255, 255, 255, 0.7);
   --text-color: #000;
   --primary-color: #d40000;
   --border-color: rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode {
+  --bg-color: #0d0d0d;
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --text-color: #fff;
+  --primary-color: #ff1c1c;
+  --border-color: rgba(255, 255, 255, 0.2);
 }
 
 * {
