@@ -226,7 +226,8 @@ def init_db():
                 
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (student_id) REFERENCES student(student_id),
-                FOREIGN KEY teacher_id REFERENCES teacher(teacher_id)
+                FOREIGN KEY (teacher_id) REFERENCES teacher(teacher_id)
+
             )
             ''')
 
@@ -267,12 +268,20 @@ def student():
 
         if student_data:
             # Store user information in session
-            session['logged_in'] = True
+            session['role'] = 'student'
+            # OR
+            session['role'] = 'teacher'
+            if session.get('role') != 'teacher':
+              return redirect(url_for('teacher'))
+
             session['student_id'] = student_data[1]
             session['student_name'] = student_data[0]
             session['student_dept'] = student_data[6]
 
             # Authentication successful - store student info in session
+            @app.route("/student-dashboard", endpoint="student_dashboard")
+            def student_dashboard()
+
             return redirect(url_for("student-dashboard"))
         else:
             # Authentication failed
@@ -465,9 +474,8 @@ def submit_achievements():
 
 
             with sqlite3.connect(DB_PATH) as connection:
-                # First establish connection and cursor before using them
-                connection = sqlite3.connect(DB_PATH)
                 cursor = connection.cursor()
+
 
                 # Debug: Check if achievements table exists
                 cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='achievements'")
@@ -495,17 +503,16 @@ def submit_achievements():
                             secure_name = f"{timestamp}_{secure_filename(file.filename)}"
                             file_path = os.path.join(UPLOAD_FOLDER, secure_name)
                             file.save(file_path)
-                            certificate_path = f"uploads/{secure_name}"
+                            certificate_path = os.path.join("uploads", secure_name)
                         else:
                             connection.close()
                             return render_template("submit_achievements.html", error="Invalid file type. Please upload PDF, PNG, JPG, or JPEG files.")
                         
                 # Parse team_size
                 team_size = request.form.get("team_size")
-                if team_size and team_size.strip():
-                    team_size = int(team_size)
-                else:
-                    team_size = None
+                team_size = int(team_size) 
+                if team_size and team_size.isdigit() 
+                else None
                     
                 # Get other form fields
                 symposium_theme = request.form.get("symposium_theme")
@@ -703,5 +710,6 @@ def all_achievements():
 if __name__ == "__main__":
     init_db()
     # migrate_achievements_table()
+    migrate_achievements_table()
     add_teacher_id_column()
     app.run(debug=True)
