@@ -1,3 +1,4 @@
+ feature/improve-theme-system-and-ui
 # Python virtual environment
 venv/
 venv1/
@@ -40,3 +41,12 @@ static/uploads/*
 
 # Instance folder
 instance/
+
+/venv1
+/__pycache__
+/.env
+/*.db
+/instance/*
+.DS_Store
+*.pyc
+ main
