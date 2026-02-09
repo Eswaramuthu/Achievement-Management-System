@@ -12,9 +12,7 @@ from firebase_config import get_firebase_config, validate_firebase_config
 # Load environment variables from .env file
 load_dotenv()
 
-from dotenv import load_dotenv
 
-load_dotenv()
 
 # ------------------------------------------------------------------
 # App setup
