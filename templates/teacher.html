@@ -23,7 +23,10 @@
           </div>
           <div class="input-box full-width">
             <span class="details">Password</span>
-            <input type="password" name="password" placeholder="Enter your password" required />
+            <div class="password-wrapper">
+              <input type="password" id="password" name="password" placeholder="Enter your password" required />
+              <span class="toggle-password" onclick="togglePassword('password', this)">👁️</span>
+            </div>
           </div>
         </div>
 
