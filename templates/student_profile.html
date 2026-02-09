@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Student Profile | Achievement Management System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+  <style>
+    body {
+      background: var(--bg-color);
+      color: var(--text-color);
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    .profile-container {
+      max-width: 500px;
+      margin: 120px auto 40px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .profile-header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .avatar {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      font-weight: bold;
+      margin: 0 auto 15px;
+    }
+
+    .profile-header h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .profile-header p {
+      margin-top: 6px;
+      opacity: 0.8;
+    }
+
+    .profile-card {
+      margin-top: 20px;
+    }
+
+    .profile-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .profile-row:last-child {
+      border-bottom: none;
+    }
+
+    .label {
+      font-weight: 600;
+      opacity: 0.8;
+      min-width: 120px;
+    }
+
+    .value {
+      font-weight: 500;
+      text-align: right;
+    }
+
+    .profile-actions {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .btn-back {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+    }
+
+    .btn-back:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="profile-container">
+
+    <div class="profile-header">
+      <div class="avatar">{{ student.name[0] }}</div>
+      <h2>{{ student.name }}</h2>
+      <p>{{ student.dept }} Department</p>
+    </div>
+
+    <div class="profile-card">
+      <div class="profile-row">
+        <span class="label">Student ID:</span>
+        <span class="value">{{ student.id }}</span>
+      </div>
+
+      <div class="profile-row">
+        <span class="label">Name:</span>
+        <span class="value">{{ student.name }}</span>
+      </div>
+
+      <div class="profile-row">
+        <span class="label">Department:</span>
+        <span class="value">{{ student.dept }}</span>
+      </div>
+    </div>
+
+    <div class="profile-actions">
+      <a href="{{ url_for('student-dashboard') }}" class="btn btn-back">
+        ⬅ Dashboard
+      </a>
+    </div>
+
+  </div>
+
+</body>
+</html>
