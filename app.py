@@ -11,7 +11,10 @@ app.secret_key = secrets.token_hex(16)
 
 
 # Define database path consistently
-DB_PATH = "C:\\Users\\Dell\\Downloads\\AMS-Achievement-Management-System-main\\AMS-Achievement-Management-System-main\\Achievement-Management-System\\ams.db"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+INSTANCE_DIR = os.path.join(BASE_DIR, "instance")
+os.makedirs(INSTANCE_DIR, exist_ok=True)
+DB_PATH = os.environ.get("AMS_DB_PATH", os.path.join(INSTANCE_DIR, "achievement.db"))
 
 # Add this function to your code
 def add_teacher_id_column():
@@ -128,113 +131,82 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Initialize database on startup
 def init_db():
-    if not os.path.exists(DB_PATH):
-        connection = sqlite3.connect(DB_PATH)
-        cursor = connection.cursor()
-        cursor.execute('''
-        CREATE TABLE IF NOT EXISTS student (
-            student_name TEXT NOT NULL,
-            student_id TEXT PRIMARY KEY,
-            email TEXT UNIQUE NOT NULL,
-            phone_number TEXT,
-            password TEXT NOT NULL,
-            student_gender TEXT,
-            student_dept TEXT
-        )
-        ''')
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
 
-        # Create the achievements table
-        cursor.execute('''
-        CREATE TABLE IF NOT EXISTS achievements (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            teacher_id TEXT NOT NULL,
-            student_id TEXT NOT NULL,
-            achievement_type TEXT NOT NULL,
-            event_name TEXT NOT NULL,
-            achievement_date DATE NOT NULL,
-            organizer TEXT NOT NULL,
-            position TEXT NOT NULL,
-            achievement_description TEXT,
-            certificate_path TEXT,
-            
-            /* For Symposium */
-            symposium_theme TEXT,
-                       
-            /* For Coding Competition */
-            programming_language TEXT,
-            coding_platform TEXT,
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS student (
+        student_name TEXT NOT NULL,
+        student_id TEXT PRIMARY KEY,
+        email TEXT UNIQUE NOT NULL,
+        phone_number TEXT,
+        password TEXT NOT NULL,
+        student_gender TEXT,
+        student_dept TEXT
+    )
+    ''')
 
-            /* For Paper Presentation */
-            paper_title TEXT,
-            journal_name TEXT,
-                       
-            /* For Conference */
-            conference_level TEXT,
-            conference_role TEXT,
-                       
-            /* For Hackathon */
-            team_size INTEGER,
-            project_title TEXT,
-                       
-            /* For SQL Query Event */
-            database_type TEXT,
-            difficulty_level TEXT,
-                       
-            /* For other events - achievement type description */
-            other_description TEXT,
-            
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (student_id) REFERENCES student(student_id),
-            FOREIGN KEY (teacher_id) REFERENCES teacher(teacher_id))
-        ''')
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS teacher (
+        teacher_name TEXT NOT NULL,
+        teacher_id TEXT PRIMARY KEY,
+        email TEXT UNIQUE NOT NULL,
+        phone_number TEXT,
+        password TEXT NOT NULL,
+        teacher_gender TEXT,
+        teacher_dept TEXT
+    )
+    ''')
 
-        connection.commit()
-        connection.close()
-        print(f"Created database at {DB_PATH}")
-    else:
-        # Check if the achievements table exists and create it if not
-        connection = sqlite3.connect(DB_PATH)
-        cursor = connection.cursor()
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='achievements'")
-        if not cursor.fetchone():
-            cursor.execute('''
-            CREATE TABLE IF NOT EXISTS achievements (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                teacher_id TEXT NOT NULL,
-                student_id TEXT NOT NULL,
-                achievement_type TEXT NOT NULL,
-                event_name TEXT NOT NULL,
-                achievement_date DATE NOT NULL,
-                organizer TEXT NOT NULL,
-                position TEXT NOT NULL,
-                achievement_description TEXT,
-                certificate_path TEXT,
-                
-                /* Common additional fields */
-                symposium_theme TEXT,
-                programming_language TEXT,
-                coding_platform TEXT,
-                paper_title TEXT,
-                journal_name TEXT,
-                conference_level TEXT,
-                conference_role TEXT,
-                team_size INTEGER,
-                project_title TEXT,
-                database_type TEXT,
-                difficulty_level TEXT,
-                other_description TEXT,
-                
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (student_id) REFERENCES student(student_id),
-                FOREIGN KEY teacher_id REFERENCES teacher(teacher_id)
-            )
-            ''')
+    # Create the achievements table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS achievements (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        teacher_id TEXT NOT NULL,
+        student_id TEXT NOT NULL,
+        achievement_type TEXT NOT NULL,
+        event_name TEXT NOT NULL,
+        achievement_date DATE NOT NULL,
+        organizer TEXT NOT NULL,
+        position TEXT NOT NULL,
+        achievement_description TEXT,
+        certificate_path TEXT,
+        
+        /* For Symposium */
+        symposium_theme TEXT,
+                   
+        /* For Coding Competition */
+        programming_language TEXT,
+        coding_platform TEXT,
 
-            migrate_achievements_table()
-            connection.commit()
-            print("Created achievements table")
-        connection.close()
-        print(f"Database already exists at {DB_PATH}")
+        /* For Paper Presentation */
+        paper_title TEXT,
+        journal_name TEXT,
+                   
+        /* For Conference */
+        conference_level TEXT,
+        conference_role TEXT,
+                   
+        /* For Hackathon */
+        team_size INTEGER,
+        project_title TEXT,
+                   
+        /* For SQL Query Event */
+        database_type TEXT,
+        difficulty_level TEXT,
+                   
+        /* For other events - achievement type description */
+        other_description TEXT,
+        
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (student_id) REFERENCES student(student_id),
+        FOREIGN KEY (teacher_id) REFERENCES teacher(teacher_id)
+    )
+    ''')
+
+    connection.commit()
+    connection.close()
+    print(f"Database initialized at {DB_PATH}")
 
         
 

@@ -1,0 +1,16 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+venv/
+venv1/
+
+# SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+instance/*.db
+
+# Uploaded files generated at runtime
+static/uploads/
