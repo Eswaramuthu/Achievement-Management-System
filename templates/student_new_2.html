@@ -84,6 +84,9 @@
             <div class="title">Student Registration</div>
             <div class="content">
                 <form action="/student-new" method="POST" onsubmit="return validatePasswords(event)">
+                    {% if error %}
+                    <p style="color: #ff6b6b; margin-bottom: 12px;">{{ error }}</p>
+                    {% endif %}
                     <div class="user-details">
                         <div class="input-box">
                             <span class="details">Full Name</span>
@@ -128,12 +131,14 @@
 
                         <div class="input-box">
                             <span class="details">Department</span>
-                            <select name="student_dept" required>
+                            <select name="dept" required>
                                 <option disabled selected value="">Department</option>
                                 <option value="CSE">CSE</option>
-                                <option value="CSE(E Tech)">CSE(E Tech)</option>
+                                <option value="IT">IT</option>
+                                <option value="AIDS">AIDS</option>
                                 <option value="ECE">ECE</option>
-                                <option value="MECH">MECH</option>
+                                <option value="ME">ME</option>
+                                <option value="CE">CE</option>
                             </select>
                         </div>
                     </div>
