@@ -1,31 +1,79 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
 
-<html lang="en">
-    <head>
-        <title>Achievement Management System</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
-    </head>
+{% block content %}
 
-    <body>
-        <div class="heading">
-            <h1>Achievement Management System</h1>
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Welcome to Achievement Management System</h1>
+        <p>A centralized platform where students and teachers track academic achievements in one place. Students view their accomplishments, teachers record them, and everyone gets a clear picture of academic progress — all automated and organized.</p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('student') }}" class="btn btn-primary">Student Login</a>
+            <a href="{{ url_for('teacher') }}" class="btn btn-secondary">Teacher Login</a>
         </div>
+    </div>
+</section>
 
-        <h1>You want to login as</h1>
-
-        <div class="student-row">
-            <div class="student-col">
-                <h3>Student</h3>
+<!-- Features Section -->
+<section id="features" class="features">
+    <div class="container">
+        <h2 class="title">Key Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>🎓 Student Dashboard</h3>
+                <p>View all achievements at a glance with analytics and filtering options.</p>
+            </div>
+            <div class="feature-card">
+                <h3>👨‍🏫 Teacher Management</h3>
+                <p>Quick entry forms for recording achievements with auto-complete functionality.</p>
+            </div>
+            <div class="feature-card">
+                <h3>📄 Certificate Management</h3>
+                <p>Upload and download certificates in various formats (PDF, JPG, PNG).</p>
+            </div>
+            <div class="feature-card">
+                <h3>📊 Analytics Dashboard</h3>
+                <p>Visual representation of achievement metrics by type, year, and position.</p>
             </div>
         </div>
+    </div>
+</section>
 
-        <div class="teacher-row">
-            <div class="teacher-col">
-                <h3>Teacher</h3>
+<!-- About Section -->
+<section id="about" class="about">
+    <div class="container">
+        <h2 class="title">About Our System</h2>
+        <div class="about-content">
+            <div class="about-text">
+                <p>Academic achievements are scattered everywhere — certificates in folders, emails buried in inboxes, paper records collecting dust. Students struggle to showcase their accomplishments during placements or applications. Teachers waste time managing spreadsheets and physical documents. Nobody has a clear, organized view of what students have actually achieved.</p>
+                <p>Our Achievement Management System centralizes everything. Students see all their achievements in one dashboard with analytics. Teachers input achievements through simple forms with auto-complete. The system tracks hackathons, coding competitions, paper presentations, conferences, and symposiums — complete with certificates, dates, positions, and detailed descriptions. Clean, fast, and organized.</p>
             </div>
         </div>
-    </body>
-</html>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <h3>1000+</h3>
+                <p>Students Registered</p>
+            </div>
+            <div class="stat-item">
+                <h3>500+</h3>
+                <p>Achievements Recorded</p>
+            </div>
+            <div class="stat-item">
+                <h3>50+</h3>
+                <p>Teachers Active</p>
+            </div>
+            <div class="stat-item">
+                <h3>98%</h3>
+                <p>User Satisfaction</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

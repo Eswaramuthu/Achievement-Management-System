@@ -212,36 +212,105 @@
     color: var(--primary-color);
   }
   
-  .footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    padding: 20px;
+/* ===== Full Dashboard Footer ===== */
+/* ===== Full Width Footer Wrapper ===== */
+.footer {
+  position: relative;
+  margin-top: 60px;
+
+  /* FORCE full viewport width */
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border-color);
+}
+
+/* ===== Footer Main Content ===== */
+.footer-content {
+  width: 100%;
+  padding: 40px 80px;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 40px;
+}
+
+/* ===== Branding ===== */
+.footer-brand h3 {
+  margin: 0 0 10px;
+  color: var(--primary-color);
+  font-size: 20px;
+}
+
+.footer-brand p {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* ===== Footer Links ===== */
+.footer-links h4 {
+  margin-bottom: 10px;
+  font-size: 15px;
+  color: var(--text-color);
+}
+
+.footer-links a {
+  display: block;
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  margin-bottom: 6px;
+}
+
+.footer-links a:hover {
+  color: var(--primary-color);
+}
+
+/* ===== Bottom Bar ===== */
+.footer-bottom {
+  width: 100%;
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+  padding: 15px 80px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.footer-bottom strong {
+  color: var(--primary-color);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .footer-content {
+    grid-template-columns: 1fr;
     text-align: center;
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid var(--border-color);
-    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.2);
-    z-index: 50;
+    padding: 30px 20px;
   }
-  
-  .footer-text {
-    color: var(--text-secondary);
-    font-size: 14px;
-    font-weight: 500;
-    margin: 0;
+
+  .footer-bottom {
+    padding: 15px 20px;
   }
-  
-  .footer-text strong {
-    color: var(--primary-color);
-    font-weight: 600;
-  }
+}
+
+  /* ===== Page Layout for Sticky Footer ===== */
+.dashboard-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main content grows, footer pushed down */
+.dashboard-main {
+  flex: 1;
+  padding-top: 120px; /* header space */
+}
+
   </style>
 </head>
-<body style="height: auto; align-items: flex-start; padding-top: 120px; padding-bottom: 80px;">
+<body class="dashboard-page">
   <!-- Header -->
   <header class="header">
     <h1 class="header-text">
@@ -253,7 +322,12 @@
     <button id="mode-toggle">Dark Mode 🌙</button>
   </div>
   
+<main class="dashboard-main">
   <div class="container dashboard-container">
+    <!-- existing dashboard content -->
+  </div>
+</main>
+
     <div class="title">Student Dashboard</div>
     <div class="content">
       <!-- Student Info -->
@@ -335,10 +409,34 @@
   </div>
   
   <!-- Footer -->
-  <footer class="footer">
-    <p class="footer-text">
-      <strong>OSCG</strong> open source
-    </p>
-  </footer>
+<footer class="footer">
+  <div class="footer-content">
+
+    <div class="footer-brand">
+      <h3>Achievement Management System</h3>
+      <p>Track, manage, and showcase student achievements efficiently.</p>
+    </div>
+
+    <div class="footer-links">
+      <h4>Quick Links</h4>
+      <a href="{{ url_for('student-achievements') }}">My Achievements</a>
+      <a href="#">Analytics</a>
+      <a href="#">Profile</a>
+    </div>
+
+    <div class="footer-links">
+      <h4>Support</h4>
+      <a href="#">Help</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Use</a>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    © 2026 <strong>OSCG</strong> · Open Source Project
+  </div>
+</footer>
+
 </body>
 </html>
