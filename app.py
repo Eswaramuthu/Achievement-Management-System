@@ -1,3 +1,4 @@
+import logging
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import sqlite3
 import os
@@ -10,11 +11,14 @@ from config import DevelopmentConfig, ProductionConfig
 from firebase_config import get_firebase_config, validate_firebase_config
 
 # Load environment variables from .env file
-# load_dotenv()
-
-from dotenv import load_dotenv
-
 load_dotenv()
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 # ------------------------------------------------------------------
 # App setup
@@ -32,8 +36,6 @@ if env == "production":
     ProductionConfig.validate()
 else:
     app.config.from_object(DevelopmentConfig)
-    
-# app.config["MAX_CONTENT_LENGTH"] = app.config["MAX_CONTENT_LENGTH"]
 
 DB_PATH = app.config["DB_PATH"]
 UPLOAD_FOLDER = app.config["UPLOAD_FOLDER"]
@@ -204,11 +206,13 @@ init_db()
 
 @app.route("/")
 def home():
+    """Display home page with navigation options"""
     return render_template("home.html")
 
 
 @app.route("/student", methods=["GET", "POST"])
 def student():
+    """Handle student login. GET: Display login form, POST: Authenticate student"""
     firebase_config = get_firebase_config()
     
     if request.method == "POST":
@@ -244,6 +248,7 @@ def student():
 
 @app.route("/teacher", methods=["GET", "POST"])
 def teacher():
+    """Handle teacher login. GET: Display login form, POST: Authenticate teacher"""
     if request.method == "POST":
 
         # Get user data
@@ -277,12 +282,12 @@ def teacher():
     return render_template("teacher.html")
 
 
-# @app.route("/student-new", methods=["GET", "POST"])
 @app.route("/student_new", methods=["GET", "POST"])
 def student_new():
+    """Handle student registration. GET: Display form, POST: Process registration"""
     firebase_config = get_firebase_config()
 
-    print(f"Request method: {request.method}")
+    logger.info(f"Student registration request: {request.method}")
     
     # Getting the form data
     if request.method == "POST":
@@ -294,7 +299,7 @@ def student_new():
         student_gender = request.form.get("student_gender")
         student_dept = request.form.get("student_dept")
 
-        print(f"Form data: {student_name}, {student_id}, {email}, {phone_number}, {student_gender}, {student_dept}")
+        logger.info(f"Registering student: {student_id}")
 
         # Connecting to the database
         connection = sqlite3.connect(DB_PATH)
@@ -303,7 +308,7 @@ def student_new():
         # Check if the student table exists
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='student'")
         if not cursor.fetchone():
-            print("Student table doesn't exist! Creating now...")
+            logger.warning("Student table doesn't exist! Creating now...")
             cursor.execute('''
             CREATE TABLE IF NOT EXISTS student (
                 student_name TEXT NOT NULL,
@@ -326,11 +331,14 @@ def student_new():
             
             # Committing changes
             connection.commit()
-            print("Database update successful!")
+            logger.info(f"Student {student_id} registered successfully!")
             return redirect(url_for("student"))
+        except sqlite3.IntegrityError as e:
+            logger.error(f"Student registration failed - Duplicate record: {e}")
+            return render_template("student_new.html", error="This email or student ID already exists", firebase_config=firebase_config)
         except sqlite3.Error as e:
-            print(f"Database error: {e}")
-            # Add error handling here
+            logger.error(f"Database error during registration: {e}")
+            return render_template("student_new.html", error="Database error occurred", firebase_config=firebase_config)
         finally:
             # Closing the connection
             connection.close()
@@ -340,6 +348,9 @@ def student_new():
 
 @app.route("/teacher-new", endpoint="teacher-new", methods=["GET", "POST"])
 def teacher_new():
+    """Handle teacher registration. GET: Display form, POST: Process registration
+    Requires TEACHER_REGISTRATION_CODE for security
+    """
     if request.method == "POST":
         teacher_name = request.form.get("teacher_name")
         teacher_id = request.form.get("teacher_id")
@@ -349,7 +360,7 @@ def teacher_new():
         teacher_gender = request.form.get("teacher_gender")
         teacher_dept = request.form.get("teacher_dept")
 
-        print(f"Form data: {teacher_name}, {teacher_id}, {email}, {phone_number}, {teacher_gender}, {teacher_dept}")
+        logger.info(f"Teacher registration attempt: {teacher_id}")
 
         # Check for Teacher Code
         teacher_code = request.form.get("teacher_code")
@@ -357,8 +368,8 @@ def teacher_new():
         required_code = os.environ.get("TEACHER_REGISTRATION_CODE", "admin123")
         
         if teacher_code != required_code:
-            print("Invalid Teacher Code provided")
-            return render_template("teacher_new_2.html", error="Invalid Teacher Code. Registration denied.")
+            logger.warning(f"Invalid teacher code provided for: {teacher_id}")
+            return render_template("teacher_new.html", error="Invalid Teacher Code. Registration denied.")
 
                 # Connecting to the database
         connection = sqlite3.connect(DB_PATH)
@@ -367,7 +378,7 @@ def teacher_new():
         # Check if the teacher table exists
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='teacher'")
         if not cursor.fetchone():
-            print("Teacher table doesn't exist! Creating now...")
+            logger.warning("Teacher table doesn't exist! Creating now...")
             cursor.execute('''
             CREATE TABLE IF NOT EXISTS teacher (
                 teacher_name TEXT NOT NULL,
@@ -389,16 +400,20 @@ def teacher_new():
 
             # Committing changes
             connection.commit()
-            print("Database update successful!")
+            logger.info(f"Teacher {teacher_id} registered successfully!")
             return redirect(url_for("teacher"))
+        except sqlite3.IntegrityError as e:
+            logger.error(f"Teacher registration failed - Duplicate record: {e}")
+            return render_template("teacher_new.html", error="This email or teacher ID already exists")
         except sqlite3.Error as e:
-            print(f"Database error: {e}")
+            logger.error(f"Database error during teacher registration: {e}")
+            return render_template("teacher_new.html", error="Database error occurred")
 
         finally:
             # Closing the connection
             connection.close()
 
-    return render_template("teacher_new_2.html")
+    return render_template("teacher_new.html")
 
 
 @app.route("/teacher-achievements", endpoint="teacher-achievements")
@@ -778,9 +793,9 @@ def logout():
 
     
 if __name__ == "__main__":
+    logger.info("Starting Achievement Management System...")
     init_db()
-    # migrate_achievements_table()
-    add_teacher_id_column()
+    logger.info("Database initialized successfully")
     app.run(debug=True)
 
 
