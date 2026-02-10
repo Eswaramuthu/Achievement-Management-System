@@ -117,13 +117,19 @@
 
                     <div class="input-box">
                         <span class="details">Password</span>
-                        <input autocomplete="off" type="password" id="password" name="password"
-                            placeholder="Enter your Password" required>
+                        <div class="password-wrapper">
+                            <input autocomplete="off" type="password" id="password" name="password"
+                                placeholder="Enter your Password" required>
+                            <span class="toggle-password" onclick="togglePassword('password', this)">👁️</span>
+                        </div>
                     </div>
 
                     <div class="input-box">
                         <span class="details">Confirm Password</span>
-                        <input type="password" id="confirm-password" placeholder="Confirm your password" required>
+                        <div class="password-wrapper">
+                            <input type="password" id="confirm-password" placeholder="Confirm your password" required>
+                            <span class="toggle-password" onclick="togglePassword('confirm-password', this)">👁️</span>
+                        </div>
                         <small id="password-message" style="font-size: 14px;"></small>
                     </div>
 
