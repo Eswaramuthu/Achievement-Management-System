@@ -1,0 +1,9 @@
+# Python cache and virtualenv artifacts
+__pycache__/
+*.py[cod]
+venv/
+venv1/
+
+# Local runtime files
+instance/*.db
+*.db
