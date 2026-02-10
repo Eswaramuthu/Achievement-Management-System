@@ -9,6 +9,8 @@ import datetime
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
 
+ALLOWED_DEPARTMENTS = ("CSE", "IT", "AIDS", "ECE", "ME", "CE")
+
 
 # Define database path consistently
 DB_PATH = "C:\\Users\\Dell\\Downloads\\AMS-Achievement-Management-System-main\\AMS-Achievement-Management-System-main\\Achievement-Management-System\\ams.db"
@@ -139,7 +141,7 @@ def init_db():
             phone_number TEXT,
             password TEXT NOT NULL,
             student_gender TEXT,
-            student_dept TEXT
+            dept TEXT
         )
         ''')
 
@@ -328,7 +330,10 @@ def student_new():
         phone_number = request.form.get("phone_number")
         password = request.form.get("password")
         student_gender = request.form.get("student_gender")
-        student_dept = request.form.get("student_dept")
+        student_dept = request.form.get("dept") or request.form.get("student_dept")
+
+        if student_dept not in ALLOWED_DEPARTMENTS:
+            return render_template("student_new_2.html", error="Please select a valid department.")
 
         print(f"Form data: {student_name}, {student_id}, {email}, {phone_number}, {student_gender}, {student_dept}")
 
@@ -348,15 +353,20 @@ def student_new():
                 phone_number TEXT,
                 password TEXT NOT NULL,
                 student_gender TEXT,
-                student_dept TEXT
+                dept TEXT
             )
             ''')
             connection.commit()
+
+        # Keep compatibility with existing databases that use `student_dept`
+        cursor.execute("PRAGMA table_info(student)")
+        student_columns = {column[1] for column in cursor.fetchall()}
+        dept_column = "dept" if "dept" in student_columns else "student_dept"
         
         try:
             # Inserting the values into the student table
-            cursor.execute("""
-                INSERT INTO student (student_name, student_id, email, phone_number, password, student_gender, student_dept)
+            cursor.execute(f"""
+                INSERT INTO student (student_name, student_id, email, phone_number, password, student_gender, {dept_column})
                 VALUES (?, ?, ?, ?, ?, ?, ?)
                 """, (student_name, student_id, email, phone_number, password, student_gender, student_dept))
             
