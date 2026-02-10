@@ -7,3 +7,10 @@ venv1/
 # Local runtime files
 instance/*.db
 *.db
+/venv1
+/__pycache__
+/.env
+/*.db
+/instance/*
+.DS_Store
+*.pyc
