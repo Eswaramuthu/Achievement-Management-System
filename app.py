@@ -13,28 +13,32 @@ app.secret_key = secrets.token_hex(16)
 # Define database path consistently
 DB_PATH = "C:\\Users\\Dell\\Downloads\\AMS-Achievement-Management-System-main\\AMS-Achievement-Management-System-main\\Achievement-Management-System\\ams.db"
 
-# Add this function to your code
-def add_teacher_id_column():
-    try:
-        connection = sqlite3.connect(DB_PATH)
-        cursor = connection.cursor()
-        
-        # Check if teacher_id column exists in achievements table
-        cursor.execute("PRAGMA table_info(achievements)")
-        columns = cursor.fetchall()
-        column_names = [column[1] for column in columns]
-        
-        if 'teacher_id' not in column_names:
-            print("Adding teacher_id column to achievements table...")
-            # SQLite supports limited ALTER TABLE functionality
-            # We can add a column but not add constraints in the same statement
-            cursor.execute("ALTER TABLE achievements ADD COLUMN teacher_id TEXT DEFAULT 'unknown'")
-            connection.commit()
-            print("teacher_id column added successfully")
-        
-        connection.close()
-    except sqlite3.Error as e:
-        print(f"Error adding teacher_id column: {e}")
+def ensure_achievements_schema(connection):
+    """
+    Safely migrate the achievements table without deleting existing data.
+    Ensures required columns exist for dashboard queries and inserts.
+    """
+    cursor = connection.cursor()
+    cursor.execute("PRAGMA table_info(achievements)")
+    columns = cursor.fetchall()
+    column_names = [column[1] for column in columns]
+
+    if 'teacher_id' not in column_names:
+        print("Adding teacher_id column to achievements table...")
+        cursor.execute("ALTER TABLE achievements ADD COLUMN teacher_id TEXT DEFAULT 'unknown'")
+        print("teacher_id column added successfully")
+
+    if 'created_at' not in column_names:
+        print("Adding created_at column to achievements table...")
+        # Use a safe migration path for SQLite: add nullable column and backfill rows.
+        # This keeps all existing data intact.
+        cursor.execute("ALTER TABLE achievements ADD COLUMN created_at TEXT")
+        cursor.execute(
+            "UPDATE achievements SET created_at = datetime('now') WHERE created_at IS NULL"
+        )
+        print("created_at column added and backfilled successfully")
+
+    connection.commit()
 
 def migrate_achievements_table():
     connection = sqlite3.connect(DB_PATH)
@@ -230,9 +234,11 @@ def init_db():
             )
             ''')
 
-            migrate_achievements_table()
+            ensure_achievements_schema(connection)
             connection.commit()
             print("Created achievements table")
+        else:
+            ensure_achievements_schema(connection)
         connection.close()
         print(f"Database already exists at {DB_PATH}")
 
@@ -703,5 +709,4 @@ def all_achievements():
 if __name__ == "__main__":
     init_db()
     # migrate_achievements_table()
-    add_teacher_id_column()
     app.run(debug=True)
