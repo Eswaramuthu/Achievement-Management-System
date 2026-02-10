@@ -206,8 +206,7 @@ init_db()
 
 @app.route("/")
 def home():
-    """Display home page with navigation options"""
-    return render_template("home.html")
+    return render_template("index.html")
 
 
 @app.route("/student", methods=["GET", "POST"])
@@ -239,7 +238,7 @@ def student():
             session['student_dept'] = student_data[6]
 
             # Authentication successful - store student info in session
-            return redirect(url_for("student-dashboard"))
+            return redirect(url_for("student_dashboard"))
         else:
             # Authentication failed
             return render_template("student.html", error="Invalid credentials. Please try again.", firebase_config=firebase_config)
@@ -273,7 +272,7 @@ def teacher():
             session['teacher_dept'] = teacher_data[6]
 
             # Authentication successful
-            return redirect(url_for("teacher-dashboard"))
+            return redirect(url_for("teacher_dashboard"))
 
         else:
             # Authentication failed
