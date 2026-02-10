@@ -249,6 +249,11 @@ def home():
     return render_template("home.html")
 
 
+def has_student_session():
+    """Return True only for authenticated student sessions."""
+    return bool(session.get('logged_in') and session.get('student_id'))
+
+
 @app.route("/student", methods=["GET", "POST"])
 def student():
     if request.method == "POST":
@@ -580,7 +585,7 @@ def submit_achievements():
 @app.route("/student-achievements", endpoint="student-achievements")
 def student_achievements():
     # Check if user is logged in
-    if not session.get('logged_in'):
+    if not has_student_session():
         return redirect(url_for('student'))
 
     # Get the current user data from session
@@ -622,7 +627,7 @@ def student_achievements():
 
 @app.route("/student-achievements/<int:achievement_id>")
 def student_achievement_details(achievement_id):
-    if not session.get('logged_in'):
+    if not has_student_session():
         return redirect(url_for('student'))
 
     connection = sqlite3.connect(DB_PATH)
@@ -651,7 +656,7 @@ def student_achievement_details(achievement_id):
 
 @app.route("/student-achievements/<int:achievement_id>/download")
 def download_achievement_certificate(achievement_id):
-    if not session.get('logged_in'):
+    if not has_student_session():
         return redirect(url_for('student'))
 
     connection = sqlite3.connect(DB_PATH)
@@ -682,7 +687,7 @@ def download_achievement_certificate(achievement_id):
 
 @app.route("/student-achievements/export")
 def export_student_achievements():
-    if not session.get('logged_in'):
+    if not has_student_session():
         return redirect(url_for('student'))
 
     student_id = session.get('student_id')
@@ -727,7 +732,7 @@ def export_student_achievements():
 @app.route("/student-dashboard", endpoint="student-dashboard")
 def student_dashboard():
     # Check if user is logged in
-    if not session.get('logged_in'):
+    if not has_student_session():
         return redirect(url_for('student'))
 
     # Get the current user data from session
