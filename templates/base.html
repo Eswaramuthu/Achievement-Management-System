@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if title %}{{ title }}{% else %}Achievement Management System{% endif %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+</head>
+<body class="light-mode">
+    <!-- Header/Navbar -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h2>Achievement Management System</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#contact">Contact</a></li>
+                {% if session.get('student_id') %}
+                    <li><a href="{{ url_for('student_dashboard') }}">Dashboard</a></li>
+                {% elif session.get('teacher_id') %}
+                    <li><a href="{{ url_for('teacher_dashboard') }}">Dashboard</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('student') }}">Student Login</a></li>
+                    <li><a href="{{ url_for('teacher') }}">Teacher Login</a></li>
+                {% endif %}
+            </ul>
+            <div class="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <p>Achievement Management System helps students and teachers track academic achievements in one place.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="{{ url_for('home') }}">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Info</h3>
+                <p>Email: info@achievement-system.com</p>
+                <p>Phone: +1 (123) 456-7890</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Achievement Management System. All rights reserved. Developed at SRM Institute of Science and Technology.</p>
+        </div>
+    </footer>
+
+    <!-- Theme Toggle Button -->
+    <div class="toggle-container">
+        <button id="mode-toggle" class="theme-toggle">🌙</button>
+    </div>
+
+    <script>
+        // Theme toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('mode-toggle');
+            const body = document.body;
+            
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                body.classList.remove('light-mode');
+            } else {
+                body.classList.add('light-mode');
+            }
+            
+            themeToggle.addEventListener('click', function() {
+                body.classList.toggle('light-mode');
+                const isLightMode = body.classList.contains('light-mode');
+                localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+                
+                // Update icon
+                themeToggle.textContent = isLightMode ? '🌙' : '☀️';
+            });
+            
+            // Set initial icon based on theme
+            const isLightMode = body.classList.contains('light-mode');
+            themeToggle.textContent = isLightMode ? '🌙' : '☀️';
+        });
+        
+        // Mobile menu toggle
+        document.querySelector('.nav-toggle').addEventListener('click', function() {
+            document.querySelector('.nav-menu').classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
