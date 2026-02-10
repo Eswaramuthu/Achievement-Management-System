@@ -1,7 +1,38 @@
-/venv1
-/__pycache__
-/.env
-/*.db
-/instance/*
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+venv/
+env/
+.venv/
+.env
+
+# Flask & Database
+instance/
+.webassets-cache
+*.db
+*.sqlite3
+
+# Distribution / Packaging
+dist/
+build/
+*.egg-info/
+
+# IDEs and Editors
+.vscode/
+.idea/
 .DS_Store
-*.pyc
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+
+# Frontend (if applicable)
+node_modules/
+package-lock.json

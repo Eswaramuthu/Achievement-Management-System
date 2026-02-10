@@ -47,6 +47,20 @@ body {
   margin: 0 auto;
 }
 
+@media (max-width: 768px) {
+  .container {
+    padding: 20px;
+    border-radius: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 15px;
+    border-radius: 12px;
+  }
+}
+
 /* REMOVED unwanted red underline */
 .title::before {
   display: none;
@@ -317,6 +331,18 @@ body {
   text-align: center;
   max-width: 1200px;
   margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .features, .about, .faq, .contact, .stats {
+    padding: 3rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .features, .about, .faq, .contact, .stats {
+    padding: 2.5rem 1rem;
+  }
 }
 
 .features-grid {
@@ -602,6 +628,21 @@ body {
     max-width: 100%;
     padding: 0 1rem;
   }
+  .contact-info {
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+}
+
+/* Tablet Optimizations */
+@media (max-width: 992px) {
+  .input-box {
+    width: 100%;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 /* Stats Section */
@@ -675,5 +716,22 @@ body {
   .features, .about, .faq, .contact, .stats {
     padding: 2.5rem 1rem;
     max-width: 100%;
+  }
+  .features, .about, .faq, .contact, .stats {
+    padding: 2.5rem 1rem;
+    max-width: 100%;
+  }
+
+  /* Table Responsiveness */
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 20px;
+  }
+  
+  table {
+    width: 100%;
+    min-width: 600px; /* Ensure table doesn't squash too much */
   }
 }
