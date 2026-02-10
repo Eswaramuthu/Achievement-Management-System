@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Achievement Details</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body>
+  <div class="container" style="max-width: 800px; margin: 40px auto;">
+    <h1>{{ achievement.event_name }}</h1>
+    <p><strong>Type:</strong> {{ achievement.achievement_type }}</p>
+    <p><strong>Date:</strong> {{ achievement.achievement_date }}</p>
+    <p><strong>Organizer:</strong> {{ achievement.organizer }}</p>
+    <p><strong>Position:</strong> {{ achievement.position }}</p>
+    <p><strong>Description:</strong> {{ achievement.achievement_description or 'No description available.' }}</p>
+
+    {% if achievement.symposium_theme %}<p><strong>Symposium Theme:</strong> {{ achievement.symposium_theme }}</p>{% endif %}
+    {% if achievement.programming_language %}<p><strong>Programming Language:</strong> {{ achievement.programming_language }}</p>{% endif %}
+    {% if achievement.coding_platform %}<p><strong>Coding Platform:</strong> {{ achievement.coding_platform }}</p>{% endif %}
+    {% if achievement.paper_title %}<p><strong>Paper Title:</strong> {{ achievement.paper_title }}</p>{% endif %}
+    {% if achievement.journal_name %}<p><strong>Journal Name:</strong> {{ achievement.journal_name }}</p>{% endif %}
+    {% if achievement.conference_level %}<p><strong>Conference Level:</strong> {{ achievement.conference_level }}</p>{% endif %}
+    {% if achievement.conference_role %}<p><strong>Conference Role:</strong> {{ achievement.conference_role }}</p>{% endif %}
+    {% if achievement.team_size %}<p><strong>Team Size:</strong> {{ achievement.team_size }}</p>{% endif %}
+    {% if achievement.project_title %}<p><strong>Project Title:</strong> {{ achievement.project_title }}</p>{% endif %}
+    {% if achievement.database_type %}<p><strong>Database Type:</strong> {{ achievement.database_type }}</p>{% endif %}
+    {% if achievement.difficulty_level %}<p><strong>Difficulty Level:</strong> {{ achievement.difficulty_level }}</p>{% endif %}
+    {% if achievement.other_description %}<p><strong>Additional Details:</strong> {{ achievement.other_description }}</p>{% endif %}
+
+    <div style="margin-top: 20px; display:flex; gap:12px;">
+      {% if achievement.certificate_path %}
+        <a href="{{ url_for('download_achievement_certificate', achievement_id=achievement.id) }}">Download Certificate</a>
+      {% endif %}
+      <a href="{{ url_for('student-achievements') }}">Back to My Achievements</a>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,9 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, send_file, abort
 import sqlite3
 import os
 import secrets
 from werkzeug.utils import secure_filename
 import datetime
+import csv
+import io
 
 
 app = Flask(__name__)
@@ -582,12 +584,144 @@ def student_achievements():
         return redirect(url_for('student'))
 
     # Get the current user data from session
+    student_id = session.get('student_id')
     student_data = {
-        'id': session.get('student_id'),
+        'id': student_id,
         'name': session.get('student_name'),
         'dept': session.get('student_dept')
     }
-    return render_template("student_achievements_1.html", student=student_data)
+
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        SELECT id, achievement_type, event_name, achievement_date, organizer,
+               position, achievement_description, certificate_path
+        FROM achievements
+        WHERE student_id = ?
+        ORDER BY achievement_date DESC, id DESC
+        """,
+        (student_id,)
+    )
+    achievements = cursor.fetchall()
+    connection.close()
+
+    total_achievements = len(achievements)
+    first_positions = sum(1 for achievement in achievements if 'first' in (achievement['position'] or '').lower())
+
+    return render_template(
+        "student_achievements_1.html",
+        student=student_data,
+        achievements=achievements,
+        total_achievements=total_achievements,
+        first_positions=first_positions,
+    )
+
+
+@app.route("/student-achievements/<int:achievement_id>")
+def student_achievement_details(achievement_id):
+    if not session.get('logged_in'):
+        return redirect(url_for('student'))
+
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+    cursor.execute(
+        """
+        SELECT id, student_id, achievement_type, event_name, achievement_date, organizer,
+               position, achievement_description, certificate_path, symposium_theme,
+               programming_language, coding_platform, paper_title, journal_name,
+               conference_level, conference_role, team_size, project_title,
+               database_type, difficulty_level, other_description
+        FROM achievements
+        WHERE id = ? AND student_id = ?
+        """,
+        (achievement_id, session.get('student_id'))
+    )
+    achievement = cursor.fetchone()
+    connection.close()
+
+    if not achievement:
+        abort(404)
+
+    return render_template("student_achievement_details.html", achievement=achievement)
+
+
+@app.route("/student-achievements/<int:achievement_id>/download")
+def download_achievement_certificate(achievement_id):
+    if not session.get('logged_in'):
+        return redirect(url_for('student'))
+
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+    cursor.execute(
+        "SELECT certificate_path, event_name FROM achievements WHERE id = ? AND student_id = ?",
+        (achievement_id, session.get('student_id'))
+    )
+    achievement = cursor.fetchone()
+    connection.close()
+
+    if not achievement:
+        abort(404)
+
+    certificate_path = achievement['certificate_path']
+    if not certificate_path:
+        return redirect(url_for('student-achievements'))
+
+    file_path = os.path.join('static', certificate_path)
+    absolute_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), file_path)
+
+    if not os.path.exists(absolute_path):
+        abort(404)
+
+    return send_file(absolute_path, as_attachment=True)
+
+
+@app.route("/student-achievements/export")
+def export_student_achievements():
+    if not session.get('logged_in'):
+        return redirect(url_for('student'))
+
+    student_id = session.get('student_id')
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+    cursor.execute(
+        """
+        SELECT achievement_type, event_name, achievement_date, organizer,
+               position, achievement_description
+        FROM achievements
+        WHERE student_id = ?
+        ORDER BY achievement_date DESC, id DESC
+        """,
+        (student_id,)
+    )
+    achievements = cursor.fetchall()
+    connection.close()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Achievement Type", "Event Name", "Date", "Organizer", "Position", "Description"])
+    for achievement in achievements:
+        writer.writerow([
+            achievement['achievement_type'],
+            achievement['event_name'],
+            achievement['achievement_date'],
+            achievement['organizer'],
+            achievement['position'],
+            achievement['achievement_description'] or "",
+        ])
+
+    response = send_file(
+        io.BytesIO(output.getvalue().encode('utf-8')),
+        mimetype='text/csv',
+        as_attachment=True,
+        download_name=f"{student_id}_achievements.csv"
+    )
+    return response
 
 
 @app.route("/student-dashboard", endpoint="student-dashboard")
