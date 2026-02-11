@@ -328,41 +328,41 @@
             const themeToggle = document.getElementById('mode-toggle');
             const body = document.body;
 
-            if (!themeToggle) {
-                console.error('Theme toggle button not found!');
-                return;
-            }
+            // Theme toggle initialization (independent feature)
+            if (themeToggle) {
+                console.log('Theme toggle button found and initialized');
 
-            console.log('Theme toggle button found and initialized');
+                // Check for saved theme preference
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme === 'dark') {
+                    body.classList.remove('light-mode');
+                    body.classList.add('dark-mode');
+                } else {
+                    body.classList.remove('dark-mode');
+                    body.classList.add('light-mode');
+                }
 
-            // Check for saved theme preference
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                body.classList.remove('light-mode');
-                body.classList.add('dark-mode');
-            } else {
-                body.classList.remove('dark-mode');
-                body.classList.add('light-mode');
-            }
-
-            // Set initial icon based on theme
-            const isLightMode = body.classList.contains('light-mode');
-            themeToggle.textContent = isLightMode ? '🌙' : '☀️';
-            console.log('Initial theme set to:', isLightMode ? 'light' : 'dark');
-
-            themeToggle.addEventListener('click', function() {
-                console.log('Theme toggle clicked');
-                body.classList.toggle('light-mode');
-                body.classList.toggle('dark-mode');
+                // Set initial icon based on theme
                 const isLightMode = body.classList.contains('light-mode');
-                localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
-
-                // Update icon
                 themeToggle.textContent = isLightMode ? '🌙' : '☀️';
-                console.log('Theme changed to:', isLightMode ? 'light' : 'dark');
-            });
+                console.log('Initial theme set to:', isLightMode ? 'light' : 'dark');
 
-            // Mobile menu toggle
+                themeToggle.addEventListener('click', function() {
+                    console.log('Theme toggle clicked');
+                    body.classList.toggle('light-mode');
+                    body.classList.toggle('dark-mode');
+                    const isLightMode = body.classList.contains('light-mode');
+                    localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+
+                    // Update icon
+                    themeToggle.textContent = isLightMode ? '🌙' : '☀️';
+                    console.log('Theme changed to:', isLightMode ? 'light' : 'dark');
+                });
+            } else {
+                console.error('Theme toggle button not found!');
+            }
+
+            // Mobile menu toggle (independent feature)
             const navToggle = document.querySelector('.nav-toggle');
             const navMenu = document.querySelector('.nav-menu');
 

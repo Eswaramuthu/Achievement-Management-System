@@ -34,6 +34,8 @@ def init_db(db_path: str = None) -> None:
     """
     if db_path is None:
         db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ams.db")
+    
+    connection = None
     try:
         connection = sqlite3.connect(db_path)
         cursor = connection.cursor()
@@ -93,10 +95,13 @@ def init_db(db_path: str = None) -> None:
         """)
 
         connection.commit()
-        connection.close()
         logger.info("Database initialized successfully")
     except sqlite3.Error as e:
         logger.error(f"Database initialization error: {e}")
+    finally:
+        if connection:
+            connection.close()
+
 
 def handle_registration(
     user_type: str, 
