@@ -20,8 +20,8 @@
             </div>
             <ul class="nav-menu">
                 <li><a href="{{ url_for('home') }}">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#features">Features</a></li>
+                <li><a href="{{ url_for('home') }}#about">About</a></li>
+                <li><a href="{{ url_for('home') }}#features">Features</a></li>
                 <li><a href="{{ url_for('home') }}#contact">Contact</a></li>
                 {% if session.get('student_id') %}
                 <li><a href="{{ url_for('student_dashboard') }}">Dashboard</a></li>
