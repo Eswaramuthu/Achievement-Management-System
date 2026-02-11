@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Contact Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Get in Touch</h1>
+        <p>Have questions or suggestions? We'd love to hear from you. Fill out the form below and we'll get back to you
+            as soon as possible.</p>
+    </div>
+</section>
+
+<!-- Contact Form Section -->
+<section class="contact-section">
+    <div class="container">
+        <div class="contact-grid">
+            <!-- Contact Form -->
+            <div class="contact-form-container">
+                <h2>Send us a Message</h2>
+                <form class="contact-form" id="contactForm" method="POST" action="#">
+                    <div class="form-group">
+                        <label for="name">Full Name *</label>
+                        <input type="text" id="name" name="name" required placeholder="Enter your full name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" required placeholder="your.email@example.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subject">Subject *</label>
+                        <input type="text" id="subject" name="subject" required placeholder="What is this regarding?">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Message *</label>
+                        <textarea id="message" name="message" rows="6" required
+                            placeholder="Type your message here..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </form>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="contact-info">
+                <h2>Contact Information</h2>
+
+                <div class="info-item">
+                    <h3>📧 Email</h3>
+                    <p>info@achievement-system.com</p>
+                    <p>support@achievement-system.com</p>
+                </div>
+
+                <div class="info-item">
+                    <h3>📞 Phone</h3>
+                    <p>+1 (123) 456-7890</p>
+                    <p>Monday - Friday, 9:00 AM - 6:00 PM</p>
+                </div>
+
+                <div class="info-item">
+                    <h3>🏫 Address</h3>
+                    <p>SRM Institute of Science and Technology</p>
+                    <p>Kattankulathur, Tamil Nadu</p>
+                    <p>India - 603203</p>
+                </div>
+
+                <div class="info-item">
+                    <h3>⏰ Office Hours</h3>
+                    <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
+                    <p>Saturday: 10:00 AM - 2:00 PM</p>
+                    <p>Sunday: Closed</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="faq-section">
+    <div class="container">
+        <h2 class="title">Frequently Asked Questions</h2>
+        <div class="faq-grid">
+            <div class="faq-item">
+                <h3>How do I register as a student?</h3>
+                <p>Click on "Student Login" and then select "New Student Registration" to create your account.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>How can teachers record achievements?</h3>
+                <p>Teachers can log in and use the "Submit Achievement" feature to record student accomplishments.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>What file formats are supported for certificates?</h3>
+                <p>We support PDF, JPG, PNG, and JPEG formats for certificate uploads.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>How do I reset my password?</h3>
+                <p>Contact your system administrator or use the password reset option on the login page.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Contact Section Styles */
+    .contact-section {
+        padding: 60px 20px;
+        background-color: var(--card-bg, #ffffff);
+    }
+
+    .contact-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .contact-form-container {
+        background: var(--primary-bg, #f8f9fa);
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .contact-form-container h2 {
+        margin-bottom: 30px;
+        color: var(--text-primary, #333);
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--text-primary, #333);
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        font-family: 'Poppins', sans-serif;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #4a90e2;
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    .contact-info {
+        padding: 20px;
+    }
+
+    .contact-info h2 {
+        margin-bottom: 30px;
+        color: var(--text-primary, #333);
+    }
+
+    .info-item {
+        margin-bottom: 30px;
+        padding: 20px;
+        background: var(--primary-bg, #f8f9fa);
+        border-radius: 8px;
+        border-left: 4px solid #4a90e2;
+    }
+
+    .info-item h3 {
+        margin-bottom: 10px;
+        color: var(--text-primary, #333);
+        font-size: 18px;
+    }
+
+    .info-item p {
+        margin: 5px 0;
+        color: var(--text-secondary, #666);
+    }
+
+    /* FAQ Section */
+    .faq-section {
+        padding: 60px 20px;
+        background-color: var(--primary-bg, #f8f9fa);
+    }
+
+    .faq-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        max-width: 1200px;
+        margin: 0 auto;
+        margin-top: 40px;
+    }
+
+    .faq-item {
+        background: var(--card-bg, #ffffff);
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .faq-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .faq-item h3 {
+        margin-bottom: 12px;
+        color: var(--text-primary, #333);
+        font-size: 16px;
+    }
+
+    .faq-item p {
+        color: var(--text-secondary, #666);
+        line-height: 1.6;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .contact-grid {
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .contact-form-container {
+            padding: 25px;
+        }
+
+        .faq-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Dark mode support */
+    body:not(.light-mode) .contact-section {
+        background-color: #1a1a1a;
+    }
+
+    body:not(.light-mode) .contact-form-container,
+    body:not(.light-mode) .info-item,
+    body:not(.light-mode) .faq-item {
+        background-color: #2a2a2a;
+    }
+
+    body:not(.light-mode) .form-group input,
+    body:not(.light-mode) .form-group textarea {
+        background-color: #1a1a1a;
+        border-color: #444;
+        color: #e0e0e0;
+    }
+
+    body:not(.light-mode) .form-group label,
+    body:not(.light-mode) .contact-info h2,
+    body:not(.light-mode) .contact-form-container h2,
+    body:not(.light-mode) .info-item h3,
+    body:not(.light-mode) .faq-item h3 {
+        color: #e0e0e0;
+    }
+
+    body:not(.light-mode) .info-item p,
+    body:not(.light-mode) .faq-item p {
+        color: #b0b0b0;
+    }
+
+    body:not(.light-mode) .faq-section {
+        background-color: #0f0f0f;
+    }
+</style>
+
+<script>
+    document.getElementById('contactForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        // Get form values
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const subject = document.getElementById('subject').value;
+        const message = document.getElementById('message').value;
+
+        // For now, just show a success message
+        // In a real implementation, this would send data to the backend
+        alert('Thank you for your message, ' + name + '! We will get back to you shortly at ' + email);
+
+        // Reset form
+        this.reset();
+    });
+</script>
+
+{% endblock %}

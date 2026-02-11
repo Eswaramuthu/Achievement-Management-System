@@ -207,6 +207,11 @@ def home():
     return render_template("index.html")
 
 
+@app.route("/contact")
+def contact():
+    return render_template("contact.html")
+
+
 @app.route("/student", methods=["GET", "POST"])
 def student():
     firebase_config = get_firebase_config()
