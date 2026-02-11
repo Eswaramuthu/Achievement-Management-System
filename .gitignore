@@ -5,3 +5,4 @@
 /instance/*
 .DS_Store
 *.pyc
+ams.db
