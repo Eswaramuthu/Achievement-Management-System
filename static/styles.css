@@ -677,3 +677,49 @@ body {
     max-width: 100%;
   }
 }
+.achievement-card {
+  background-color: #1e1e1e;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 15px;
+  box-shadow: 0 0 12px rgba(255, 0, 0, 0.3);
+  border: 1px solid #333;
+}
+.achievement-box {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 40px;
+  background-color: #1c1c1c;
+  border-radius: 15px;
+  box-shadow: 0 0 12px rgba(255, 0, 0, 0.3);
+  border: 1px solid #333;
+  color: #fff;
+}
+
+.achievement-box + .faq-section {
+  margin-top: 40px;
+  padding-top: 20px;
+}
+.dashboard-box{
+  max-width: 1000px;
+  margin-top:10px;
+  margin-bottom:20px;
+  padding:40px;
+  background-color: #1c1c1c;
+  border-radius: 15px;
+  box-shadow: 0 0 12px rgba(255, 0, 0, 0.3);
+  border: 1px solid #333;
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .achievement-box {
+    margin: 24px auto;
+    padding: 24px;
+  }
+
+  .achievement-box + .faq-section {
+    margin-top: 24px;
+    padding-top: 16px;
+  }
+}
