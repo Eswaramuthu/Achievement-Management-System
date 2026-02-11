@@ -250,10 +250,13 @@
                     <li><a href="{{ url_for('teacher') }}">Teacher Login</a></li>
                 {% endif %}
             </ul>
-            <div class="nav-toggle">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
+            <div class="nav-actions">
+                <button id="mode-toggle" class="theme-toggle">🌙</button>
+                <div class="nav-toggle">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
             </div>
         </nav>
     </header>
@@ -319,11 +322,6 @@
         </div>
     </div>
 </footer>
-    <!-- Theme Toggle Button -->
-    <div class="toggle-container">
-        <button id="mode-toggle" class="theme-toggle">🌙</button>
-    </div>
-
     <script>
         // Theme toggle functionality
         document.addEventListener('DOMContentLoaded', function() {
