@@ -1,4 +1,5 @@
-Flask 
+Flask
 Flask_SQLAlchemy
 python-dotenv
 pytest
+pytest-flask

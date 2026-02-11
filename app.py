@@ -235,7 +235,7 @@ def student():
             session['student_dept'] = student_data[6]
 
             # Authentication successful - store student info in session
-            return redirect(url_for("student_dashboard"))
+            return redirect(url_for("student-dashboard"))
         else:
             # Authentication failed
             return render_template("student.html", error="Invalid credentials. Please try again.", firebase_config=firebase_config)
