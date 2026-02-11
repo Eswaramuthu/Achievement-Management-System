@@ -1,68 +1,72 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Achievement Management System</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-  <script src="{{ url_for('static', filename = 'script.js') }}">
-   
+{% extends "base.html" %}
 
-  </script>
-  <style>
-    .faq-answer {
-  display: none;
-}
-.faq-answer.open {
-  display: block;
-}
+{% block content %}
 
-  </style>
-</head>
-<body>
-  <header>
-  <nav>
-    <ul>
-      <li><a href="#faq">FAQ</a></li>
-    </ul>
-  </nav>
-</header>
-
-<section id="faq">
-  <h2>Frequently Asked Questions</h2>
-
-  <div class="faq-item">
-    <button class="faq-question">What is this project about?</button>
-    <div class="faq-answer">
-      <p>This project helps users understand and navigate the platform easily.</p>
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Welcome to Achievement Management System</h1>
+        <p>
+            A centralized platform where students and teachers track academic achievements in one place.
+            Students view their accomplishments, teachers record them, and everyone gets a clear picture
+            of academic progress — all automated and organized.
+        </p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('student') }}" class="btn btn-primary">Student Login</a>
+            <a href="{{ url_for('teacher') }}" class="btn btn-secondary">Teacher Login</a>
+        </div>
     </div>
-  </div>
-
-  <div class="faq-item">
-    <button class="faq-question">How can I contribute?</button>
-    <div class="faq-answer">
-      <p>You can contribute via issues, pull requests, or documentation.</p>
-    </div>
-  </div>
 </section>
 
-
-
-  <div class="toggle-container">
-    <button id="mode-toggle">Dark Mode 🌙</button>
-  </div>
-
-  <div class="container home-container">
-    <div class="title">Achievement Management System</div>
-    <div class="content">
-      <div class="welcome-text">
-        <p>Welcome to the Achievement Management System. Please select your role to continue.</p>
-      </div>
-      <div class="login-options">
-        <a href="{{ url_for('student') }}" class="login-button student">Student Login</a>
-        <a href="{{ url_for('teacher') }}" class="login-button teacher">Teacher Login</a>
-      </div>
+<!-- Features Section -->
+<section id="features" class="features">
+    <div class="container">
+        <h2 class="title">Key Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>Student Dashboard</h3>
+                <p>View all achievements at a glance with analytics and filtering options.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Teacher Management</h3>
+                <p>Quick entry forms for recording achievements with auto-complete functionality.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Certificate Management</h3>
+                <p>Upload and download certificates in various formats.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Analytics Dashboard</h3>
+                <p>Visual representation of achievement metrics.</p>
+            </div>
+        </div>
     </div>
-  </div>
-</body>
-</html>
+</section>
+
+<!-- FAQ Section (YOUR CONTRIBUTION – CORRECTLY MERGED) -->
+<section id="faq" class="faq">
+    <div class="container">
+        <h2 class="title">Frequently Asked Questions</h2>
+
+        <div class="faq-item">
+            <button class="faq-question">What is this project about?</button>
+            <div class="faq-answer">
+                <p>This project helps users understand and navigate the platform easily.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question">How can I contribute?</button>
+            <div class="faq-answer">
+                <p>You can contribute via issues, pull requests, or documentation.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Dark / Light Mode Toggle -->
+<div class="toggle-container">
+    <button id="mode-toggle">Dark Mode 🌙</button>
+</div>
+
+{% endblock %}

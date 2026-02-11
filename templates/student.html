@@ -6,11 +6,153 @@
   <title>Student Login - Achievement Management System</title>
   <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
   <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+  <style>
+    .google-signin-container {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #ddd;
+    }
+    .signin-divider {
+      text-align: center;
+      margin: 15px 0;
+      position: relative;
+      font-size: 12px;
+      color: #999;
+    }
+    .signin-divider::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 100%;
+      height: 1px;
+      background: #ddd;
+    }
+    .signin-divider span {
+      background: white;
+      padding: 0 8px;
+      position: relative;
+      display: inline-block;
+    }
+    .google-signin-btn {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background-color 0.2s, box-shadow 0.2s;
+    }
+    .google-signin-btn:hover {
+      background-color: #f8f8f8;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .google-signin-btn:active {
+      background-color: #f0f0f0;
+    }
+    .google-signin-btn img {
+      width: 18px;
+      height: 18px;
+    }
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    /* ===== Theme Toggle (Top Right) ===== */
+    .theme-toggle {
+      position: fixed;
+      top: 16px;
+      right: 20px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: none;
+      background: #ffffff;
+      color: #000;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 9999;
+    }
+
+    body:not(.light-mode) .theme-toggle {
+      background: #1f1f1f;
+      color: #fff;
+    }
+
+    /* ===== Auth Links Section ===== */
+    .auth-links {
+      margin-top: 22px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Register CTA (secondary action) */
+    .register-cta {
+      font-size: 14px;
+      color: #d10000;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .register-cta:hover {
+      text-decoration: underline;
+    }
+
+    /* Back to Home (tertiary navigation) */
+    .back-home {
+      font-size: 13px;
+      color: #666;
+      text-decoration: none;
+    }
+
+    .back-home:hover {
+      text-decoration: underline;
+    }
+
+    /* ===== Password visibility toggle ===== */
+    .password-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .password-wrapper input[type="password"],
+    .password-wrapper input[type="text"] {
+      width: 100%;
+      padding-right: 40px; 
+    }
+
+    .password-toggle-btn {
+      position: absolute;
+      right: 10px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: #fff;
+    }
+
+    .password-toggle-btn:focus {
+      outline: none;
+    }
+  </style>
 </head>
 <body>
-  <div class="toggle-container">
-    <button id="mode-toggle">Dark Mode 🌙</button>
-  </div>
+  <button id="mode-toggle" class="theme-toggle" title="Toggle theme"></button>
 
   <div class="container login-container">
     <div class="title">Student Login</div>
@@ -21,9 +163,28 @@
             <span class="details">Student ID</span>
             <input autocomplete="off" autofocus type="text" name="sname" placeholder="Enter your Student ID" required />
           </div>
+
+          <!-- Password with visibility toggle -->
           <div class="input-box full-width">
             <span class="details">Password</span>
-            <input autocomplete="off" autofocus type="password" name="password" placeholder="Enter your password" required />
+            <div class="password-wrapper">
+              <input
+                autocomplete="off"
+                type="password"
+                name="password"
+                id="student-login-password"
+                placeholder="Enter your password"
+                required
+              />
+              <button
+                type="button"
+                class="password-toggle-btn"
+                aria-label="Show password"
+                data-target="student-login-password"
+              >
+                👁
+              </button>
+            </div>
           </div>
         </div>
 
@@ -37,13 +198,95 @@
           <input type="submit" value="Login" />
         </div>
       </form>
-      <div class="register-link">
-        <p>New student? <a href="{{ url_for('student_new') }}">Register here</a></p>
+
+      <!-- Firebase Google Sign-In Option -->
+      <div class="google-signin-container">
+        <div class="signin-divider">
+          <span>OR</span>
+        </div>
+        <button type="button" id="firebaseSignInBtn" class="google-signin-btn">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+          Sign in with Google
+        </button>
       </div>
-      <div class="back-link">
-        <a href="{{ url_for('home') }}">Back to Home</a>
+
+      <div class="auth-links">
+        <a class="register-cta" href="{{ url_for('student_new') }}">
+          New student? Register here
+        </a>
+
+        <a class="back-home" href="{{ url_for('home') }}">
+          ← Back to Home
+        </a>
       </div>
+
     </div>
   </div>
+
+  <script>
+    /**
+     * Firebase Configuration Injection - Student Login Page
+     * IMPORTANT: This passes the Firebase config from the server (app.py)
+     * loaded from environment variables (.env file)
+     */
+    window.FIREBASE_CONFIG = {
+      apiKey: "{{ firebase_config['apiKey'] }}",
+      authDomain: "{{ firebase_config['authDomain'] }}",
+      databaseURL: "{{ firebase_config.get('databaseURL', '') }}",
+      projectId: "{{ firebase_config['projectId'] }}",
+      storageBucket: "{{ firebase_config.get('storageBucket', '') }}",
+      messagingSenderId: "{{ firebase_config.get('messagingSenderId', '') }}",
+      appId: "{{ firebase_config['appId'] }}",
+      measurementId: "{{ firebase_config.get('measurementId', '') }}"
+    };
+    console.log("✅ Firebase config injected from server");
+  </script>
+
+  <!-- Firebase SDK Initialization (ES Module) -->
+  <script type="module">
+    // Import Firebase initialization module
+    import { signInWithGoogle } from "{{ url_for('static', filename='js/firebase-init.js') }}";
+
+    /**
+     * Handle Firebase Google Sign-In Button Click
+     */
+    document.getElementById('firebaseSignInBtn').addEventListener('click', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('firebaseSignInBtn');
+      btn.classList.add('loading');
+      btn.disabled = true;
+
+      try {
+        await signInWithGoogle();
+      } catch (error) {
+        console.error('❌ Sign-in error:', error);
+        alert('Sign-in failed: ' + (error.message || 'Please try again'));
+        btn.classList.remove('loading');
+        btn.disabled = false;
+      }
+    });
+
+    console.log("✅ Firebase Google Sign-In initialized on Student Login page");
+  </script>
+
+  <!-- Password visibility toggle logic  -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggleButtons = document.querySelectorAll('.password-toggle-btn');
+
+      toggleButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const targetId = btn.getAttribute('data-target');
+          const input = document.getElementById(targetId);
+          if (!input) return;
+
+          const isPassword = input.type === 'password';
+          input.type = isPassword ? 'text' : 'password';
+          btn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+          btn.textContent = isPassword ? '🙈' : '👁';
+        });
+      });
+    });
+  </script>
 </body>
 </html>
