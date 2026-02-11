@@ -6,6 +6,228 @@
     <title>{% if title %}{{ title }}{% else %}Achievement Management System{% endif %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<style>
+    /* Footer Styles */
+    .footer {
+        background-color: var(--footer-bg, #2c3e50);
+        color: var(--footer-text, #ecf0f1);
+        padding: 3rem 0 0;
+        margin-top: 3rem;
+        font-size: 0.95rem;
+    }
+
+    .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+    }
+
+    .footer-section h3 {
+        color: var(--footer-heading, #fff);
+        margin-bottom: 1.5rem;
+        font-size: 1.2rem;
+        position: relative;
+        padding-bottom: 0.75rem;
+    }
+
+    .footer-section h3::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 50px;
+        height: 2px;
+        background-color: var(--primary-color, #3498db);
+    }
+
+    .footer-section p {
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+
+    .footer-section ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .footer-section ul li {
+        margin-bottom: 0.75rem;
+    }
+
+    .footer-section ul li a {
+        color: var(--footer-link, #bdc3c7);
+        text-decoration: none;
+        transition: color 0.3s ease, padding-left 0.3s ease;
+        display: flex;
+        align-items: center;
+    }
+
+    .footer-section ul li a:hover {
+        color: var(--primary-color, #3498db);
+        padding-left: 5px;
+    }
+
+    .footer-section ul li i {
+        margin-right: 8px;
+        font-size: 0.8rem;
+        color: var(--primary-color, #3498db);
+    }
+
+    .contact-info p {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .contact-info i {
+        margin-right: 10px;
+        color: var(--primary-color, #3498db);
+        margin-top: 4px;
+    }
+
+    .social-links {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .social-links a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        color: var(--footer-text, #ecf0f1);
+        transition: all 0.3s ease;
+    }
+
+    .social-links a:hover {
+        background-color: var(--primary-color, #3498db);
+        color: white;
+        transform: translateY(-3px);
+    }
+
+    .newsletter-form .form-group {
+        display: flex;
+        margin-top: 1rem;
+    }
+
+    .newsletter-form input {
+        flex: 1;
+        padding: 0.75rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 4px 0 0 4px;
+        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--footer-text, #ecf0f1);
+    }
+
+    .newsletter-form input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .btn-subscribe {
+        background-color: var(--primary-color, #3498db);
+        color: white;
+        border: none;
+        padding: 0 1.25rem;
+        border-radius: 0 4px 4px 0;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-subscribe:hover {
+        background-color: var(--primary-dark, #2980b9);
+    }
+
+    .footer-bottom {
+        text-align: center;
+        padding: 1.5rem;
+        margin-top: 3rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 0.85rem;
+        color: var(--footer-text-muted, #95a5a6);
+    }
+
+    .footer-links {
+        margin-top: 1rem;
+    }
+
+    .footer-links a {
+        color: var(--footer-link, #bdc3c7);
+        text-decoration: none;
+        margin: 0 0.5rem;
+        transition: color 0.3s ease;
+    }
+
+    .footer-links a:hover {
+        color: var(--primary-color, #3498db);
+    }
+
+    .footer-links span {
+        color: var(--footer-text-muted, #95a5a6);
+    }
+
+    /* Dark mode adjustments */
+    .dark-mode .footer {
+        --footer-bg: #1a252f;
+        --footer-text: #ecf0f1;
+        --footer-heading: #fff;
+        --footer-link: #bdc3c7;
+        --footer-text-muted: #95a5a6;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .footer-content {
+            grid-template-columns: 1fr;
+            gap: 2.5rem;
+        }
+
+        .footer-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-section:not(:last-child) {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 2rem;
+        }
+    }
+</style>
+
+<script>
+    // Newsletter form submission
+    document.addEventListener('DOMContentLoaded', function() {
+        const newsletterForm = document.querySelector('.newsletter-form');
+        if (newsletterForm) {
+            newsletterForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = this.querySelector('input[type="email"]').value;
+                
+                // Here you would typically send this to your server
+                console.log('Subscribing email:', email);
+                
+                // Show success message
+                if (window.formHandler) {
+                    window.formHandler.showNotification(
+                        'Success!', 
+                        'Thank you for subscribing to our newsletter!', 
+                        'success'
+                    );
+                }
+                
+                // Reset form
+                this.reset();
+            });
+        }
+    });
+</script>
 </head>
 <body class="light-mode">
     <!-- Header/Navbar -->
@@ -20,7 +242,7 @@
                 <li><a href="#features">Features</a></li>
                 <li><a href="#contact">Contact</a></li>
                 {% if session.get('student_id') %}
-                    <li><a href="{{ url_for('student_dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ url_for('student-dashboard') }}">Dashboard</a></li>
                 {% elif session.get('teacher_id') %}
                     <li><a href="{{ url_for('teacher_dashboard') }}">Dashboard</a></li>
                 {% else %}
@@ -28,10 +250,13 @@
                     <li><a href="{{ url_for('teacher') }}">Teacher Login</a></li>
                 {% endif %}
             </ul>
-            <div class="nav-toggle">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
+            <div class="nav-actions">
+                <button id="mode-toggle" class="theme-toggle">🌙</button>
+                <div class="nav-toggle">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
             </div>
         </nav>
     </header>
@@ -42,68 +267,111 @@
     </main>
 
     <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>About Us</h3>
-                <p>Achievement Management System helps students and teachers track academic achievements in one place.</p>
-            </div>
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <ul>
-                    <li><a href="{{ url_for('home') }}">Home</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Contact Info</h3>
-                <p>Email: info@achievement-system.com</p>
-                <p>Phone: +1 (123) 456-7890</p>
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3>About Us</h3>
+            <p>Achievement Management System helps students and teachers track academic achievements in one place.</p>
+            <div class="social-links">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
             </div>
         </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 Achievement Management System. All rights reserved. Developed at SRM Institute of Science and Technology.</p>
+        <div class="footer-section">
+            <h3>Quick Links</h3>
+            <ul>
+                <li><a href="{{ url_for('home') }}"><i class="fas fa-chevron-right"></i> Home</a></li>
+                <li><a href="#about"><i class="fas fa-chevron-right"></i> About</a></li>
+                <li><a href="#features"><i class="fas fa-chevron-right"></i> Features</a></li>
+                <li><a href="#contact"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                {% if not (session.get('student_id') or session.get('teacher_id')) %}
+                <li><a href="{{ url_for('student') }}"><i class="fas fa-chevron-right"></i> Student Login</a></li>
+                <li><a href="{{ url_for('teacher') }}"><i class="fas fa-chevron-right"></i> Teacher Login</a></li>
+                {% endif %}
+            </ul>
         </div>
-    </footer>
-
-    <!-- Theme Toggle Button -->
-    <div class="toggle-container">
-        <button id="mode-toggle" class="theme-toggle">🌙</button>
+        <div class="footer-section">
+            <h3>Contact Info</h3>
+            <div class="contact-info">
+                <p><i class="fas fa-envelope"></i> info@achievement-system.com</p>
+                <p><i class="fas fa-phone"></i> +1 (123) 456-7890</p>
+                <p><i class="fas fa-map-marker-alt"></i> SRM Institute of Science and Technology, Kattankulathur, India</p>
+            </div>
+        </div>
+        <div class="footer-section">
+            <h3>Newsletter</h3>
+            <p>Subscribe to our newsletter for the latest updates.</p>
+            <form class="newsletter-form">
+                <div class="form-group">
+                    <input type="email" placeholder="Your email address" required>
+                    <button type="submit" class="btn-subscribe">Subscribe</button>
+                </div>
+            </form>
+        </div>
     </div>
-
+    <div class="footer-bottom">
+        <p>&copy; 2026 Achievement Management System. All rights reserved. Developed at SRM Institute of Science and Technology.</p>
+        <div class="footer-links">
+            <a href="/privacy-policy">Privacy Policy</a>
+            <span>|</span>
+            <a href="/terms">Terms of Service</a>
+            <span>|</span>
+            <a href="/sitemap">Sitemap</a>
+        </div>
+    </div>
+</footer>
     <script>
         // Theme toggle functionality
         document.addEventListener('DOMContentLoaded', function() {
             const themeToggle = document.getElementById('mode-toggle');
             const body = document.body;
-            
-            // Check for saved theme preference
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                body.classList.remove('light-mode');
-            } else {
-                body.classList.add('light-mode');
-            }
-            
-            themeToggle.addEventListener('click', function() {
-                body.classList.toggle('light-mode');
+
+            // Theme toggle initialization (independent feature)
+            if (themeToggle) {
+                console.log('Theme toggle button found and initialized');
+
+                // Check for saved theme preference
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme === 'dark') {
+                    body.classList.remove('light-mode');
+                    body.classList.add('dark-mode');
+                } else {
+                    body.classList.remove('dark-mode');
+                    body.classList.add('light-mode');
+                }
+
+                // Set initial icon based on theme
                 const isLightMode = body.classList.contains('light-mode');
-                localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
-                
-                // Update icon
                 themeToggle.textContent = isLightMode ? '🌙' : '☀️';
-            });
-            
-            // Set initial icon based on theme
-            const isLightMode = body.classList.contains('light-mode');
-            themeToggle.textContent = isLightMode ? '🌙' : '☀️';
-        });
-        
-        // Mobile menu toggle
-        document.querySelector('.nav-toggle').addEventListener('click', function() {
-            document.querySelector('.nav-menu').classList.toggle('active');
+                console.log('Initial theme set to:', isLightMode ? 'light' : 'dark');
+
+                themeToggle.addEventListener('click', function() {
+                    console.log('Theme toggle clicked');
+                    body.classList.toggle('light-mode');
+                    body.classList.toggle('dark-mode');
+                    const isLightMode = body.classList.contains('light-mode');
+                    localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+
+                    // Update icon
+                    themeToggle.textContent = isLightMode ? '🌙' : '☀️';
+                    console.log('Theme changed to:', isLightMode ? 'light' : 'dark');
+                });
+            } else {
+                console.error('Theme toggle button not found!');
+            }
+
+            // Mobile menu toggle (independent feature)
+            const navToggle = document.querySelector('.nav-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+
+            if (navToggle && navMenu) {
+                navToggle.addEventListener('click', function() {
+                    navMenu.classList.toggle('active');
+                    console.log('Mobile menu toggled');
+                });
+            }
         });
     </script>
 </body>

@@ -1,4 +1,4 @@
 Flask 
 Flask_SQLAlchemy
 python-dotenv
-pytest
+pytestfirebase-admin
