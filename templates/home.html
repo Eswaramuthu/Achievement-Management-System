@@ -6,7 +6,11 @@
 <section class="hero">
     <div class="hero-content">
         <h1>Welcome to Achievement Management System</h1>
-        <p>A centralized platform where students and teachers track academic achievements in one place. Students view their accomplishments, teachers record them, and everyone gets a clear picture of academic progress — all automated and organized.</p>
+        <p>
+            A centralized platform where students and teachers track academic achievements in one place.
+            Students view their accomplishments, teachers record them, and everyone gets a clear picture
+            of academic progress — all automated and organized.
+        </p>
         <div class="hero-buttons">
             <a href="{{ url_for('student') }}" class="btn btn-primary">Student Login</a>
             <a href="{{ url_for('teacher') }}" class="btn btn-secondary">Teacher Login</a>
@@ -29,70 +33,40 @@
             </div>
             <div class="feature-card">
                 <h3>Certificate Management</h3>
-                <p>Upload and download certificates in various formats (PDF, JPG, PNG).</p>
+                <p>Upload and download certificates in various formats.</p>
             </div>
             <div class="feature-card">
                 <h3>Analytics Dashboard</h3>
-                <p>Visual representation of achievement metrics by type, year, and position.</p>
+                <p>Visual representation of achievement metrics.</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- About Section -->
-<section id="about" class="about">
-    <div class="container">
-        <h2 class="title">About Our System</h2>
-        <div class="about-content">
-            <div class="about-text">
-                <p>Academic achievements are scattered everywhere — certificates in folders, emails buried in inboxes, paper records collecting dust. Students struggle to showcase their accomplishments during placements or applications. Teachers waste time managing spreadsheets and physical documents. Nobody has a clear, organized view of what students have actually achieved.</p>
-                <p>Our Achievement Management System centralizes everything. Students see all their achievements in one dashboard with analytics. Teachers input achievements through simple forms with auto-complete. The system tracks hackathons, coding competitions, paper presentations, conferences, and symposiums — complete with certificates, dates, positions, and detailed descriptions. Clean, fast, and organized.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- FAQ Section -->
+<!-- FAQ Section (YOUR CONTRIBUTION – CORRECTLY MERGED) -->
 <section id="faq" class="faq">
     <div class="container">
         <h2 class="title">Frequently Asked Questions</h2>
-        <div class="faq-content">
-            <div class="faq-item">
-                <h3>What is Achievement Management System?</h3>
-                <p>It is a centralized platform designed to help students and teachers track academic achievements efficiently.</p>
+
+        <div class="faq-item">
+            <button class="faq-question">What is this project about?</button>
+            <div class="faq-answer">
+                <p>This project helps users understand and navigate the platform easily.</p>
             </div>
-            <div class="faq-item">
-                <h3>Who can use this platform?</h3>
-                <p>Both students and teachers can use this system for recording and monitoring academic accomplishments.</p>
-            </div>
-            <div class="faq-item">
-                <h3>Can certificates be uploaded?</h3>
-                <p>Yes, users can upload digital certificates which remain accessible anytime.</p>
-            </div>
-            <div class="faq-item">
-                <h3>Is my data secure?</h3>
-                <p>The system uses authentication and structured data storage practices to keep information secure.</p>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question">How can I contribute?</button>
+            <div class="faq-answer">
+                <p>You can contribute via issues, pull requests, or documentation.</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Contact Section -->
-<section id="contact" class="contact">
-    <div class="container">
-        <h2 class="title">Contact Us</h2>
-        <div class="contact-content">
-            <div class="contact-info">
-                <h3>Get In Touch</h3>
-                <p>Have questions or feedback? Reach out to us!</p>
-                <ul>
-                    <li>Email: info@achievement-system.com</li>
-                    <li>Phone: +1 (123) 456-7890</li>
-                    <li>Location: SRM Institute of Science and Technology</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</section>
+<!-- Dark / Light Mode Toggle -->
+<div class="toggle-container">
+    <button id="mode-toggle">Dark Mode 🌙</button>
+</div>
 
 {% endblock %}

@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
+
+
+  // 🌗 Dark / Light mode toggle
   const toggleButton = document.getElementById("mode-toggle");
   if (!toggleButton) return;
 
@@ -6,21 +9,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (savedTheme === "light") {
     document.body.classList.add("light-mode");
-    toggleButton.textContent = "☀️";
+    toggleButton.textContent = "Light Mode 🌞";
   } else {
-    document.body.classList.remove("light-mode");
-    toggleButton.textContent = "🌙";
+    toggleButton.textContent = "Dark Mode 🌙";
   }
 
   toggleButton.addEventListener("click", function () {
-    const isLight = document.body.classList.toggle("light-mode");
+    document.body.classList.toggle("light-mode");
 
-    if (isLight) {
-      toggleButton.textContent = "☀️";
+    if (document.body.classList.contains("light-mode")) {
+      toggleButton.textContent = "Light Mode 🌞";
       localStorage.setItem("theme", "light");
     } else {
-      toggleButton.textContent = "🌙";
+      toggleButton.textContent = "Dark Mode 🌙";
       localStorage.setItem("theme", "dark");
     }
   });
+
+  // ❓ FAQ accordion toggle
+  const questions = document.querySelectorAll(".faq-question");
+
+  questions.forEach((question) => {
+    question.addEventListener("click", () => {
+      question.nextElementSibling.classList.toggle("open");
+    });
+  });
+
+});
+
 });

@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Teacher Login - Achievement Management System</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </head>
 <body>
   <div class="toggle-container">
@@ -30,7 +30,13 @@
         <div class="button">
           <input type="submit" value="Login" />
         </div>
+
+        <!-- Forgot Password link INSIDE the form container -->
+        <p class="forgot-password">
+          <a href="{{ url_for('forgot_password') }}">Forgot Password?</a>
+        </p>
       </form>
+
       <div class="register-link">
         <p>New teacher? <a href="{{ url_for('teacher-new') }}">Register here</a></p>
       </div>
