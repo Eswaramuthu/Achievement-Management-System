@@ -22,30 +22,32 @@
   <body class="light-mode">
     <!-- Header/Navbar -->
     <header class="header">
-      <nav class="navbar">
-        <div class="nav-brand">
-          <h2>Achievement Management System</h2>
-        </div>
-        <ul class="nav-menu">
-          <li><a href="{{ url_for('home') }}">Home</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#features">Features</a></li>
-          <li><a href="#contact">Contact</a></li>
-          {% if session.get('student_id') %}
-          <li><a href="{{ url_for('student_dashboard') }}">Dashboard</a></li>
-          {% elif session.get('teacher_id') %}
-          <li><a href="{{ url_for('teacher_dashboard') }}">Dashboard</a></li>
-          {% else %}
-          <li><a href="{{ url_for('student') }}">Student Login</a></li>
-          <li><a href="{{ url_for('teacher') }}">Teacher Login</a></li>
-          {% endif %}
-        </ul>
-        <div class="nav-toggle">
-          <span class="bar"></span>
-          <span class="bar"></span>
-          <span class="bar"></span>
-        </div>
-      </nav>
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h2>Achievement Management System</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('home') }}#about">About</a></li>
+                <li><a href="{{ url_for('home') }}#features">Features</a></li>
+                <li><a href="{{ url_for('home') }}#contact">Contact</a></li>
+                {% if session.get('student_id') %}
+                <li><a href="{{ url_for('student_dashboard') }}">Dashboard</a></li>
+                {% elif session.get('teacher_id') %}
+                <li><a href="{{ url_for('teacher_dashboard') }}">Dashboard</a></li>
+                {% else %}
+                <li><a href="{{ url_for('student') }}">Student Login</a></li>
+                <li><a href="{{ url_for('teacher') }}">Teacher Login</a></li>
+                {% endif %}
+            </ul>
+        <button id="mode-toggle" class="theme-toggle">🌙</button>
+    </div>
+            <div class="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </nav>
     </header>
 
     <!-- Main Content -->
@@ -84,10 +86,6 @@
       </div>
     </footer>
 
-    <!-- Theme Toggle Button -->
-    <div class="toggle-container">
-      <button id="mode-toggle" class="theme-toggle">🌙</button>
-    </div>
 
     <script>
       // Theme toggle functionality
