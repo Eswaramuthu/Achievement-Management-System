@@ -85,6 +85,57 @@
     <div class="container">
         <div class="title">Teacher Registration</div>
         <div class="content">
+            <form action="/teacher-new" method="POST" onsubmit="return validatePasswords(event)">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <div class="user-details">
+                    <div class="input-box">
+                        <span class="details">Full Name</span>
+                        <input autocomplete="off" autofocus type="text" name="teacher_name"
+                            placeholder="Enter your full name" required>
+                    </div>
+
+                    <div class="input-box">
+                        <span class="details">Teacher ID</span>
+                        <input autocomplete="off" type="text" name="teacher_id" placeholder="Enter your Teacher ID"
+                            required>
+                    </div>
+
+                    <div class="input-box">
+                        <span class="details">Email</span>
+                        <input autocomplete="off" type="email" name="email" placeholder="Enter your email" required>
+                    </div>
+
+                    <div class="input-box">
+                        <span class="details">Phone Number</span>
+                        <input autocomplete="off" type="tel" name="phone_number" placeholder="Enter your phone number"
+                            required>
+                    </div>
+
+                    <div class="input-box">
+                        <span class="details">Password</span>
+                        <input autocomplete="off" type="password" id="password" name="password"
+                            placeholder="Enter your Password" required>
+                    </div>
+
+                    <div class="input-box">
+
+        /* Style for dropdown options */
+        .input-box select option {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="toggle-container">
+        <button id="mode-toggle">Dark Mode 🌙</button>
+    </div>
+
+    <div class="container">
+        <div class="title">Teacher Registration</div>
+        <div class="content">
             {% if error %}
             <div style="color: red; text-align: center; margin-bottom: 10px; font-weight: bold;">
                 {{ error }}
@@ -147,6 +198,11 @@
                             <option value="MECH">MECH</option>
                         </select>
                     </div>
+                </div>
+
+                <div class="button">
+                    <input type="submit" value="Register">
+                </div>
 
                     <div class="input-box" style="margin-top: 20px; width: 100%;">
                         <span class="details">Teacher Code <small>(Required for verification)</small></span>

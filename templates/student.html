@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Student Login - Achievement Management System</title>
   <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
   <script src="{{ url_for('static', filename = 'script.js') }}"></script>
@@ -151,6 +152,7 @@
     }
   </style>
 </head>
+
 <body>
   <button id="mode-toggle" class="theme-toggle" title="Toggle theme"></button>
 
@@ -158,6 +160,7 @@
     <div class="title">Student Login</div>
     <div class="content">
       <form action="/student" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div class="user-details">
           <div class="input-box full-width">
             <span class="details">Student ID</span>
@@ -167,6 +170,8 @@
           <!-- Password with visibility toggle -->
           <div class="input-box full-width">
             <span class="details">Password</span>
+            <input autocomplete="off" autofocus type="password" name="password" placeholder="Enter your password"
+              required />
             <div class="password-wrapper">
               <input
                 autocomplete="off"
@@ -289,4 +294,6 @@
     });
   </script>
 </body>
+
+</html>
 </html>

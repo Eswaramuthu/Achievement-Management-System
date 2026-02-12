@@ -176,8 +176,11 @@ body {
 /* Navigation Styles */
 .navbar {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  /* Stack items vertically */
+  justify-content: center;
   align-items: center;
+  gap: 1rem;
   padding: 1rem 2rem;
   background: var(--glass-bg);
   backdrop-filter: blur(10px);
@@ -187,11 +190,22 @@ body {
   left: 0;
   right: 0;
   z-index: 1000;
+  height: 140px;
+  /* Increased height for specific 2-row layout */
+}
+
+.nav-brand {
+  width: 100%;
+  text-align: center;
 }
 
 .nav-brand h2 {
   color: var(--text-color);
   margin: 0;
+  display: block;
+  /* Ensure it's not hidden */
+  font-size: 1.5rem;
+  /* Explicit size */
 }
 
 .nav-menu {
@@ -199,7 +213,8 @@ body {
   list-style: none;
   margin: 0;
   padding: 0;
-  gap: 1.5rem;
+  gap: 2rem;
+  /* Increased gap for better spacing */
 }
 
 .nav-menu a {
@@ -229,13 +244,15 @@ body {
 
 /* Header offset to account for fixed navbar */
 .header {
-  height: 80px;
+  height: 140px;
+  /* Match navbar height */
 }
 
 /* Main content with proper spacing */
 .main-content {
-  margin-top: 80px;
-  min-height: calc(100vh - 160px);
+  margin-top: 140px;
+  /* Match navbar height */
+  min-height: calc(100vh - 200px);
 }
 
 /* Hero Section */
@@ -243,7 +260,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: calc(90vh - 200px);
+  /* Subtract navbar height to center in remaining space */
   background: var(--bg-gradient);
   padding: 0;
   text-align: center;
@@ -312,11 +330,17 @@ body {
 }
 
 /* Sections */
-.features, .about, .faq, .contact, .stats {
+.features,
+.about,
+.faq,
+.contact,
+.stats {
   padding: 5rem 2rem;
   text-align: center;
   max-width: 1200px;
   margin: 0 auto;
+  scroll-margin-top: 160px;
+  /* Offset for fixed navbar (140px + 20px) */
 }
 
 .features-grid {
@@ -497,13 +521,29 @@ body {
 
 @media (max-width: 768px) {
   .navbar {
-    padding: 1rem;
+    flex-direction: row;
+    /* Restore row layout for mobile */
+    justify-content: space-between;
+    height: 80px;
+    /* Restore original mobile height */
+    padding: 1rem 70px 1rem 1rem;
+    /* Increase right padding to clear fixed toggle */
+    align-items: center;
   }
-  
+
+  .header {
+    height: 80px;
+  }
+
+  .main-content {
+    margin-top: 80px;
+  }
+
   .nav-menu {
     position: fixed;
     left: -100%;
-    top: 70px;
+    top: 80px;
+    /* Match header height */
     flex-direction: column;
     background-color: var(--bg-color);
     width: 100%;
@@ -512,92 +552,97 @@ body {
     padding: 2rem;
     gap: 1.5rem;
   }
-  
+
   .nav-menu.active {
     left: 0;
   }
-  
+
   .nav-toggle {
     display: flex;
   }
-  
+
   .toggle-container {
     top: 15px;
     right: 15px;
   }
-  
+
   .theme-toggle {
     width: 45px;
     height: 45px;
     font-size: 1.3rem;
   }
-  
+
   .hero {
     min-height: 80vh;
     padding: 0 1rem;
   }
-  
+
   .hero-content {
     max-width: 100%;
     padding: 0 1rem;
   }
-  
+
   .hero-content h1 {
     font-size: 2rem;
   }
-  
+
   .hero-content p {
     font-size: 1.1rem;
   }
-  
+
   .hero-buttons {
     flex-direction: column;
     align-items: center;
     gap: 1rem;
   }
-  
-  .features, .about, .faq, .contact, .stats {
+
+  .features,
+  .about,
+  .faq,
+  .contact,
+  .stats {
     padding: 3rem 1rem;
     max-width: 100%;
+    scroll-margin-top: 80px;
   }
-  
+
   .features-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
     max-width: 100%;
   }
-  
+
   .feature-card {
     max-width: 100%;
   }
-  
+
   .about-content {
     flex-direction: column;
     align-items: center;
     max-width: 100%;
   }
-  
+
   .about-text {
     max-width: 100%;
     padding: 0 1rem;
   }
-  
+
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
     max-width: 100%;
   }
-  
+
   .stat-item {
     max-width: 100%;
   }
-  
+
   .contact-content {
     flex-direction: column;
     align-items: center;
     max-width: 100%;
   }
-  
+
   .contact-info {
     max-width: 100%;
     padding: 0 1rem;
@@ -650,30 +695,36 @@ body {
   .login-button {
     width: 100%;
   }
-  
+
   .hero {
     min-height: 70vh;
   }
-  
+
   .hero-content h1 {
     font-size: 1.8rem;
   }
-  
+
   .hero-content p {
     font-size: 1rem;
   }
-  
+
   .hero-buttons {
     flex-direction: column;
     gap: 1rem;
   }
-  
+
   .stat-item h3 {
     font-size: 2rem;
   }
-  
-  .features, .about, .faq, .contact, .stats {
+
+  .features,
+  .about,
+  .faq,
+  .contact,
+  .stats {
     padding: 2.5rem 1rem;
     max-width: 100%;
+    scroll-margin-top: 100px;
+    /* Offset for mobile navbar (80px + 20px) */
   }
 }

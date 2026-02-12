@@ -99,17 +99,24 @@
                 localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
 
                 // Update icon
-                themeToggle.textContent = isLightMode ? '🌙' : '☀️';
+                themeToggle.textContent = isLightMode ? '☀️' : '🌙';
             });
 
             // Set initial icon based on theme
             const isLightMode = body.classList.contains('light-mode');
-            themeToggle.textContent = isLightMode ? '🌙' : '☀️';
+            themeToggle.textContent = isLightMode ? '☀️' : '🌙';
         });
 
         // Mobile menu toggle
         document.querySelector('.nav-toggle').addEventListener('click', function () {
             document.querySelector('.nav-menu').classList.toggle('active');
+        });
+
+        // Close mobile menu when a link is clicked
+        document.querySelectorAll('.nav-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.querySelector('.nav-menu').classList.remove('active');
+            });
         });
     </script>
 </body>
