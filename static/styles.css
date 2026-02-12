@@ -439,12 +439,7 @@ body {
 }
 
 /* Theme Toggle Button */
-.toggle-container {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 1001;
-}
+
 
 .theme-toggle {
   background: var(--glass-bg);
@@ -460,6 +455,7 @@ body {
   justify-content: center;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
+  margin-left:12px;
 }
 
 .theme-toggle:hover {
