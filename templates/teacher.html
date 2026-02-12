@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Teacher Login - Achievement Management System</title>
   <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
   <script src="{{ url_for('static', filename = 'script.js') }}"></script>
 </head>
+
 <body>
   <div class="toggle-container">
     <button id="mode-toggle">Dark Mode 🌙</button>
@@ -16,6 +18,7 @@
     <div class="title">Teacher Login</div>
     <div class="content">
       <form action="/teacher" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div class="user-details">
           <div class="input-box full-width">
             <span class="details">Teacher ID</span>
@@ -40,4 +43,5 @@
     </div>
   </div>
 </body>
+
 </html>
