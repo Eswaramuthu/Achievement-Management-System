@@ -1,139 +1,96 @@
-from flask import Flask, render_template, request, redirect, url_for, session, send_file, abort
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    session,
+    jsonify,
+    send_file,
+    abort,
+)
 import sqlite3
 import os
-import secrets
-from werkzeug.utils import secure_filename
 import datetime
 import csv
 import io
+from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
+from dotenv import load_dotenv
 
+from config import DevelopmentConfig, ProductionConfig
+from firebase_config import get_firebase_config
+
+# ------------------------------------------------------------
+# App setup
+# ------------------------------------------------------------
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = secrets.token_hex(16)
+app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key-change-this")
 
+env = os.environ.get("FLASK_ENV", "development")
+if env == "production":
+    app.config.from_object(ProductionConfig)
+    # ProductionConfig.validate()  # if your project has it
+else:
+    app.config.from_object(DevelopmentConfig)
 
-# Define database path consistently
-DB_PATH = "C:\\Users\\Dell\\Downloads\\AMS-Achievement-Management-System-main\\AMS-Achievement-Management-System-main\\Achievement-Management-System\\ams.db"
+DB_PATH = app.config.get("DB_PATH", os.path.join(os.path.dirname(__file__), "ams.db"))
+UPLOAD_FOLDER = app.config.get(
+    "UPLOAD_FOLDER", os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "uploads")
+)
+ALLOWED_EXTENSIONS = app.config.get("ALLOWED_EXTENSIONS", {"pdf", "png", "jpg", "jpeg"})
 
-# Add this function to your code
-def add_teacher_id_column():
-    try:
-        connection = sqlite3.connect(DB_PATH)
-        cursor = connection.cursor()
-        
-        # Check if teacher_id column exists in achievements table
-        cursor.execute("PRAGMA table_info(achievements)")
-        columns = cursor.fetchall()
-        column_names = [column[1] for column in columns]
-        
-        if 'teacher_id' not in column_names:
-            print("Adding teacher_id column to achievements table...")
-            # SQLite supports limited ALTER TABLE functionality
-            # We can add a column but not add constraints in the same statement
-            cursor.execute("ALTER TABLE achievements ADD COLUMN teacher_id TEXT DEFAULT 'unknown'")
-            connection.commit()
-            print("teacher_id column added successfully")
-        
-        connection.close()
-    except sqlite3.Error as e:
-        print(f"Error adding teacher_id column: {e}")
-
-def migrate_achievements_table():
-    connection = sqlite3.connect(DB_PATH)
-    cursor = connection.cursor()
-    
-    # Check if teacher_id column exists in achievements table
-    cursor.execute("PRAGMA table_info(achievements)")
-    columns = cursor.fetchall()
-    column_names = [column[1] for column in columns]
-    
-    if 'teacher_id' not in column_names:
-        print("Migrating achievements table to add teacher_id column...")
-        
-        # Create a backup of the current table
-        cursor.execute("ALTER TABLE achievements RENAME TO achievements_backup")
-        
-        # Create the new table with the teacher_id column
-        cursor.execute('''
-        CREATE TABLE achievements (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            student_id TEXT NOT NULL,
-            teacher_id TEXT NOT NULL DEFAULT 'unknown',
-            achievement_type TEXT NOT NULL,
-            event_name TEXT NOT NULL,
-            achievement_date DATE NOT NULL,
-            organizer TEXT NOT NULL,
-            position TEXT NOT NULL,
-            achievement_description TEXT,
-            certificate_path TEXT,
-            
-            /* Common additional fields */
-            symposium_theme TEXT,
-            programming_language TEXT,
-            coding_platform TEXT,
-            paper_title TEXT,
-            journal_name TEXT,
-            conference_level TEXT,
-            conference_role TEXT,
-            team_size INTEGER,
-            project_title TEXT,
-            database_type TEXT,
-            difficulty_level TEXT,
-            other_description TEXT,
-            
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (student_id) REFERENCES student(student_id),
-            FOREIGN KEY (teacher_id) REFERENCES teacher(teacher_id)
-        )
-        ''')
-        
-        # Copy data from backup table to new table
-        cursor.execute('''
-        INSERT INTO achievements (
-            id, student_id, achievement_type, event_name, 
-            achievement_date, organizer, position, achievement_description, 
-            certificate_path, symposium_theme, programming_language, coding_platform, 
-            paper_title, journal_name, conference_level, conference_role, 
-            team_size, project_title, database_type, difficulty_level, 
-            other_description, created_at
-        )
-        SELECT 
-            id, student_id, achievement_type, event_name, 
-            achievement_date, organizer, position, achievement_description, 
-            certificate_path, symposium_theme, programming_language, coding_platform, 
-            paper_title, journal_name, conference_level, conference_role, 
-            team_size, project_title, database_type, difficulty_level, 
-            other_description, created_at
-        FROM achievements_backup
-        ''')
-        
-        # Drop the backup table (optional - you might want to keep it for safety)
-        # cursor.execute("DROP TABLE achievements_backup")
-        
-        connection.commit()
-        print("Migration completed successfully.")
-    
-    connection.close()
-
-# Define a function to check allowed file extensions
-def allowed_file(filename):
-    ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg'}
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-# Define upload folder path for certificates
-UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'uploads')
-
-# Create the upload directory if it doesn't exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
-# Initialize database on startup
-def init_db():
-    if not os.path.exists(DB_PATH):
-        connection = sqlite3.connect(DB_PATH)
-        cursor = connection.cursor()
-        cursor.execute('''
+# ------------------------------------------------------------
+# Helpers
+# ------------------------------------------------------------
+def allowed_file(filename: str) -> bool:
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def has_student_session() -> bool:
+    return bool(session.get("logged_in") and session.get("student_id"))
+
+
+def has_teacher_session() -> bool:
+    return bool(session.get("logged_in") and session.get("teacher_id"))
+
+
+# ------------------------------------------------------------
+# DB schema safety (non-destructive)
+# ------------------------------------------------------------
+def ensure_achievements_schema(connection: sqlite3.Connection) -> None:
+    """
+    Non-destructive migration:
+    - ensure teacher_id exists
+    - ensure created_at exists (needed for teacher dashboard ordering)
+    """
+    cursor = connection.cursor()
+    cursor.execute("PRAGMA table_info(achievements)")
+    cols = cursor.fetchall()
+    col_names = [c[1] for c in cols]
+
+    if "teacher_id" not in col_names:
+        cursor.execute("ALTER TABLE achievements ADD COLUMN teacher_id TEXT DEFAULT 'unknown'")
+
+    if "created_at" not in col_names:
+        # Add column then backfill. We will also set created_at on new inserts explicitly.
+        cursor.execute("ALTER TABLE achievements ADD COLUMN created_at TEXT")
+        cursor.execute("UPDATE achievements SET created_at = datetime('now') WHERE created_at IS NULL")
+
+    connection.commit()
+
+
+def init_db() -> None:
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
         CREATE TABLE IF NOT EXISTS student (
             student_name TEXT NOT NULL,
             student_id TEXT PRIMARY KEY,
@@ -143,10 +100,25 @@ def init_db():
             student_gender TEXT,
             student_dept TEXT
         )
-        ''')
+        """
+    )
 
-        # Create the achievements table
-        cursor.execute('''
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS teacher (
+            teacher_name TEXT NOT NULL,
+            teacher_id TEXT PRIMARY KEY,
+            email TEXT UNIQUE NOT NULL,
+            phone_number TEXT,
+            password TEXT NOT NULL,
+            teacher_gender TEXT,
+            teacher_dept TEXT
+        )
+        """
+    )
+
+    cursor.execute(
+        """
         CREATE TABLE IF NOT EXISTS achievements (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             teacher_id TEXT NOT NULL,
@@ -158,278 +130,185 @@ def init_db():
             position TEXT NOT NULL,
             achievement_description TEXT,
             certificate_path TEXT,
-            
-            /* For Symposium */
+
             symposium_theme TEXT,
-                       
-            /* For Coding Competition */
             programming_language TEXT,
             coding_platform TEXT,
-
-            /* For Paper Presentation */
             paper_title TEXT,
             journal_name TEXT,
-                       
-            /* For Conference */
             conference_level TEXT,
             conference_role TEXT,
-                       
-            /* For Hackathon */
             team_size INTEGER,
             project_title TEXT,
-                       
-            /* For SQL Query Event */
             database_type TEXT,
             difficulty_level TEXT,
-                       
-            /* For other events - achievement type description */
             other_description TEXT,
-            
+
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (student_id) REFERENCES student(student_id),
-            FOREIGN KEY (teacher_id) REFERENCES teacher(teacher_id))
-        ''')
+            FOREIGN KEY (teacher_id) REFERENCES teacher(teacher_id)
+        )
+        """
+    )
 
-        connection.commit()
-        connection.close()
-        print(f"Created database at {DB_PATH}")
-    else:
-        # Check if the achievements table exists and create it if not
-        connection = sqlite3.connect(DB_PATH)
-        cursor = connection.cursor()
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='achievements'")
-        if not cursor.fetchone():
-            cursor.execute('''
-            CREATE TABLE IF NOT EXISTS achievements (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                teacher_id TEXT NOT NULL,
-                student_id TEXT NOT NULL,
-                achievement_type TEXT NOT NULL,
-                event_name TEXT NOT NULL,
-                achievement_date DATE NOT NULL,
-                organizer TEXT NOT NULL,
-                position TEXT NOT NULL,
-                achievement_description TEXT,
-                certificate_path TEXT,
-                
-                /* Common additional fields */
-                symposium_theme TEXT,
-                programming_language TEXT,
-                coding_platform TEXT,
-                paper_title TEXT,
-                journal_name TEXT,
-                conference_level TEXT,
-                conference_role TEXT,
-                team_size INTEGER,
-                project_title TEXT,
-                database_type TEXT,
-                difficulty_level TEXT,
-                other_description TEXT,
-                
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (student_id) REFERENCES student(student_id),
-                FOREIGN KEY teacher_id REFERENCES teacher(teacher_id)
-            )
-            ''')
+    connection.commit()
 
-            migrate_achievements_table()
-            connection.commit()
-            print("Created achievements table")
-        connection.close()
-        print(f"Database already exists at {DB_PATH}")
+    # Ensure schema for older DBs
+    ensure_achievements_schema(connection)
 
-        
+    connection.close()
 
 
-# Call initialization function
+# Run init on import
 init_db()
 
+
+# ------------------------------------------------------------
+# Routes
+# ------------------------------------------------------------
 @app.route("/")
 def home():
+    # Keep home.html (older repo). If your repo uses index.html, change it here.
     return render_template("home.html")
-
-
-def has_student_session():
-    """Return True only for authenticated student sessions."""
-    return bool(session.get('logged_in') and session.get('student_id'))
 
 
 @app.route("/student", methods=["GET", "POST"])
 def student():
-    if request.method == "POST":
+    firebase_config = get_firebase_config()
 
-        # Get user data
+    if request.method == "POST":
         student_id = request.form.get("sname")
         password = request.form.get("password")
 
-        # Validate credentials against database
         connection = sqlite3.connect(DB_PATH)
         cursor = connection.cursor()
-
-        # Query the database for the student
-        cursor.execute("SELECT * FROM student WHERE student_id = ? AND password = ?", 
-                      (student_id, password))
+        cursor.execute("SELECT * FROM student WHERE student_id = ?", (student_id,))
         student_data = cursor.fetchone()
         connection.close()
 
+        # If your DB stores plain password (older), fallback
         if student_data:
-            # Store user information in session
-            session['logged_in'] = True
-            session['student_id'] = student_data[1]
-            session['student_name'] = student_data[0]
-            session['student_dept'] = student_data[6]
+            stored_pw = student_data[4]
+            ok = False
+            try:
+                ok = check_password_hash(stored_pw, password)
+            except Exception:
+                ok = (stored_pw == password)
 
-            # Authentication successful - store student info in session
-            return redirect(url_for("student-dashboard"))
-        else:
-            # Authentication failed
-            return render_template("student.html", error="Invalid credentials. Please try again.")
-    return render_template("student.html")
+            if ok:
+                session.permanent = True
+                session["logged_in"] = True
+                session["student_id"] = student_data[1]
+                session["student_name"] = student_data[0]
+                session["student_dept"] = student_data[6]
+                return redirect(url_for("student-dashboard"))
+
+        return render_template(
+            "student.html",
+            error="Invalid credentials. Please try again.",
+            firebase_config=firebase_config,
+        )
+
+    return render_template("student.html", firebase_config=firebase_config)
 
 
 @app.route("/teacher", methods=["GET", "POST"])
 def teacher():
     if request.method == "POST":
-
-        # Get user data
         teacher_id = request.form.get("tname")
         password = request.form.get("password")
 
-        # Validate credentials against database
         connection = sqlite3.connect(DB_PATH)
         cursor = connection.cursor()
-
-        # Query for the teacher data
-        cursor.execute("SELECT * FROM teacher WHERE teacher_id = ? AND password = ?", 
-                       (teacher_id, password))
+        cursor.execute("SELECT * FROM teacher WHERE teacher_id = ?", (teacher_id,))
         teacher_data = cursor.fetchone()
         connection.close()
 
         if teacher_data:
-            # Store user information in session
-            session['logged_in'] = True
-            session['teacher_id'] = teacher_data[1]
-            session['teacher_name'] = teacher_data[0]
-            session['teacher_dept'] = teacher_data[6]
+            stored_pw = teacher_data[4]
+            ok = False
+            try:
+                ok = check_password_hash(stored_pw, password)
+            except Exception:
+                ok = (stored_pw == password)
 
-            # Authentication successful
-            return redirect(url_for("teacher-dashboard"))
+            if ok:
+                session.permanent = True
+                session["logged_in"] = True
+                session["teacher_id"] = teacher_data[1]
+                session["teacher_name"] = teacher_data[0]
+                session["teacher_dept"] = teacher_data[6]
+                return redirect(url_for("teacher-dashboard"))
 
-        else:
-            # Authentication failed
-            return render_template("teacher.html", error="Invalid credentials. Please try again.")
+        return render_template("teacher.html", error="Invalid credentials. Please try again.")
 
     return render_template("teacher.html")
 
 
-@app.route("/student-new", methods=["GET", "POST"])
+@app.route("/student_new", methods=["GET", "POST"])
 def student_new():
+    firebase_config = get_firebase_config()
 
-    print(f"Request method: {request.method}")
-    
-    # Getting the form data
     if request.method == "POST":
         student_name = request.form.get("student_name")
         student_id = request.form.get("student_id")
         email = request.form.get("email")
         phone_number = request.form.get("phone_number")
-        password = request.form.get("password")
+        password = generate_password_hash(request.form.get("password"))
         student_gender = request.form.get("student_gender")
         student_dept = request.form.get("student_dept")
 
-        print(f"Form data: {student_name}, {student_id}, {email}, {phone_number}, {student_gender}, {student_dept}")
-
-        # Connecting to the database
         connection = sqlite3.connect(DB_PATH)
         cursor = connection.cursor()
-
-        # Check if the student table exists
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='student'")
-        if not cursor.fetchone():
-            print("Student table doesn't exist! Creating now...")
-            cursor.execute('''
-            CREATE TABLE IF NOT EXISTS student (
-                student_name TEXT NOT NULL,
-                student_id TEXT PRIMARY KEY,
-                email TEXT UNIQUE NOT NULL,
-                phone_number TEXT,
-                password TEXT NOT NULL,
-                student_gender TEXT,
-                student_dept TEXT
-            )
-            ''')
-            connection.commit()
-        
         try:
-            # Inserting the values into the student table
-            cursor.execute("""
+            cursor.execute(
+                """
                 INSERT INTO student (student_name, student_id, email, phone_number, password, student_gender, student_dept)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
-                """, (student_name, student_id, email, phone_number, password, student_gender, student_dept))
-            
-            # Committing changes
+                """,
+                (student_name, student_id, email, phone_number, password, student_gender, student_dept),
+            )
             connection.commit()
-            print("Database update successful!")
             return redirect(url_for("student"))
         except sqlite3.Error as e:
-            print(f"Database error: {e}")
-            # Add error handling here
+            return render_template("student_new.html", firebase_config=firebase_config, error=str(e))
         finally:
-            # Closing the connection
             connection.close()
-    
-    return render_template("student_new_2.html")
+
+    return render_template("student_new.html", firebase_config=firebase_config)
 
 
-@app.route("/teacher-new", endpoint="teacher-new", methods=["GET", "POST"])
+@app.route("/teacher-new", methods=["GET", "POST"], endpoint="teacher-new")
 def teacher_new():
     if request.method == "POST":
         teacher_name = request.form.get("teacher_name")
         teacher_id = request.form.get("teacher_id")
         email = request.form.get("email")
         phone_number = request.form.get("phone_number")
-        password = request.form.get("password")
+        password = generate_password_hash(request.form.get("password"))
         teacher_gender = request.form.get("teacher_gender")
         teacher_dept = request.form.get("teacher_dept")
 
-        print(f"Form data: {teacher_name}, {teacher_id}, {email}, {phone_number}, {teacher_gender}, {teacher_dept}")
+        teacher_code = request.form.get("teacher_code")
+        required_code = os.environ.get("TEACHER_REGISTRATION_CODE", "admin123")
+        if teacher_code != required_code:
+            return render_template("teacher_new_2.html", error="Invalid Teacher Code. Registration denied.")
 
-                # Connecting to the database
         connection = sqlite3.connect(DB_PATH)
         cursor = connection.cursor()
-
-        # Check if the teacher table exists
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='teacher'")
-        if not cursor.fetchone():
-            print("Teacher table doesn't exist! Creating now...")
-            cursor.execute('''
-            CREATE TABLE IF NOT EXISTS teacher (
-                teacher_name TEXT NOT NULL,
-                teacher_id TEXT PRIMARY KEY,
-                email TEXT UNIQUE NOT NULL,
-                phone_number TEXT,
-                password TEXT NOT NULL,
-                teacher_gender TEXT,
-                teacher_dept TEXT
-            )
-            ''')
-            connection.commit()
-
         try:
-            cursor.execute("""
-            INSERT INTO teacher (teacher_name, teacher_id, email, phone_number, password, teacher_gender, teacher_dept)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (teacher_name, teacher_id, email, phone_number, password, teacher_gender, teacher_dept))
-
-            # Committing changes
+            cursor.execute(
+                """
+                INSERT INTO teacher (teacher_name, teacher_id, email, phone_number, password, teacher_gender, teacher_dept)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                (teacher_name, teacher_id, email, phone_number, password, teacher_gender, teacher_dept),
+            )
             connection.commit()
-            print("Database update successful!")
             return redirect(url_for("teacher"))
         except sqlite3.Error as e:
-            print(f"Database error: {e}")
-
+            return render_template("teacher_new_2.html", error=str(e))
         finally:
-            # Closing the connection
             connection.close()
 
     return render_template("teacher_new_2.html")
@@ -440,24 +319,16 @@ def teacher_achievements():
     return render_template("teacher_achievements_2.html")
 
 
-@app.route("/submit_achievements", endpoint="submit_achievements", methods=["GET", "POST"])
+@app.route("/submit_achievements", methods=["GET", "POST"], endpoint="submit_achievements")
 def submit_achievements():
-    # Check if teacher is logged in
-    if not session.get('logged_in') or not session.get('teacher_id'):
-        return redirect(url_for('teacher'))
-        
-    # Get teacher ID from session
-    teacher_id = session.get('teacher_id')
+    if not has_teacher_session():
+        return redirect(url_for("teacher"))
+
+    teacher_id = session.get("teacher_id")
 
     if request.method == "POST":
         try:
-            # Debug: Print all form data to see what's being received
-            print("Form data received:", request.form)
-            print("Files received:", request.files)
-            
             student_id = request.form.get("student_id")
-            # Get teacher ID from session
-            teacher_id = session.get('teacher_id')
             achievement_type = request.form.get("achievement_type")
             event_name = request.form.get("event_name")
             achievement_date = request.form.get("achievement_date")
@@ -465,135 +336,112 @@ def submit_achievements():
             position = request.form.get("position")
             achievement_description = request.form.get("achievement_description")
 
-            # Debug: Print key form values
-            print(f"Student ID: {student_id}")
-            print(f"Achievement Type: {achievement_type}")
-            print(f"Event Name: {event_name}")
+            symposium_theme = request.form.get("symposium_theme")
+            programming_language = request.form.get("programming_language")
+            coding_platform = request.form.get("coding_platform")
+            paper_title = request.form.get("paper_title")
+            journal_name = request.form.get("journal_name")
+            conference_level = request.form.get("conference_level")
+            conference_role = request.form.get("conference_role")
+            project_title = request.form.get("project_title")
+            database_type = request.form.get("database_type")
+            difficulty_level = request.form.get("difficulty_level")
+            other_description = request.form.get("other_description")
 
+            team_size = request.form.get("team_size")
+            team_size = int(team_size) if team_size and team_size.strip() else None
 
-            with sqlite3.connect(DB_PATH) as connection:
-                # First establish connection and cursor before using them
-                connection = sqlite3.connect(DB_PATH)
-                cursor = connection.cursor()
+            certificate_path = None
+            if "certificate" in request.files:
+                file = request.files["certificate"]
+                if file and file.filename:
+                    if not allowed_file(file.filename):
+                        return render_template(
+                            "submit_achievements.html",
+                            error="Invalid file type. Please upload PDF, PNG, JPG, or JPEG files.",
+                        )
+                    timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+                    safe_name = f"{timestamp}_{secure_filename(file.filename)}"
+                    file.save(os.path.join(UPLOAD_FOLDER, safe_name))
+                    certificate_path = f"uploads/{safe_name}"
 
-                # Debug: Check if achievements table exists
-                cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='achievements'")
-                table_exists = cursor.fetchone()
-                print(f"Achievements table exists: {table_exists is not None}")
+            connection = sqlite3.connect(DB_PATH)
+            cursor = connection.cursor()
 
-                # Check if student ID exists - fixed parameter passing
-                cursor.execute("SELECT student_id, student_name FROM student WHERE student_id = ?", (student_id,))
-                student_data = cursor.fetchone()
-                    
-                if not student_data:
-                    connection.close()
-                    return render_template("submit_achievements.html", error="Student ID does not exist in the system.")
-                
-                student_name = student_data[1]
-            
-                # Handle certificate file upload
-                certificate_path = None
-                if 'certificate' in request.files:
-                    file = request.files['certificate']
-                    if file and file.filename != '':
-                        if allowed_file(file.filename):
-                            # Create a secure filename with timestamp to prevent duplicates
-                            timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-                            secure_name = f"{timestamp}_{secure_filename(file.filename)}"
-                            file_path = os.path.join(UPLOAD_FOLDER, secure_name)
-                            file.save(file_path)
-                            certificate_path = f"uploads/{secure_name}"
-                        else:
-                            connection.close()
-                            return render_template("submit_achievements.html", error="Invalid file type. Please upload PDF, PNG, JPG, or JPEG files.")
-                        
-                # Parse team_size
-                team_size = request.form.get("team_size")
-                if team_size and team_size.strip():
-                    team_size = int(team_size)
-                else:
-                    team_size = None
-                    
-                # Get other form fields
-                symposium_theme = request.form.get("symposium_theme")
-                programming_language = request.form.get("programming_language")
-                coding_platform = request.form.get("coding_platform")
-                paper_title = request.form.get("paper_title")
-                journal_name = request.form.get("journal_name")
-                conference_level = request.form.get("conference_level")
-                conference_role = request.form.get("conference_role")
-                project_title = request.form.get("project_title")
-                database_type = request.form.get("database_type")
-                difficulty_level = request.form.get("difficulty_level")
-                other_description = request.form.get("other_description")
-                
-                # Debug: Print the values we're about to insert
-                print(f"About to insert values: {student_id}, {achievement_type}, {event_name}, {achievement_date}")
-                    
-                # Insert achievement into database
-                try:
-                    cursor.execute('''
-                    INSERT INTO achievements (
-                    student_id, teacher_id, achievement_type, event_name, achievement_date, 
-                    organizer, position, achievement_description, certificate_path,
-                    symposium_theme, programming_language, coding_platform, paper_title,
-                    journal_name, conference_level, conference_role, team_size,
-                    project_title, database_type, difficulty_level, other_description
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    ''', (
+            # Ensure schema safety
+            ensure_achievements_schema(connection)
+
+            cursor.execute("SELECT student_id, student_name FROM student WHERE student_id = ?", (student_id,))
+            student_data = cursor.fetchone()
+            if not student_data:
+                connection.close()
+                return render_template("submit_achievements.html", error="Student ID does not exist in the system.")
+
+            # Always set created_at explicitly (safe for old DBs)
+            created_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+            cursor.execute(
+                """
+                INSERT INTO achievements (
                     student_id, teacher_id, achievement_type, event_name, achievement_date,
                     organizer, position, achievement_description, certificate_path,
                     symposium_theme, programming_language, coding_platform, paper_title,
                     journal_name, conference_level, conference_role, team_size,
-                    project_title, database_type, difficulty_level, other_description
-                    ))
+                    project_title, database_type, difficulty_level, other_description,
+                    created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    student_id,
+                    teacher_id,
+                    achievement_type,
+                    event_name,
+                    achievement_date,
+                    organizer,
+                    position,
+                    achievement_description,
+                    certificate_path,
+                    symposium_theme,
+                    programming_language,
+                    coding_platform,
+                    paper_title,
+                    journal_name,
+                    conference_level,
+                    conference_role,
+                    team_size,
+                    project_title,
+                    database_type,
+                    difficulty_level,
+                    other_description,
+                    created_at,
+                ),
+            )
 
-                    # Check how many rows were affected
-                    rows_affected = cursor.rowcount
-                    print(f"Rows inserted: {rows_affected}")
-                
-                    connection.commit()
-                    print("Database committed successfully")
+            connection.commit()
+            connection.close()
 
-                    # Verify the data was inserted by selecting it back
-                    cursor.execute("SELECT * FROM achievements WHERE student_id = ? ORDER BY id DESC LIMIT 1", (student_id,))
-                    inserted_data = cursor.fetchone()
-                    print(f"Data after insertion: {inserted_data}")
-            
-                    connection.close()
+            success_message = f"Achievement of {student_data[1]} has been successfully registered!!"
+            return render_template("submit_achievements.html", success=success_message)
 
-                    success_message = f"Achievement of {student_name} has been successfully registered!!"
-                    return render_template("submit_achievements.html", success=success_message)
-
-            
-                except sqlite3.Error as sql_error:
-                    print(f"SQL Error: {sql_error}")
-                    connection.close()
-                    return render_template("submit_achievements.html", error=f"Database error: {str(sql_error)}")
-    
         except Exception as e:
-            print(f"Error submitting achievement: {e}")
-            import traceback
-            traceback.print_exc()  # Print the full error traceback for debugging
             return render_template("submit_achievements.html", error=f"An error occurred: {str(e)}")
-        
 
-    # Redirect to success page or back to dashboard
-    return redirect(url_for("teacher-dashboard", success="Achievement submitted successfully!"))
+    return render_template("submit_achievements.html")
 
 
+# ------------------------------------------------------------
+# Student: My Achievements (View / Download / Export)
+# ------------------------------------------------------------
 @app.route("/student-achievements", endpoint="student-achievements")
 def student_achievements():
-    # Check if user is logged in
     if not has_student_session():
-        return redirect(url_for('student'))
+        return redirect(url_for("student"))
 
-    # Get the current user data from session
-    student_id = session.get('student_id')
+    student_id = session.get("student_id")
     student_data = {
-        'id': student_id,
-        'name': session.get('student_name'),
-        'dept': session.get('student_dept')
+        "id": student_id,
+        "name": session.get("student_name"),
+        "dept": session.get("student_dept"),
     }
 
     connection = sqlite3.connect(DB_PATH)
@@ -608,13 +456,15 @@ def student_achievements():
         WHERE student_id = ?
         ORDER BY achievement_date DESC, id DESC
         """,
-        (student_id,)
+        (student_id,),
     )
     achievements = cursor.fetchall()
     connection.close()
 
     total_achievements = len(achievements)
-    first_positions = sum(1 for achievement in achievements if 'first' in (achievement['position'] or '').lower())
+    first_positions = sum(
+        1 for a in achievements if "first" in (a["position"] or "").lower()
+    )
 
     return render_template(
         "student_achievements_1.html",
@@ -626,24 +476,17 @@ def student_achievements():
 
 
 @app.route("/student-achievements/<int:achievement_id>")
-def student_achievement_details(achievement_id):
+def student_achievement_details(achievement_id: int):
     if not has_student_session():
-        return redirect(url_for('student'))
+        return redirect(url_for("student"))
 
     connection = sqlite3.connect(DB_PATH)
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
+
     cursor.execute(
-        """
-        SELECT id, student_id, achievement_type, event_name, achievement_date, organizer,
-               position, achievement_description, certificate_path, symposium_theme,
-               programming_language, coding_platform, paper_title, journal_name,
-               conference_level, conference_role, team_size, project_title,
-               database_type, difficulty_level, other_description
-        FROM achievements
-        WHERE id = ? AND student_id = ?
-        """,
-        (achievement_id, session.get('student_id'))
+        "SELECT * FROM achievements WHERE id = ? AND student_id = ?",
+        (achievement_id, session.get("student_id")),
     )
     achievement = cursor.fetchone()
     connection.close()
@@ -655,30 +498,29 @@ def student_achievement_details(achievement_id):
 
 
 @app.route("/student-achievements/<int:achievement_id>/download")
-def download_achievement_certificate(achievement_id):
+def download_achievement_certificate(achievement_id: int):
     if not has_student_session():
-        return redirect(url_for('student'))
+        return redirect(url_for("student"))
 
     connection = sqlite3.connect(DB_PATH)
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
+
     cursor.execute(
-        "SELECT certificate_path, event_name FROM achievements WHERE id = ? AND student_id = ?",
-        (achievement_id, session.get('student_id'))
+        "SELECT certificate_path FROM achievements WHERE id = ? AND student_id = ?",
+        (achievement_id, session.get("student_id")),
     )
-    achievement = cursor.fetchone()
+    row = cursor.fetchone()
     connection.close()
 
-    if not achievement:
+    if not row or not row["certificate_path"]:
         abort(404)
 
-    certificate_path = achievement['certificate_path']
-    if not certificate_path:
-        return redirect(url_for('student-achievements'))
-
-    file_path = os.path.join('static', certificate_path)
-    absolute_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), file_path)
-
+    absolute_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "static",
+        row["certificate_path"],
+    )
     if not os.path.exists(absolute_path):
         abort(404)
 
@@ -688,12 +530,14 @@ def download_achievement_certificate(achievement_id):
 @app.route("/student-achievements/export")
 def export_student_achievements():
     if not has_student_session():
-        return redirect(url_for('student'))
+        return redirect(url_for("student"))
 
-    student_id = session.get('student_id')
+    student_id = session.get("student_id")
+
     connection = sqlite3.connect(DB_PATH)
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
+
     cursor.execute(
         """
         SELECT achievement_type, event_name, achievement_date, organizer,
@@ -702,932 +546,197 @@ def export_student_achievements():
         WHERE student_id = ?
         ORDER BY achievement_date DESC, id DESC
         """,
-        (student_id,)
+        (student_id,),
     )
-    achievements = cursor.fetchall()
+    rows = cursor.fetchall()
     connection.close()
 
     output = io.StringIO()
     writer = csv.writer(output)
     writer.writerow(["Achievement Type", "Event Name", "Date", "Organizer", "Position", "Description"])
-    for achievement in achievements:
+    for r in rows:
         writer.writerow([
-            achievement['achievement_type'],
-            achievement['event_name'],
-            achievement['achievement_date'],
-            achievement['organizer'],
-            achievement['position'],
-            achievement['achievement_description'] or "",
+            r["achievement_type"],
+            r["event_name"],
+            r["achievement_date"],
+            r["organizer"],
+            r["position"],
+            r["achievement_description"] or "",
         ])
 
-    response = send_file(
-        io.BytesIO(output.getvalue().encode('utf-8')),
-        mimetype='text/csv',
+    return send_file(
+        io.BytesIO(output.getvalue().encode("utf-8")),
+        mimetype="text/csv",
         as_attachment=True,
-        download_name=f"{student_id}_achievements.csv"
+        download_name=f"{student_id}_achievements.csv",
     )
-    return response
 
 
+# ------------------------------------------------------------
+# Dashboards
+# ------------------------------------------------------------
 @app.route("/student-dashboard", endpoint="student-dashboard")
 def student_dashboard():
-    # Check if user is logged in
     if not has_student_session():
-        return redirect(url_for('student'))
+        return redirect(url_for("student"))
 
-    # Get the current user data from session
     student_data = {
-        'id': session.get('student_id'),
-        'name': session.get('student_name'),
-        'dept': session.get('student_dept')
+        "id": session.get("student_id"),
+        "name": session.get("student_name"),
+        "dept": session.get("student_dept"),
     }
-        
     return render_template("student_dashboard.html", student=student_data)
 
 
-# Temporary Code. Needs to be updated once the backend is complete
 @app.route("/teacher-dashboard", endpoint="teacher-dashboard")
 def teacher_dashboard():
-    # Check if user is logged in
-    if not session.get('logged_in'):
-        return redirect(url_for('teacher'))
+    if not has_teacher_session():
+        return redirect(url_for("teacher"))
 
-    # Get the current user data from session
-    teacher_id = session.get('teacher_id')
+    teacher_id = session.get("teacher_id")
     teacher_data = {
-        'id': teacher_id,
-        'name': session.get('teacher_name'),
-        'dept': session.get('teacher_dept')
+        "id": teacher_id,
+        "name": session.get("teacher_name"),
+        "dept": session.get("teacher_dept"),
     }
 
-    # Connect to database
     connection = sqlite3.connect(DB_PATH)
-    connection.row_factory = sqlite3.Row  # This enables column access by name
+    connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
 
-    # Get statistics
-    # Total achievements recorded by this teacher
-    cursor.execute("SELECT COUNT(*) FROM achievements WHERE teacher_id = ?", (teacher_id,))
-    total_achievements = cursor.fetchone()[0]
+    # Ensure schema safety before queries
+    ensure_achievements_schema(connection)
 
-    # Count unique students managed by this teacher
-    cursor.execute("SELECT COUNT(DISTINCT student_id) FROM achievements WHERE teacher_id = ?", 
-                  (teacher_id,))
-    students_managed = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(*) AS c FROM achievements WHERE teacher_id = ?", (teacher_id,))
+    total_achievements = cursor.fetchone()["c"]
 
-    # Count achievements recorded this week
-    one_week_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime('%Y-%m-%d')
-    cursor.execute("SELECT COUNT(*) FROM achievements WHERE teacher_id = ? AND achievement_date >= ?", 
-                  (teacher_id, one_week_ago))
-    this_week_count = cursor.fetchone()[0]
+    cursor.execute(
+        "SELECT COUNT(DISTINCT student_id) AS c FROM achievements WHERE teacher_id = ?",
+        (teacher_id,),
+    )
+    students_managed = cursor.fetchone()["c"]
 
-    # Get recent entries
-    cursor.execute("""
-        SELECT a.id, a.student_id, s.student_name, a.achievement_type, 
+    one_week_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime("%Y-%m-%d")
+    cursor.execute(
+        "SELECT COUNT(*) AS c FROM achievements WHERE teacher_id = ? AND achievement_date >= ?",
+        (teacher_id, one_week_ago),
+    )
+    this_week_count = cursor.fetchone()["c"]
+
+    cursor.execute(
+        """
+        SELECT a.id, a.student_id, s.student_name, a.achievement_type,
                a.event_name, a.achievement_date
         FROM achievements a
         JOIN student s ON a.student_id = s.student_id
         WHERE a.teacher_id = ?
         ORDER BY a.created_at DESC
         LIMIT 5
-    """, (teacher_id,))
+        """,
+        (teacher_id,),
+    )
     recent_entries = cursor.fetchall()
 
     connection.close()
 
-    # Prepare statistics data
     stats = {
-        'total_achievements': total_achievements,
-        'students_managed': students_managed,
-        'this_week': this_week_count
+        "total_achievements": total_achievements,
+        "students_managed": students_managed,
+        "this_week": this_week_count,
     }
-    
-    return render_template("teacher_dashboard.html", 
-                           teacher=teacher_data,
-                           stats=stats,
-                           recent_entries=recent_entries)
 
+    return render_template(
+        "teacher_dashboard.html",
+        teacher=teacher_data,
+        stats=stats,
+        recent_entries=recent_entries,
+    )
 
 
 @app.route("/all-achievements", endpoint="all-achievements")
 def all_achievements():
-    # Check if user is logged in
-    if not session.get('logged_in'):
-        return redirect(url_for('teacher'))
+    if not has_teacher_session():
+        return redirect(url_for("teacher"))
 
-    teacher_id = session.get('teacher_id')
-    
-    # Connect to database
+    teacher_id = session.get("teacher_id")
+
     connection = sqlite3.connect(DB_PATH)
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
-    
-    # Get all achievements by this teacher
-    cursor.execute("""
-        SELECT a.id, a.student_id, s.student_name, a.achievement_type, 
+
+    cursor.execute(
+        """
+        SELECT a.id, a.student_id, s.student_name, a.achievement_type,
                a.event_name, a.achievement_date, a.position, a.organizer,
                a.certificate_path
         FROM achievements a
         JOIN student s ON a.student_id = s.student_id
         WHERE a.teacher_id = ?
         ORDER BY a.achievement_date DESC
-    """, (teacher_id,))
-    
+        """,
+        (teacher_id,),
+    )
     achievements = cursor.fetchall()
     connection.close()
-    
-    return render_template("all_achievements.html", achievements=achievements)
 
-    
-if __name__ == "__main__":
-    init_db()
-    # migrate_achievements_table()
-    add_teacher_id_column()
-    app.run(debug=True)
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
-import sqlite3
-import os
-import datetime
-from werkzeug.utils import secure_filename
-from werkzeug.security import generate_password_hash, check_password_hash
-from dotenv import load_dotenv
-
-from config import DevelopmentConfig, ProductionConfig
-from firebase_config import get_firebase_config, validate_firebase_config
-
-# Load environment variables from .env file
-# load_dotenv()
-
-from dotenv import load_dotenv
-
-load_dotenv()
-
-# ------------------------------------------------------------------
-# App setup
-# ------------------------------------------------------------------
-
-app = Flask(__name__)
-
-app.secret_key = os.getenv("SECRET_KEY")
-
-# Choose config based on environment
-env = os.environ.get("FLASK_ENV", "development")
-
-if env == "production":
-    app.config.from_object(ProductionConfig)
-    ProductionConfig.validate()
-else:
-    app.config.from_object(DevelopmentConfig)
-    
-# app.config["MAX_CONTENT_LENGTH"] = app.config["MAX_CONTENT_LENGTH"]
-
-DB_PATH = app.config["DB_PATH"]
-UPLOAD_FOLDER = app.config["UPLOAD_FOLDER"]
-
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-
-
-# ------------------------------------------------------------------
-# Helpers
-# ------------------------------------------------------------------
-
-def allowed_file(filename):
-    return (
-        "." in filename and
-        filename.rsplit(".", 1)[1].lower()
-        in app.config["ALLOWED_EXTENSIONS"]
-    )
-
-
-# ------------------------------------------------------------------
-# Database migration helpers
-# ------------------------------------------------------------------
-
-def add_teacher_id_column():
-    try:
-        connection = sqlite3.connect(DB_PATH)
-        cursor = connection.cursor()
-
-        cursor.execute("PRAGMA table_info(achievements)")
-        columns = cursor.fetchall()
-        column_names = [column[1] for column in columns]
-
-        if "teacher_id" not in column_names:
-            cursor.execute(
-                "ALTER TABLE achievements ADD COLUMN teacher_id TEXT DEFAULT 'unknown'"
-            )
-            connection.commit()
-
-        connection.close()
-    except sqlite3.Error as e:
-        print(f"Error adding teacher_id column: {e}")
-
-
-def migrate_achievements_table():
-    connection = sqlite3.connect(DB_PATH)
-    cursor = connection.cursor()
-
-    cursor.execute("PRAGMA table_info(achievements)")
-    columns = cursor.fetchall()
-    column_names = [column[1] for column in columns]
-
-    if "teacher_id" not in column_names:
-        cursor.execute("ALTER TABLE achievements RENAME TO achievements_backup")
-
-        cursor.execute("""
-        CREATE TABLE achievements (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            student_id TEXT NOT NULL,
-            teacher_id TEXT NOT NULL DEFAULT 'unknown',
-            achievement_type TEXT NOT NULL,
-            event_name TEXT NOT NULL,
-            achievement_date DATE NOT NULL,
-            organizer TEXT NOT NULL,
-            position TEXT NOT NULL,
-            achievement_description TEXT,
-            certificate_path TEXT,
-            symposium_theme TEXT,
-            programming_language TEXT,
-            coding_platform TEXT,
-            paper_title TEXT,
-            journal_name TEXT,
-            conference_level TEXT,
-            conference_role TEXT,
-            team_size INTEGER,
-            project_title TEXT,
-            database_type TEXT,
-            difficulty_level TEXT,
-            other_description TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (student_id) REFERENCES student(student_id),
-            FOREIGN KEY (teacher_id) REFERENCES teacher(teacher_id)
-        )
-        """)
-
-        cursor.execute("""
-        INSERT INTO achievements (
-            id, student_id, achievement_type, event_name,
-            achievement_date, organizer, position, achievement_description,
-            certificate_path, symposium_theme, programming_language, coding_platform,
-            paper_title, journal_name, conference_level, conference_role,
-            team_size, project_title, database_type, difficulty_level,
-            other_description, created_at
-        )
-        SELECT
-            id, student_id, achievement_type, event_name,
-            achievement_date, organizer, position, achievement_description,
-            certificate_path, symposium_theme, programming_language, coding_platform,
-            paper_title, journal_name, conference_level, conference_role,
-            team_size, project_title, database_type, difficulty_level,
-            other_description, created_at
-        FROM achievements_backup
-        """)
-
-        connection.commit()
-
-    connection.close()
-
-
-# Initialize database on startup
-# ------------------------------------------------------------------
-# Database init
-# ------------------------------------------------------------------
-
-def init_db():
-    db_path = app.config["DB_PATH"]
-
-    connection = sqlite3.connect(db_path)
-    cursor = connection.cursor()
-
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS student (
-        student_name TEXT NOT NULL,
-        student_id TEXT PRIMARY KEY,
-        email TEXT UNIQUE NOT NULL,
-        phone_number TEXT,
-        password TEXT NOT NULL,
-        student_gender TEXT,
-        student_dept TEXT
-    )
-    """)
-
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS teacher (
-        teacher_name TEXT NOT NULL,
-        teacher_id TEXT PRIMARY KEY,
-        email TEXT UNIQUE NOT NULL,
-        phone_number TEXT,
-        password TEXT NOT NULL,
-        teacher_gender TEXT,
-        teacher_dept TEXT
-    )
-    """)
-
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS achievements (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        teacher_id TEXT NOT NULL,
-        student_id TEXT NOT NULL,
-        achievement_type TEXT NOT NULL,
-        event_name TEXT NOT NULL,
-        achievement_date DATE NOT NULL,
-        organizer TEXT NOT NULL,
-        position TEXT NOT NULL,
-        achievement_description TEXT,
-        certificate_path TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (student_id) REFERENCES student(student_id),
-        FOREIGN KEY (teacher_id) REFERENCES teacher(teacher_id)
-    )
-    """)
-
-    connection.commit()
-    connection.close()
-
-# Call initialization function
-init_db()
-
-@app.route("/")
-def home():
-    return render_template("home.html")
-
-
-@app.route("/student", methods=["GET", "POST"])
-def student():
-    firebase_config = get_firebase_config()
-    
-    if request.method == "POST":
-
-        # Get user data
-        student_id = request.form.get("sname")
-        password = request.form.get("password")
-
-        # Validate credentials against database
-        connection = sqlite3.connect(DB_PATH)
-        cursor = connection.cursor()
-
-        # Query the database for the student
-        cursor.execute("SELECT * FROM student WHERE student_id = ?", (student_id,))
-        student_data = cursor.fetchone()
-        connection.close()
-
-        if student_data and check_password_hash(student_data[4], password):
-            # Store user information in session
-            session.permanent = True
-            session['logged_in'] = True
-            session['student_id'] = student_data[1]
-            session['student_name'] = student_data[0]
-            session['student_dept'] = student_data[6]
-
-            # Authentication successful - store student info in session
-            return redirect(url_for("student-dashboard"))
-        else:
-            # Authentication failed
-            return render_template("student.html", error="Invalid credentials. Please try again.", firebase_config=firebase_config)
-    return render_template("student.html", firebase_config=firebase_config)
-
-
-@app.route("/teacher", methods=["GET", "POST"])
-def teacher():
-    if request.method == "POST":
-
-        # Get user data
-        teacher_id = request.form.get("tname")
-        password = request.form.get("password")
-
-        # Validate credentials against database
-        connection = sqlite3.connect(DB_PATH)
-        cursor = connection.cursor()
-
-        # Query for the teacher data
-        cursor.execute("SELECT * FROM teacher WHERE teacher_id = ?", (teacher_id,))
-        teacher_data = cursor.fetchone()
-        connection.close()
-
-        if teacher_data and check_password_hash(teacher_data[4], password):
-            # Store user information in session
-            session.permanent = True
-            session['logged_in'] = True
-            session['teacher_id'] = teacher_data[1]
-            session['teacher_name'] = teacher_data[0]
-            session['teacher_dept'] = teacher_data[6]
-
-            # Authentication successful
-            return redirect(url_for("teacher-dashboard"))
-
-        else:
-            # Authentication failed
-            return render_template("teacher.html", error="Invalid credentials. Please try again.")
-
-    return render_template("teacher.html")
-
-
-# @app.route("/student-new", methods=["GET", "POST"])
-@app.route("/student_new", methods=["GET", "POST"])
-def student_new():
-    firebase_config = get_firebase_config()
-
-    print(f"Request method: {request.method}")
-    
-    # Getting the form data
-    if request.method == "POST":
-        student_name = request.form.get("student_name")
-        student_id = request.form.get("student_id")
-        email = request.form.get("email")
-        phone_number = request.form.get("phone_number")
-        password = generate_password_hash(request.form.get("password"))
-        student_gender = request.form.get("student_gender")
-        student_dept = request.form.get("student_dept")
-
-        print(f"Form data: {student_name}, {student_id}, {email}, {phone_number}, {student_gender}, {student_dept}")
-
-        # Connecting to the database
-        connection = sqlite3.connect(DB_PATH)
-        cursor = connection.cursor()
-
-        # Check if the student table exists
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='student'")
-        if not cursor.fetchone():
-            print("Student table doesn't exist! Creating now...")
-            cursor.execute('''
-            CREATE TABLE IF NOT EXISTS student (
-                student_name TEXT NOT NULL,
-                student_id TEXT PRIMARY KEY,
-                email TEXT UNIQUE NOT NULL,
-                phone_number TEXT,
-                password TEXT NOT NULL,
-                student_gender TEXT,
-                student_dept TEXT
-            )
-            ''')
-            connection.commit()
-        
-        try:
-            # Inserting the values into the student table
-            cursor.execute("""
-                INSERT INTO student (student_name, student_id, email, phone_number, password, student_gender, student_dept)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                """, (student_name, student_id, email, phone_number, password, student_gender, student_dept))
-            
-            # Committing changes
-            connection.commit()
-            print("Database update successful!")
-            return redirect(url_for("student"))
-        except sqlite3.Error as e:
-            print(f"Database error: {e}")
-            # Add error handling here
-        finally:
-            # Closing the connection
-            connection.close()
-    
-    return render_template("student_new.html", firebase_config=firebase_config)
-
-
-@app.route("/teacher-new", endpoint="teacher-new", methods=["GET", "POST"])
-def teacher_new():
-    if request.method == "POST":
-        teacher_name = request.form.get("teacher_name")
-        teacher_id = request.form.get("teacher_id")
-        email = request.form.get("email")
-        phone_number = request.form.get("phone_number")
-        password = generate_password_hash(request.form.get("password"))
-        teacher_gender = request.form.get("teacher_gender")
-        teacher_dept = request.form.get("teacher_dept")
-
-        print(f"Form data: {teacher_name}, {teacher_id}, {email}, {phone_number}, {teacher_gender}, {teacher_dept}")
-
-        # Check for Teacher Code
-        teacher_code = request.form.get("teacher_code")
-        # Get the secret code from environment variable or use default
-        required_code = os.environ.get("TEACHER_REGISTRATION_CODE", "admin123")
-        
-        if teacher_code != required_code:
-            print("Invalid Teacher Code provided")
-            return render_template("teacher_new_2.html", error="Invalid Teacher Code. Registration denied.")
-
-                # Connecting to the database
-        connection = sqlite3.connect(DB_PATH)
-        cursor = connection.cursor()
-
-        # Check if the teacher table exists
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='teacher'")
-        if not cursor.fetchone():
-            print("Teacher table doesn't exist! Creating now...")
-            cursor.execute('''
-            CREATE TABLE IF NOT EXISTS teacher (
-                teacher_name TEXT NOT NULL,
-                teacher_id TEXT PRIMARY KEY,
-                email TEXT UNIQUE NOT NULL,
-                phone_number TEXT,
-                password TEXT NOT NULL,
-                teacher_gender TEXT,
-                teacher_dept TEXT
-            )
-            ''')
-            connection.commit()
-
-        try:
-            cursor.execute("""
-            INSERT INTO teacher (teacher_name, teacher_id, email, phone_number, password, teacher_gender, teacher_dept)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (teacher_name, teacher_id, email, phone_number, password, teacher_gender, teacher_dept))
-
-            # Committing changes
-            connection.commit()
-            print("Database update successful!")
-            return redirect(url_for("teacher"))
-        except sqlite3.Error as e:
-            print(f"Database error: {e}")
-
-        finally:
-            # Closing the connection
-            connection.close()
-
-    return render_template("teacher_new_2.html")
-
-
-@app.route("/teacher-achievements", endpoint="teacher-achievements")
-def teacher_achievements():
-    return render_template("teacher_achievements_2.html")
-
-
-@app.route("/submit_achievements", endpoint="submit_achievements", methods=["GET", "POST"])
-def submit_achievements():
-    # Check if teacher is logged in
-    if not session.get('logged_in') or not session.get('teacher_id'):
-        return redirect(url_for('teacher'))
-        
-    # Get teacher ID from session
-    teacher_id = session.get('teacher_id')
-
-    if request.method == "POST":
-        try:
-            # Debug: Print all form data to see what's being received
-            print("Form data received:", request.form)
-            print("Files received:", request.files)
-            
-            student_id = request.form.get("student_id")
-            # Get teacher ID from session
-            teacher_id = session.get('teacher_id')
-            achievement_type = request.form.get("achievement_type")
-            event_name = request.form.get("event_name")
-            achievement_date = request.form.get("achievement_date")
-            organizer = request.form.get("organizer")
-            position = request.form.get("position")
-            achievement_description = request.form.get("achievement_description")
-
-            # Debug: Print key form values
-            print(f"Student ID: {student_id}")
-            print(f"Achievement Type: {achievement_type}")
-            print(f"Event Name: {event_name}")
-
-
-            with sqlite3.connect(DB_PATH) as connection:
-                # First establish connection and cursor before using them
-                # connection = sqlite3.connect(DB_PATH)
-                cursor = connection.cursor()
-
-                # Debug: Check if achievements table exists
-                cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='achievements'")
-                table_exists = cursor.fetchone()
-                print(f"Achievements table exists: {table_exists is not None}")
-
-                # Check if student ID exists - fixed parameter passing
-                cursor.execute("SELECT student_id, student_name FROM student WHERE student_id = ?", (student_id,))
-                student_data = cursor.fetchone()
-                    
-                if not student_data:
-                    connection.close()
-                    return render_template("submit_achievements.html", error="Student ID does not exist in the system.")
-                
-                student_name = student_data[1]
-            
-                # Handle certificate file upload
-                certificate_path = None
-                if 'certificate' in request.files:
-                    file = request.files['certificate']
-                    if file and file.filename != '':
-                        if allowed_file(file.filename):
-                            # Create a secure filename with timestamp to prevent duplicates
-                            timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-                            secure_name = f"{timestamp}_{secure_filename(file.filename)}"
-                            file_path = os.path.join(UPLOAD_FOLDER, secure_name)
-                            file.save(file_path)
-                            certificate_path = f"uploads/{secure_name}"
-                        else:
-                            connection.close()
-                            return render_template("submit_achievements.html", error="Invalid file type. Please upload PDF, PNG, JPG, or JPEG files.")
-                        
-                # Parse team_size
-                team_size = request.form.get("team_size")
-                if team_size and team_size.strip():
-                    team_size = int(team_size)
-                else:
-                    team_size = None
-                    
-                # Get other form fields
-                symposium_theme = request.form.get("symposium_theme")
-                programming_language = request.form.get("programming_language")
-                coding_platform = request.form.get("coding_platform")
-                paper_title = request.form.get("paper_title")
-                journal_name = request.form.get("journal_name")
-                conference_level = request.form.get("conference_level")
-                conference_role = request.form.get("conference_role")
-                project_title = request.form.get("project_title")
-                database_type = request.form.get("database_type")
-                difficulty_level = request.form.get("difficulty_level")
-                other_description = request.form.get("other_description")
-                
-                # Debug: Print the values we're about to insert
-                print(f"About to insert values: {student_id}, {achievement_type}, {event_name}, {achievement_date}")
-                    
-                # Insert achievement into database
-                try:
-                    cursor.execute('''
-                    INSERT INTO achievements (
-                    student_id, teacher_id, achievement_type, event_name, achievement_date, 
-                    organizer, position, achievement_description, certificate_path,
-                    symposium_theme, programming_language, coding_platform, paper_title,
-                    journal_name, conference_level, conference_role, team_size,
-                    project_title, database_type, difficulty_level, other_description
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    ''', (
-                    student_id, teacher_id, achievement_type, event_name, achievement_date,
-                    organizer, position, achievement_description, certificate_path,
-                    symposium_theme, programming_language, coding_platform, paper_title,
-                    journal_name, conference_level, conference_role, team_size,
-                    project_title, database_type, difficulty_level, other_description
-                    ))
-
-                    # Check how many rows were affected
-                    rows_affected = cursor.rowcount
-                    print(f"Rows inserted: {rows_affected}")
-                
-                    connection.commit()
-                    print("Database committed successfully")
-
-                    # Verify the data was inserted by selecting it back
-                    cursor.execute("SELECT * FROM achievements WHERE student_id = ? ORDER BY id DESC LIMIT 1", (student_id,))
-                    inserted_data = cursor.fetchone()
-                    print(f"Data after insertion: {inserted_data}")
-            
-                    connection.close()
-
-                    success_message = f"Achievement of {student_name} has been successfully registered!!"
-                    return render_template("submit_achievements.html", success=success_message)
-
-            
-                except sqlite3.Error as sql_error:
-                    print(f"SQL Error: {sql_error}")
-                    connection.close()
-                    return render_template("submit_achievements.html", error=f"Database error: {str(sql_error)}")
-    
-        except Exception as e:
-            print(f"Error submitting achievement: {e}")
-            import traceback
-            traceback.print_exc()  # Print the full error traceback for debugging
-            return render_template("submit_achievements.html", error=f"An error occurred: {str(e)}")
-        
-
-    # Redirect to success page or back to dashboard
-    return redirect(url_for("teacher-dashboard", success="Achievement submitted successfully!"))
-
-
-@app.route("/student-achievements", endpoint="student-achievements")
-def student_achievements():
-    # Check if user is logged in
-    if not session.get('logged_in'):
-        return redirect(url_for('student'))
-
-    # Get the current user data from session
-    student_data = {
-        'id': session.get('student_id'),
-        'name': session.get('student_name'),
-        'dept': session.get('student_dept')
-    }
-    return render_template("student_achievements_1.html", student=student_data)
-
-
-@app.route("/student-dashboard", endpoint="student-dashboard")
-def student_dashboard():
-    # Check if user is logged in
-    if not session.get('logged_in'):
-        return redirect(url_for('student'))
-
-    # Get the current user data from session
-    student_data = {
-        'id': session.get('student_id'),
-        'name': session.get('student_name'),
-        'dept': session.get('student_dept')
-    }
-        
-    return render_template("student_dashboard.html", student=student_data)
-
-
-# Temporary Code. Needs to be updated once the backend is complete
-@app.route("/teacher-dashboard", endpoint="teacher-dashboard")
-def teacher_dashboard():
-    # Check if user is logged in
-    if not session.get('logged_in'):
-        return redirect(url_for('teacher'))
-
-    # Get the current user data from session
-    teacher_id = session.get('teacher_id')
-    teacher_data = {
-        'id': teacher_id,
-        'name': session.get('teacher_name'),
-        'dept': session.get('teacher_dept')
-    }
-
-    # Connect to database
-    connection = sqlite3.connect(DB_PATH)
-    connection.row_factory = sqlite3.Row  # This enables column access by name
-    cursor = connection.cursor()
-
-    # Get statistics
-    # Total achievements recorded by this teacher
-    cursor.execute("SELECT COUNT(*) FROM achievements WHERE teacher_id = ?", (teacher_id,))
-    total_achievements = cursor.fetchone()[0]
-
-    # Count unique students managed by this teacher
-    cursor.execute("SELECT COUNT(DISTINCT student_id) FROM achievements WHERE teacher_id = ?", 
-                  (teacher_id,))
-    students_managed = cursor.fetchone()[0]
-
-    # Count achievements recorded this week
-    one_week_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime('%Y-%m-%d')
-    cursor.execute("SELECT COUNT(*) FROM achievements WHERE teacher_id = ? AND achievement_date >= ?", 
-                  (teacher_id, one_week_ago))
-    this_week_count = cursor.fetchone()[0]
-
-    # Get recent entries
-    cursor.execute("""
-        SELECT a.id, a.student_id, s.student_name, a.achievement_type, 
-               a.event_name, a.achievement_date
-        FROM achievements a
-        JOIN student s ON a.student_id = s.student_id
-        WHERE a.teacher_id = ?
-        ORDER BY a.created_at DESC
-        LIMIT 5
-    """, (teacher_id,))
-    recent_entries = cursor.fetchall()
-
-    connection.close()
-
-    # Prepare statistics data
-    stats = {
-        'total_achievements': total_achievements,
-        'students_managed': students_managed,
-        'this_week': this_week_count
-    }
-    
-    return render_template("teacher_dashboard.html", 
-                           teacher=teacher_data,
-                           stats=stats,
-                           recent_entries=recent_entries)
-
-
-
-@app.route("/all-achievements", endpoint="all-achievements")
-def all_achievements():
-    # Check if user is logged in
-    if not session.get('logged_in'):
-        return redirect(url_for('teacher'))
-
-    teacher_id = session.get('teacher_id')
-    
-    # Connect to database
-    connection = sqlite3.connect(DB_PATH)
-    connection.row_factory = sqlite3.Row
-    cursor = connection.cursor()
-    
-    # Get all achievements by this teacher
-    cursor.execute("""
-        SELECT a.id, a.student_id, s.student_name, a.achievement_type, 
-               a.event_name, a.achievement_date, a.position, a.organizer,
-               a.certificate_path
-        FROM achievements a
-        JOIN student s ON a.student_id = s.student_id
-        WHERE a.teacher_id = ?
-        ORDER BY a.achievement_date DESC
-    """, (teacher_id,))
-    
-    achievements = cursor.fetchall()
-    connection.close()
-    
     return render_template("all_achievements.html", achievements=achievements)
 
 
-# ------------------------------------------------------------------
-# Firebase Authentication Routes
-# ------------------------------------------------------------------
-
+# ------------------------------------------------------------
+# Firebase Auth endpoints (keep if repo uses them)
+# ------------------------------------------------------------
 @app.route("/auth/firebase-config", methods=["GET"])
 def get_auth_firebase_config():
-    """
-    Returns Firebase configuration to frontend
-    This endpoint provides the config needed for Firebase initialization
-    IMPORTANT: apiKey is public and safe to expose, but never expose private keys
-    """
-    firebase_config = get_firebase_config()
-    return jsonify(firebase_config)
+    return jsonify(get_firebase_config())
 
 
 @app.route("/auth/google-login", methods=["POST"])
 def google_login():
-    """
-    Handle Google Sign-In authentication
-    
-    Expected POST data:
-    {
-        "email": "user@example.com",
-        "displayName": "User Name",
-        "photoURL": "https://...",
-        "uid": "firebase_uid",
-        "idToken": "firebase_id_token"
-    }
-    
-    TODO: Developers should integrate with Firebase Admin SDK to verify idToken
-    For now, basic email validation is implemented
-    """
     try:
-        data = request.get_json()
+        data = request.get_json() or {}
         email = data.get("email")
-        display_name = data.get("displayName")
-        photo_url = data.get("photoURL")
         firebase_uid = data.get("uid")
-        
-        # TODO: Verify idToken with Firebase Admin SDK
-        # import firebase_admin
-        # from firebase_admin import auth
-        # try:
-        #     decoded_token = auth.verify_id_token(data.get("idToken"))
-        #     uid = decoded_token['uid']
-        # except:
-        #     return jsonify({"success": False, "message": "Invalid token"}), 401
-        
+
         if not email:
             return jsonify({"success": False, "message": "Email is required"}), 400
-        
+
         connection = sqlite3.connect(DB_PATH)
         cursor = connection.cursor()
-        
-        # Check if student exists (students can login via Google)
+
         cursor.execute("SELECT * FROM student WHERE email = ?", (email,))
         student_data = cursor.fetchone()
-        
-        if student_data:
-            # Student exists - login via Google
-            session.permanent = True
-            session['logged_in'] = True
-            session['student_id'] = student_data[1]
-            session['student_name'] = student_data[0]
-            session['student_dept'] = student_data[6]
-            session['google_auth'] = True
-            session['firebase_uid'] = firebase_uid
-            
-            connection.close()
+        connection.close()
+
+        if not student_data:
             return jsonify({
-                "success": True, 
-                "message": "Student logged in successfully",
-                "redirectUrl": "/student-dashboard"
-            }), 200
-        else:
-            # TODO: Create new student account or ask to register
-            # For now, reject unknown users
-            connection.close()
-            return jsonify({
-                "success": False, 
+                "success": False,
                 "message": f"No student account found for {email}. Please register first."
             }), 404
-            
-    except Exception as e:
+
+        session.permanent = True
+        session["logged_in"] = True
+        session["student_id"] = student_data[1]
+        session["student_name"] = student_data[0]
+        session["student_dept"] = student_data[6]
+        session["google_auth"] = True
+        session["firebase_uid"] = firebase_uid
+
         return jsonify({
-            "success": False, 
-            "message": f"Login error: {str(e)}"
-        }), 500
+            "success": True,
+            "message": "Student logged in successfully",
+            "redirectUrl": "/student-dashboard"
+        }), 200
+
+    except Exception as e:
+        return jsonify({"success": False, "message": f"Login error: {str(e)}"}), 500
 
 
 @app.route("/auth/logout", methods=["POST"])
 def logout():
-    """
-    Handle logout for both traditional and Google Sign-In users
-    Clears session data
-    """
     session.clear()
-    return jsonify({
-        "success": True,
-        "message": "Logged out successfully"
-    }), 200
+    return jsonify({"success": True, "message": "Logged out successfully"}), 200
 
 
-    
 if __name__ == "__main__":
     init_db()
-    # migrate_achievements_table()
-    add_teacher_id_column()
     app.run(debug=True)
-
-
-

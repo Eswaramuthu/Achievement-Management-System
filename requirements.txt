@@ -1,4 +1,7 @@
 Flask 
 Flask_SQLAlchemy
+Flask-WTF
+Flask 
+Flask_SQLAlchemy
 python-dotenv
 pytest

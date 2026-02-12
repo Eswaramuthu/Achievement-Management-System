@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Student Login - Achievement Management System</title>
   <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
   <script src="{{ url_for('static', filename = 'script.js') }}"></script>
@@ -65,81 +66,130 @@
       opacity: 0.6;
       pointer-events: none;
     }
-/* ===== Theme Toggle (Top Right) ===== */
-.theme-toggle {
-  position: fixed;
-  top: 16px;
-  right: 20px;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: none;
-  background: #ffffff;
-  color: #000;
-  font-size: 20px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  z-index: 9999;
-}
 
-body:not(.light-mode) .theme-toggle {
-  background: #1f1f1f;
-  color: #fff;
-}
+    /* ===== Theme Toggle (Top Right) ===== */
+    .theme-toggle {
+      position: fixed;
+      top: 16px;
+      right: 20px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: none;
+      background: #ffffff;
+      color: #000;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 9999;
+    }
 
-/* ===== Auth Links Section ===== */
-.auth-links {
-  margin-top: 22px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
+    body:not(.light-mode) .theme-toggle {
+      background: #1f1f1f;
+      color: #fff;
+    }
 
-/* Register CTA (secondary action) */
-.register-cta {
-  font-size: 14px;
-  color: #d10000;
-  text-decoration: none;
-  font-weight: 600;
-}
+    /* ===== Auth Links Section ===== */
+    .auth-links {
+      margin-top: 22px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
 
-.register-cta:hover {
-  text-decoration: underline;
-}
+    /* Register CTA (secondary action) */
+    .register-cta {
+      font-size: 14px;
+      color: #d10000;
+      text-decoration: none;
+      font-weight: 600;
+    }
 
-/* Back to Home (tertiary navigation) */
-.back-home {
-  font-size: 13px;
-  color: #666;
-  text-decoration: none;
-}
+    .register-cta:hover {
+      text-decoration: underline;
+    }
 
-.back-home:hover {
-  text-decoration: underline;
-}
-</style>
+    /* Back to Home (tertiary navigation) */
+    .back-home {
+      font-size: 13px;
+      color: #666;
+      text-decoration: none;
+    }
 
+    .back-home:hover {
+      text-decoration: underline;
+    }
+
+    /* ===== Password visibility toggle ===== */
+    .password-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .password-wrapper input[type="password"],
+    .password-wrapper input[type="text"] {
+      width: 100%;
+      padding-right: 40px; 
+    }
+
+    .password-toggle-btn {
+      position: absolute;
+      right: 10px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: #fff;
+    }
+
+    .password-toggle-btn:focus {
+      outline: none;
+    }
   </style>
 </head>
-<button id="mode-toggle" class="theme-toggle" title="Toggle theme"></button>
 
+<body>
+  <button id="mode-toggle" class="theme-toggle" title="Toggle theme"></button>
 
   <div class="container login-container">
     <div class="title">Student Login</div>
     <div class="content">
       <form action="/student" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div class="user-details">
           <div class="input-box full-width">
             <span class="details">Student ID</span>
             <input autocomplete="off" autofocus type="text" name="sname" placeholder="Enter your Student ID" required />
           </div>
+
+          <!-- Password with visibility toggle -->
           <div class="input-box full-width">
             <span class="details">Password</span>
-            <input autocomplete="off" autofocus type="password" name="password" placeholder="Enter your password" required />
+            <input autocomplete="off" autofocus type="password" name="password" placeholder="Enter your password"
+              required />
+            <div class="password-wrapper">
+              <input
+                autocomplete="off"
+                type="password"
+                name="password"
+                id="student-login-password"
+                placeholder="Enter your password"
+                required
+              />
+              <button
+                type="button"
+                class="password-toggle-btn"
+                aria-label="Show password"
+                data-target="student-login-password"
+              >
+                👁
+              </button>
+            </div>
           </div>
         </div>
 
@@ -166,14 +216,14 @@ body:not(.light-mode) .theme-toggle {
       </div>
 
       <div class="auth-links">
-  <a class="register-cta" href="{{ url_for('student_new') }}">
-    New student? Register here
-  </a>
+        <a class="register-cta" href="{{ url_for('student_new') }}">
+          New student? Register here
+        </a>
 
-  <a class="back-home" href="{{ url_for('home') }}">
-    ← Back to Home
-  </a>
-</div>
+        <a class="back-home" href="{{ url_for('home') }}">
+          ← Back to Home
+        </a>
+      </div>
 
     </div>
   </div>
@@ -223,5 +273,27 @@ body:not(.light-mode) .theme-toggle {
 
     console.log("✅ Firebase Google Sign-In initialized on Student Login page");
   </script>
+
+  <!-- Password visibility toggle logic  -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggleButtons = document.querySelectorAll('.password-toggle-btn');
+
+      toggleButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const targetId = btn.getAttribute('data-target');
+          const input = document.getElementById(targetId);
+          if (!input) return;
+
+          const isPassword = input.type === 'password';
+          input.type = isPassword ? 'text' : 'password';
+          btn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+          btn.textContent = isPassword ? '🙈' : '👁';
+        });
+      });
+    });
+  </script>
 </body>
+
+</html>
 </html>
