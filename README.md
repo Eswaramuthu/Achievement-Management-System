@@ -33,7 +33,6 @@ python app.py
 
 
 ## Quick Start (macOS/Linux)
-
 ```bash
 # Clone repository
 git clone https://github.com/Manu95021/Achievement-Management-System.git
