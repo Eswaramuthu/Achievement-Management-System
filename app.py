@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import sqlite3
 import os
 import secrets
@@ -8,7 +8,12 @@ import datetime
 
 from flask_wtf.csrf import CSRFProtect
 
+
 app = Flask(__name__)
+@app.context_processor
+def inject_firebase_config():
+    return dict(firebase_config=get_firebase_config())
+from firebase_config import get_firebase_config
 # Enable CSRF protection
 csrf = CSRFProtect(app)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-this-in-prod')
@@ -709,7 +714,6 @@ if __name__ == "__main__":
     # migrate_achievements_table()
     add_teacher_id_column()
     app.run(debug=True)
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import sqlite3
 import os
 import datetime
