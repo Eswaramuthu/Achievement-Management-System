@@ -1,47 +1,95 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Teacher Login - Achievement Management System</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename = 'styles.css') }}"
+    />
+    <script src="{{ url_for('static', filename = 'script.js') }}"></script>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Teacher Login - Achievement Management System</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
-</head>
+    <!-- 🔥 NEW PROFESSIONAL THEME TOGGLE STYLING -->
+    <style>
+      /* ===== Theme Toggle (Top Right) ===== */
+      .theme-toggle {
+        position: fixed;
+        top: 16px;
+        right: 20px;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        border: none;
+        background: #ffffff;
+        color: #000;
+        font-size: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 9999;
+        transition: all 0.2s ease;
+      }
 
-<body>
-  <div class="toggle-container">
-    <button id="mode-toggle">Dark Mode 🌙</button>
-  </div>
+      body:not(.light-mode) .theme-toggle {
+        background: #1f1f1f;
+        color: #fff;
+      }
 
-  <div class="container login-container">
-    <div class="title">Teacher Login</div>
-    <div class="content">
-      <form action="/teacher" method="post">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-        <div class="user-details">
-          <div class="input-box full-width">
-            <span class="details">Teacher ID</span>
-            <input type="text" name="tname" placeholder="Enter your Teacher ID" required />
+      .theme-toggle:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- 🔥 UPGRADED MODERN THEME TOGGLE (Line 7) -->
+    <button id="mode-toggle" class="theme-toggle" title="Toggle theme">
+      🌙
+    </button>
+
+    <div class="container login-container">
+      <div class="title">Teacher Login</div>
+      <div class="content">
+        <form action="/teacher" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <div class="user-details">
+            <div class="input-box full-width">
+              <span class="details">Teacher ID</span>
+              <input
+                type="text"
+                name="tname"
+                placeholder="Enter your Teacher ID"
+                required
+              />
+            </div>
+            <div class="input-box full-width">
+              <span class="details">Password</span>
+              <input
+                type="password"
+                name="password"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
           </div>
-          <div class="input-box full-width">
-            <span class="details">Password</span>
-            <input type="password" name="password" placeholder="Enter your password" required />
+          <div class="button">
+            <input type="submit" value="Login" />
           </div>
+        </form>
+        <div class="register-link">
+          <p>
+            New teacher?
+            <a href="{{ url_for('teacher-new') }}">Register here</a>
+          </p>
         </div>
-
-        <div class="button">
-          <input type="submit" value="Login" />
+        <div class="back-link">
+          <a href="{{ url_for('home') }}">Back to Home</a>
         </div>
-      </form>
-      <div class="register-link">
-        <p>New teacher? <a href="{{ url_for('teacher-new') }}">Register here</a></p>
-      </div>
-      <div class="back-link">
-        <a href="{{ url_for('home') }}">Back to Home</a>
       </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

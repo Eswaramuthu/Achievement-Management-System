@@ -12,6 +12,13 @@ app = Flask(__name__)
 # Enable CSRF protection
 csrf = CSRFProtect(app)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-this-in-prod')
+# PERFECT - Add ONCE after app = Flask(__name__)
+@app.context_processor
+def inject_firebase_config():
+    try:
+        return dict(firebase_config=get_firebase_config())  # Uses existing function!
+    except:
+        return dict(firebase_config={"apiKey": "demo"})  # Safe fallback
 
 
 # Define database path consistently
@@ -253,7 +260,7 @@ def home():
 
 @app.route("/student", methods=["GET", "POST"])
 def student():
-    # Safe firebase config (works even if function missing)
+    # Safe firebase config ✅
     try:
         firebase_config = get_firebase_config()
     except:
@@ -263,21 +270,28 @@ def student():
         student_id = request.form.get("sname")
         password = request.form.get("password")
         
+        # Single query ✅
         connection = sqlite3.connect(DB_PATH)
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM student WHERE student_id = ?", (student_id,))
         student_data = cursor.fetchone()
         connection.close()
         
+        # Proper validation ✅
         if student_data and check_password_hash(student_data[4], password):
             session.permanent = True
             session['logged_in'] = True
             session['student_id'] = student_data[1]
             session['student_name'] = student_data[0]
             session['student_dept'] = student_data[6]
-            return redirect(url_for("student_dashboard"))
+            return redirect(url_for("student-dashboard"))  # ✅ FIXED endpoint
+        else:
+            return render_template("student.html", 
+                                 error="Invalid credentials. Please try again.", 
+                                 firebase_config=firebase_config)
     
     return render_template("student.html", firebase_config=firebase_config)
+
 
 @app.route("/teacher", methods=["GET", "POST"])
 def teacher():
