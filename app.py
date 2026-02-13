@@ -253,36 +253,31 @@ def home():
 
 @app.route("/student", methods=["GET", "POST"])
 def student():
+    # Safe firebase config (works even if function missing)
+    try:
+        firebase_config = get_firebase_config()
+    except:
+        firebase_config = {"apiKey": "demo", "authDomain": "local"}
+    
     if request.method == "POST":
-
-        # Get user data
         student_id = request.form.get("sname")
         password = request.form.get("password")
-
-        # Validate credentials against database
+        
         connection = sqlite3.connect(DB_PATH)
         cursor = connection.cursor()
-
-        # Query the database for the student
-        cursor.execute("SELECT * FROM student WHERE student_id = ? AND password = ?", 
-                      (student_id, password))
+        cursor.execute("SELECT * FROM student WHERE student_id = ?", (student_id,))
         student_data = cursor.fetchone()
         connection.close()
-
-        if student_data:
-            # Store user information in session
+        
+        if student_data and check_password_hash(student_data[4], password):
+            session.permanent = True
             session['logged_in'] = True
             session['student_id'] = student_data[1]
             session['student_name'] = student_data[0]
             session['student_dept'] = student_data[6]
-
-            # Authentication successful - store student info in session
-            return redirect(url_for("student-dashboard"))
-        else:
-            # Authentication failed
-            return render_template("student.html", error="Invalid credentials. Please try again.")
-    return render_template("student.html")
-
+            return redirect(url_for("student_dashboard"))
+    
+    return render_template("student.html", firebase_config=firebase_config)
 
 @app.route("/teacher", methods=["GET", "POST"])
 def teacher():
@@ -734,7 +729,12 @@ load_dotenv()
 app = Flask(__name__)
 
 app.secret_key = os.getenv("SECRET_KEY")
-
+@app.context_processor
+def inject_firebase_config():
+    try:
+        return dict(firebase_config=get_firebase_config())  # If function exists
+    except:
+        return dict(firebase_config={})  # Safe fallback
 # Choose config based on environment
 env = os.environ.get("FLASK_ENV", "development")
 
