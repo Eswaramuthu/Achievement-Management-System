@@ -1,9 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import sqlite3
 import os
-import secrets
-from werkzeug.utils import secure_filename
 import datetime
+from werkzeug.utils import secure_filename
+# This is the line you were missing:
+from werkzeug.security import generate_password_hash, check_password_hash 
+from flask_wtf.csrf import CSRFProtect
+from dotenv import load_dotenv
 
 
 from flask_wtf.csrf import CSRFProtect
@@ -743,12 +746,14 @@ load_dotenv()
 app = Flask(__name__)
 
 app.secret_key = os.getenv("SECRET_KEY")
+# After UPLOAD_FOLDER setup, before helper functions
 @app.context_processor
 def inject_firebase_config():
     try:
-        return dict(firebase_config=get_firebase_config())  # If function exists
+        return dict(firebase_config=get_firebase_config())
     except:
-        return dict(firebase_config={})  # Safe fallback
+        return dict(firebase_config={"apiKey": "demo", "authDomain": "localhost"})
+
 # Choose config based on environment
 env = os.environ.get("FLASK_ENV", "development")
 
