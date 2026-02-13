@@ -171,5 +171,16 @@ Academic project developed at SRM Institute of Science and Technology.
 
 ## Contact
 
-For questions or collaboration:
+**For questions or collaboration:**
 - GitHub Issues: **https://github.com/Manu95021/Achievement-Management-System/issues**
+
+- This PR introduces centralized error handling with custom 404 and 500 pages.
+
+Enhancements:
+- Added reusable error handler module
+- Custom 404 page for invalid routes
+- Custom 500 page for server errors
+- Improved overall user experience
+
+This replaces default Flask error pages with clean UI-based responses.
+
