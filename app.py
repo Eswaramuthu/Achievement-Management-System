@@ -4,7 +4,7 @@ import os
 import secrets
 from werkzeug.utils import secure_filename
 import datetime
-
+from firebase_config import get_firebase_config
 
 from flask_wtf.csrf import CSRFProtect
 
@@ -12,6 +12,12 @@ app = Flask(__name__)
 # Enable CSRF protection
 csrf = CSRFProtect(app)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-this-in-prod')
+
+# Inject Firebase config into all templates
+@app.context_processor
+def inject_firebase_config():
+    return dict(firebase_config=get_firebase_config())
+
 
 
 # Define database path consistently
