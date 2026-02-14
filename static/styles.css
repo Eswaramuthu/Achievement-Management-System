@@ -173,30 +173,22 @@ body {
   border: 1px solid #333;
 }
 
-/* Navigation Styles */
-.navbar {
-  display: flex;
-  flex-direction: column;
-  /* Stack items vertically */
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem 2rem;
+/* ===== HEADER & NAVIGATION ===== */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   background: var(--glass-bg);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border-color);
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  height: 140px;
-  /* Increased height for specific 2-row layout */
 }
 
 .nav-brand {
   width: 100%;
   text-align: center;
+  padding: 2rem 0;
+  background: var(--glass-bg);
+  transition: all 0.3s ease;
 }
 
 .nav-brand h2 {
@@ -205,7 +197,46 @@ body {
   display: block;
   /* Ensure it's not hidden */
   font-size: 1.5rem;
-  /* Explicit size */
+}
+
+
+/* Hide brand when scrolled */
+.header.scrolled .nav-brand {
+  max-height: 0;
+  padding: 0;
+  overflow: hidden;
+}
+.nav-content-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2rem;
+  background: var(--glass-bg);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* Small logo - hidden initially */
+.nav-logo-small {
+  opacity: 0;
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--primary-color);
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  position: absolute;
+  left: 2rem;
+}
+
+/* Show small logo when scrolled */
+.header.scrolled .nav-content-wrapper {
+  padding: 0.7rem 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header.scrolled .nav-logo-small {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .nav-menu {
@@ -242,16 +273,8 @@ body {
   transition: 0.3s;
 }
 
-/* Header offset to account for fixed navbar */
-.header {
-  height: 140px;
-  /* Match navbar height */
-}
-
-/* Main content with proper spacing */
+/* ===== MAIN CONTENT ===== */
 .main-content {
-  margin-top: 140px;
-  /* Match navbar height */
   min-height: calc(100vh - 200px);
 }
 
@@ -517,32 +540,44 @@ body {
   font-size: 0.9rem;
 }
 
-/* Responsive */
-
+/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
-  .navbar {
-    flex-direction: row;
-    /* Restore row layout for mobile */
-    justify-content: space-between;
-    height: 80px;
-    /* Restore original mobile height */
-    padding: 1rem 70px 1rem 1rem;
-    /* Increase right padding to clear fixed toggle */
-    align-items: center;
-  }
-
   .header {
-    height: 80px;
+    position: sticky;
+    top: 0;
   }
 
-  .main-content {
-    margin-top: 80px;
+  .nav-brand {
+    padding: 1rem 0;
+  }
+
+  .nav-brand h2 {
+    font-size: 1.2rem;
+  }
+
+  .nav-content-wrapper {
+    justify-content: space-between;
+    padding: 1rem;
+    position: relative;
+  }
+
+  .nav-logo-small {
+    position: static;
+    opacity: 0;
+  }
+
+  .header.scrolled .nav-menu{
+    top: 55px;
+  }
+
+  .header.scrolled .nav-logo-small {
+    opacity: 1;
   }
 
   .nav-menu {
     position: fixed;
     left: -100%;
-    top: 80px;
+    top: 120px;
     /* Match header height */
     flex-direction: column;
     background-color: var(--bg-color);
@@ -670,7 +705,7 @@ body {
 .stat-item {
   margin: 0 auto;
   max-width: 250px;
-}
+  }
 
 .stat-item h3 {
   font-size: 2.5rem;
