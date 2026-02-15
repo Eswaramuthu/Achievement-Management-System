@@ -1,3 +1,10 @@
+import os
+import io
+import csv
+import sqlite3
+import datetime
+import secrets
+
 from flask import (
     Flask,
     render_template,
@@ -9,17 +16,28 @@ from flask import (
     send_file,
     abort,
 )
-import sqlite3
-import os
-import datetime
-import csv
-import io
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 
-from config import DevelopmentConfig, ProductionConfig
-from firebase_config import get_firebase_config
+# ------------------------------------------------------------
+# Optional imports (don’t break if files not present)
+# ------------------------------------------------------------
+try:
+    from config import DevelopmentConfig, ProductionConfig  # type: ignore
+except Exception:
+    DevelopmentConfig = None
+    ProductionConfig = None
+
+try:
+    from firebase_config import get_firebase_config as _get_firebase_config  # type: ignore
+except Exception:
+    _get_firebase_config = None
+
+
+def get_firebase_config():
+    return _get_firebase_config() if _get_firebase_config else {}
+
 
 # ------------------------------------------------------------
 # App setup
@@ -29,17 +47,18 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key-change-this")
 
-env = os.environ.get("FLASK_ENV", "development")
-if env == "production":
+env = os.getenv("FLASK_ENV", "development").lower()
+
+# Load config if available (safe)
+if env == "production" and ProductionConfig is not None:
     app.config.from_object(ProductionConfig)
-    # ProductionConfig.validate()  # if your project has it
-else:
+elif DevelopmentConfig is not None:
     app.config.from_object(DevelopmentConfig)
 
-DB_PATH = app.config.get("DB_PATH", os.path.join(os.path.dirname(__file__), "ams.db"))
-UPLOAD_FOLDER = app.config.get(
-    "UPLOAD_FOLDER", os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "uploads")
-)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+DB_PATH = app.config.get("DB_PATH", os.path.join(BASE_DIR, "ams.db"))
+UPLOAD_FOLDER = app.config.get("UPLOAD_FOLDER", os.path.join(BASE_DIR, "static", "uploads"))
 ALLOWED_EXTENSIONS = app.config.get("ALLOWED_EXTENSIONS", {"pdf", "png", "jpg", "jpeg"})
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -60,6 +79,18 @@ def has_teacher_session() -> bool:
     return bool(session.get("logged_in") and session.get("teacher_id"))
 
 
+def verify_password(stored_pw: str, incoming_pw: str) -> bool:
+    """
+    Supports both hashed passwords (new) and plain-text (old DB).
+    """
+    if not stored_pw:
+        return False
+    try:
+        return check_password_hash(stored_pw, incoming_pw)
+    except Exception:
+        return stored_pw == incoming_pw
+
+
 # ------------------------------------------------------------
 # DB schema safety (non-destructive)
 # ------------------------------------------------------------
@@ -78,7 +109,6 @@ def ensure_achievements_schema(connection: sqlite3.Connection) -> None:
         cursor.execute("ALTER TABLE achievements ADD COLUMN teacher_id TEXT DEFAULT 'unknown'")
 
     if "created_at" not in col_names:
-        # Add column then backfill. We will also set created_at on new inserts explicitly.
         cursor.execute("ALTER TABLE achievements ADD COLUMN created_at TEXT")
         cursor.execute("UPDATE achievements SET created_at = datetime('now') WHERE created_at IS NULL")
 
@@ -168,7 +198,6 @@ init_db()
 # ------------------------------------------------------------
 @app.route("/")
 def home():
-    # Keep home.html (older repo). If your repo uses index.html, change it here.
     return render_template("home.html")
 
 
@@ -186,16 +215,9 @@ def student():
         student_data = cursor.fetchone()
         connection.close()
 
-        # If your DB stores plain password (older), fallback
         if student_data:
             stored_pw = student_data[4]
-            ok = False
-            try:
-                ok = check_password_hash(stored_pw, password)
-            except Exception:
-                ok = (stored_pw == password)
-
-            if ok:
+            if verify_password(stored_pw, password):
                 session.permanent = True
                 session["logged_in"] = True
                 session["student_id"] = student_data[1]
@@ -226,13 +248,7 @@ def teacher():
 
         if teacher_data:
             stored_pw = teacher_data[4]
-            ok = False
-            try:
-                ok = check_password_hash(stored_pw, password)
-            except Exception:
-                ok = (stored_pw == password)
-
-            if ok:
+            if verify_password(stored_pw, password):
                 session.permanent = True
                 session["logged_in"] = True
                 session["teacher_id"] = teacher_data[1]
@@ -289,9 +305,10 @@ def teacher_new():
         teacher_gender = request.form.get("teacher_gender")
         teacher_dept = request.form.get("teacher_dept")
 
+        # Optional: protect teacher registration with a code
         teacher_code = request.form.get("teacher_code")
         required_code = os.environ.get("TEACHER_REGISTRATION_CODE", "admin123")
-        if teacher_code != required_code:
+        if teacher_code is not None and teacher_code != required_code:
             return render_template("teacher_new_2.html", error="Invalid Teacher Code. Registration denied.")
 
         connection = sqlite3.connect(DB_PATH)
@@ -351,6 +368,7 @@ def submit_achievements():
             team_size = request.form.get("team_size")
             team_size = int(team_size) if team_size and team_size.strip() else None
 
+            # Handle certificate file upload
             certificate_path = None
             if "certificate" in request.files:
                 file = request.files["certificate"]
@@ -368,16 +386,15 @@ def submit_achievements():
             connection = sqlite3.connect(DB_PATH)
             cursor = connection.cursor()
 
-            # Ensure schema safety
             ensure_achievements_schema(connection)
 
+            # Validate student exists
             cursor.execute("SELECT student_id, student_name FROM student WHERE student_id = ?", (student_id,))
             student_data = cursor.fetchone()
             if not student_data:
                 connection.close()
                 return render_template("submit_achievements.html", error="Student ID does not exist in the system.")
 
-            # Always set created_at explicitly (safe for old DBs)
             created_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
             cursor.execute(
@@ -462,9 +479,7 @@ def student_achievements():
     connection.close()
 
     total_achievements = len(achievements)
-    first_positions = sum(
-        1 for a in achievements if "first" in (a["position"] or "").lower()
-    )
+    first_positions = sum(1 for a in achievements if "first" in (a["position"] or "").lower())
 
     return render_template(
         "student_achievements_1.html",
@@ -516,11 +531,7 @@ def download_achievement_certificate(achievement_id: int):
     if not row or not row["certificate_path"]:
         abort(404)
 
-    absolute_path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        "static",
-        row["certificate_path"],
-    )
+    absolute_path = os.path.join(BASE_DIR, "static", row["certificate_path"])
     if not os.path.exists(absolute_path):
         abort(404)
 
@@ -555,14 +566,16 @@ def export_student_achievements():
     writer = csv.writer(output)
     writer.writerow(["Achievement Type", "Event Name", "Date", "Organizer", "Position", "Description"])
     for r in rows:
-        writer.writerow([
-            r["achievement_type"],
-            r["event_name"],
-            r["achievement_date"],
-            r["organizer"],
-            r["position"],
-            r["achievement_description"] or "",
-        ])
+        writer.writerow(
+            [
+                r["achievement_type"],
+                r["event_name"],
+                r["achievement_date"],
+                r["organizer"],
+                r["position"],
+                r["achievement_description"] or "",
+            ]
+        )
 
     return send_file(
         io.BytesIO(output.getvalue().encode("utf-8")),
@@ -604,16 +617,12 @@ def teacher_dashboard():
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
 
-    # Ensure schema safety before queries
     ensure_achievements_schema(connection)
 
     cursor.execute("SELECT COUNT(*) AS c FROM achievements WHERE teacher_id = ?", (teacher_id,))
     total_achievements = cursor.fetchone()["c"]
 
-    cursor.execute(
-        "SELECT COUNT(DISTINCT student_id) AS c FROM achievements WHERE teacher_id = ?",
-        (teacher_id,),
-    )
+    cursor.execute("SELECT COUNT(DISTINCT student_id) AS c FROM achievements WHERE teacher_id = ?", (teacher_id,))
     students_managed = cursor.fetchone()["c"]
 
     one_week_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime("%Y-%m-%d")
@@ -645,12 +654,7 @@ def teacher_dashboard():
         "this_week": this_week_count,
     }
 
-    return render_template(
-        "teacher_dashboard.html",
-        teacher=teacher_data,
-        stats=stats,
-        recent_entries=recent_entries,
-    )
+    return render_template("teacher_dashboard.html", teacher=teacher_data, stats=stats, recent_entries=recent_entries)
 
 
 @app.route("/all-achievements", endpoint="all-achievements")
@@ -676,6 +680,7 @@ def all_achievements():
         """,
         (teacher_id,),
     )
+
     achievements = cursor.fetchall()
     connection.close()
 
@@ -683,7 +688,7 @@ def all_achievements():
 
 
 # ------------------------------------------------------------
-# Firebase Auth endpoints (keep if repo uses them)
+# Firebase Auth endpoints (only if firebase_config exists)
 # ------------------------------------------------------------
 @app.route("/auth/firebase-config", methods=["GET"])
 def get_auth_firebase_config():
@@ -692,6 +697,9 @@ def get_auth_firebase_config():
 
 @app.route("/auth/google-login", methods=["POST"])
 def google_login():
+    """
+    Works only if your frontend sends {email, uid}. If you don’t use Firebase, ignore this route.
+    """
     try:
         data = request.get_json() or {}
         email = data.get("email")
@@ -702,16 +710,14 @@ def google_login():
 
         connection = sqlite3.connect(DB_PATH)
         cursor = connection.cursor()
-
         cursor.execute("SELECT * FROM student WHERE email = ?", (email,))
         student_data = cursor.fetchone()
         connection.close()
 
         if not student_data:
-            return jsonify({
-                "success": False,
-                "message": f"No student account found for {email}. Please register first."
-            }), 404
+            return jsonify(
+                {"success": False, "message": f"No student account found for {email}. Please register first."}
+            ), 404
 
         session.permanent = True
         session["logged_in"] = True
@@ -721,22 +727,24 @@ def google_login():
         session["google_auth"] = True
         session["firebase_uid"] = firebase_uid
 
-        return jsonify({
-            "success": True,
-            "message": "Student logged in successfully",
-            "redirectUrl": "/student-dashboard"
-        }), 200
+        return jsonify({"success": True, "message": "Student logged in successfully", "redirectUrl": "/student-dashboard"}), 200
 
     except Exception as e:
         return jsonify({"success": False, "message": f"Login error: {str(e)}"}), 500
 
 
+@app.route("/logout", methods=["GET"])
+def web_logout():
+    session.clear()
+    return redirect(url_for("home"))
+
+
 @app.route("/auth/logout", methods=["POST"])
-def logout():
+def api_logout():
     session.clear()
     return jsonify({"success": True, "message": "Logged out successfully"}), 200
 
 
 if __name__ == "__main__":
     init_db()
-    app.run(debug=True)
+    app.run(debug=(env != "production"))
