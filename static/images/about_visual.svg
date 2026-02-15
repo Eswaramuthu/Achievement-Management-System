@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 400" fill="none">
+  <!-- Background Elements -->
+  <circle cx="250" cy="200" r="180" fill="url(#bg-gradient)" opacity="0.1"/>
+  <defs>
+    <linearGradient id="bg-gradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+    <linearGradient id="screen-gradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.1)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0.02)"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Dashboard Screen (Center) -->
+  <rect x="100" y="80" width="300" height="200" rx="10" fill="url(#screen-gradient)" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+  
+  <!-- Header Bar -->
+  <rect x="120" y="100" width="260" height="20" rx="4" fill="rgba(255,255,255,0.1)"/>
+  <circle cx="135" cy="110" r="4" fill="#ef4444"/>
+  <circle cx="150" cy="110" r="4" fill="#f59e0b"/>
+  <circle cx="165" cy="110" r="4" fill="#22c55e"/>
+
+  <!-- Charts -->
+  <rect x="120" y="140" width="120" height="80" rx="4" fill="rgba(255,255,255,0.05)"/>
+  <path d="M130 200 L150 180 L170 190 L190 160 L210 170 L230 150" stroke="#6366f1" stroke-width="2" fill="none"/>
+  
+  <rect x="260" y="140" width="120" height="80" rx="4" fill="rgba(255,255,255,0.05)"/>
+  <rect x="270" y="160" width="15" height="40" fill="#a855f7" opacity="0.8"/>
+  <rect x="295" y="180" width="15" height="20" fill="#a855f7" opacity="0.6"/>
+  <rect x="320" y="150" width="15" height="50" fill="#a855f7" opacity="0.9"/>
+  <rect x="345" y="170" width="15" height="30" fill="#a855f7" opacity="0.7"/>
+
+  <!-- Teacher Icon (Right) -->
+  <g transform="translate(320, 220)">
+    <circle cx="40" cy="40" r="50" fill="rgba(99, 102, 241, 0.2)" stroke="#6366f1" stroke-width="2"/>
+    <circle cx="40" cy="30" r="15" fill="#e0e7ff"/>
+    <path d="M20 70 Q40 90 60 70 V80 H20 V70" fill="#e0e7ff"/>
+    <rect x="50" y="20" width="40" height="30" rx="4" fill="white" stroke="#6366f1" stroke-width="2"/>
+    <path d="M55 30 H85 M55 40 H75" stroke="#94a3b8" stroke-width="2"/>
+    <text x="40" y="110" font-family="sans-serif" font-size="14" fill="white" text-anchor="middle" font-weight="bold">Teacher</text>
+  </g>
+
+  <!-- Student Icon (Left) -->
+  <g transform="translate(60, 200)">
+    <circle cx="40" cy="40" r="50" fill="rgba(168, 85, 247, 0.2)" stroke="#a855f7" stroke-width="2"/>
+    <circle cx="40" cy="35" r="15" fill="#f3e8ff"/>
+    <path d="M20 75 Q40 95 60 75 V85 H20 V75" fill="#f3e8ff"/>
+    <path d="M20 30 L40 15 L60 30 L40 40 Z" fill="#a855f7"/> <!-- Graduation Cap -->
+    <text x="40" y="110" font-family="sans-serif" font-size="14" fill="white" text-anchor="middle" font-weight="bold">Student</text>
+  </g>
+</svg>

@@ -4,13 +4,38 @@
 
 <!-- Hero Section -->
 <section class="hero">
-    <div class="hero-content">
-        <h1>Welcome to Achievement Management System</h1>
-        <p>A centralized platform where students and teachers track academic achievements in one place. Students view their accomplishments, teachers record them, and everyone gets a clear picture of academic progress — all automated and organized.</p>
-        <div class="hero-buttons">
-            <a href="{{ url_for('student') }}" class="btn btn-primary">Student Login</a>
-            <a href="{{ url_for('teacher') }}" class="btn btn-secondary">Teacher Login</a>
+    <div class="hero-container">
+        <div class="hero-content">
+            <span class="hero-badge">Academic Excellence</span>
+            <h1>Welcome to <br><span class="gradient-text">Achievement Management System</span></h1>
+            <p>A centralized platform where students and teachers track academic achievements in one place. Students
+                view their accomplishments, teachers record them, and everyone gets a clear picture of academic progress
+                — all automated and organized.</p>
+            <div class="hero-buttons">
+                <a href="{{ url_for('student') }}" class="btn btn-primary"><span>Student Login</span></a>
+                <a href="{{ url_for('teacher') }}" class="btn btn-secondary"><span>Teacher Login</span></a>
+            </div>
+
+            <!-- <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">500+</span>
+                    <span class="stat-label">Students</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">10k+</span>
+                    <span class="stat-label">Records</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Secure</span>
+                </div>
+            </div> -->
         </div>
+        <!-- <div class="hero-image">
+            <div class="hero-blob"></div>
+            <img src="https://ui-avatars.com/api/?name=AMS&background=4f46e5&color=fff&size=400&font-size=0.33"
+                alt="Achievement Management System" class="floating-img">
+        </div> -->
     </div>
 </section>
 
@@ -42,11 +67,36 @@
 <!-- About Section -->
 <section id="about" class="about">
     <div class="container">
-        <h2 class="title">About Our System</h2>
-        <div class="about-content">
-            <div class="about-text">
-                <p>Academic achievements are scattered everywhere — certificates in folders, emails buried in inboxes, paper records collecting dust. Students struggle to showcase their accomplishments during placements or applications. Teachers waste time managing spreadsheets and physical documents. Nobody has a clear, organized view of what students have actually achieved.</p>
-                <p>Our Achievement Management System centralizes everything. Students see all their achievements in one dashboard with analytics. Teachers input achievements through simple forms with auto-complete. The system tracks hackathons, coding competitions, paper presentations, conferences, and symposiums — complete with certificates, dates, positions, and detailed descriptions. Clean, fast, and organized.</p>
+        <div class="about-grid">
+            <div class="about-content-left">
+                <h2 class="about-title">About Our System</h2>
+                <div class="about-card">
+                    <div class="about-text">
+                        <p>Academic achievements are scattered everywhere — certificates in folders, emails buried in
+                            inboxes,
+                            paper records collecting dust. Students struggle to showcase their accomplishments during
+                            placements
+                            or applications. Teachers waste time managing spreadsheets and physical documents. Nobody
+                            has a
+                            clear, organized view of what students have actually achieved.</p>
+                        <p>Our Achievement Management System centralizes everything. Students see all their achievements
+                            in
+                            one
+                            dashboard with analytics. Teachers input achievements through simple forms with
+                            auto-complete.
+                            The
+                            system tracks hackathons, coding competitions, paper presentations, conferences, and
+                            symposiums
+                            —
+                            complete with certificates, dates, positions, and detailed descriptions. Clean, fast, and
+                            organized.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="about-visual-right">
+                <img src="{{ url_for('static', filename='images/about_visual.svg') }}" class="about-image"
+                    alt="Student and Teacher tracking achievements">
             </div>
         </div>
     </div>
@@ -57,22 +107,71 @@
     <div class="container">
         <h2 class="title">Frequently Asked Questions</h2>
         <div class="faq-content">
-            <div class="faq-item">
-                <h3>What is Achievement Management System?</h3>
-                <p>It is a centralized platform designed to help students and teachers track academic achievements efficiently.</p>
-            </div>
-            <div class="faq-item">
-                <h3>Who can use this platform?</h3>
-                <p>Both students and teachers can use this system for recording and monitoring academic accomplishments.</p>
-            </div>
-            <div class="faq-item">
-                <h3>Can certificates be uploaded?</h3>
-                <p>Yes, users can upload digital certificates which remain accessible anytime.</p>
-            </div>
-            <div class="faq-item">
-                <h3>Is my data secure?</h3>
-                <p>The system uses authentication and structured data storage practices to keep information secure.</p>
-            </div>
+            <details class="faq-item">
+                <summary>
+                    <h3>What is Achievement Management System?</h3>
+                    <span class="faq-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </span>
+                </summary>
+                <div class="faq-answer">
+                    <p>It is a centralized platform designed to help students and teachers track academic achievements
+                        efficiently.</p>
+                </div>
+            </details>
+
+            <details class="faq-item">
+                <summary>
+                    <h3>Who can use this platform?</h3>
+                    <span class="faq-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </span>
+                </summary>
+                <div class="faq-answer">
+                    <p>Both students and teachers can use this system for recording and monitoring academic
+                        accomplishments.
+                    </p>
+                </div>
+            </details>
+
+            <details class="faq-item">
+                <summary>
+                    <h3>Can certificates be uploaded?</h3>
+                    <span class="faq-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </span>
+                </summary>
+                <div class="faq-answer">
+                    <p>Yes, users can upload digital certificates which remain accessible anytime.</p>
+                </div>
+            </details>
+
+            <details class="faq-item">
+                <summary>
+                    <h3>Is my data secure?</h3>
+                    <span class="faq-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </span>
+                </summary>
+                <div class="faq-answer">
+                    <p>The system uses authentication and structured data storage practices to keep information secure.
+                    </p>
+                </div>
+            </details>
+
+
         </div>
     </div>
 </section>
@@ -81,15 +180,45 @@
 <section id="contact" class="contact">
     <div class="container">
         <h2 class="title">Contact Us</h2>
-        <div class="contact-content">
-            <div class="contact-info">
-                <h3>Get In Touch</h3>
-                <p>Have questions or feedback? Reach out to us!</p>
-                <ul>
-                    <li>Email: info@achievement-system.com</li>
-                    <li>Phone: +1 (123) 456-7890</li>
-                    <li>Location: SRM Institute of Science and Technology</li>
-                </ul>
+        <div class="contact-content-wrapper">
+            <div class="contact-card">
+                <div class="contact-icon-box">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                    </svg>
+                </div>
+                <h3>Email Us</h3>
+                <p>info@achievement-system.com</p>
+                <a href="mailto:info@achievement-system.com" class="contact-link">Send Email &rarr;</a>
+            </div>
+
+            <div class="contact-card">
+                <div class="contact-icon-box">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                    </svg>
+                </div>
+                <h3>Call Us</h3>
+                <p>+1 (123) 456-7890</p>
+                <a href="tel:+11234567890" class="contact-link">Call Now &rarr;</a>
+            </div>
+
+            <div class="contact-card">
+                <div class="contact-icon-box">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                    </svg>
+                </div>
+                <h3>Visit Us</h3>
+                <p>SRM Institute of Science and Technology</p>
+                <a href="#" class="contact-link">Get Directions &rarr;</a>
             </div>
         </div>
     </div>

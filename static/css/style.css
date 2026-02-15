@@ -1,0 +1,1095 @@
+/* -------------------------------------------------- */
+/* 1. CSS Variables & Theme Setup                     */
+/* -------------------------------------------------- */
+:root {
+    /* Core Colors */
+    --primary-color: #06b6d4;
+    /* Cyan 500 */
+    --primary-hover: #0891b2;
+    /* Cyan 600 */
+    --secondary-color: #8b5cf6;
+    /* Violet 500 */
+    --accent-color: #f59e0b;
+    /* Amber 500 */
+
+    /* Dark Mode Default */
+    --bg-color: #0b0f19;
+    /* Deep Navy */
+    --bg-secondary: #111827;
+    /* Gray 900 */
+    --text-main: #f9fafb;
+    /* Gray 50 */
+    --text-muted: #94a3b8;
+    /* Slate 400 */
+    --border-color: #1e293b;
+    /* Slate 800 */
+
+    /* Grid Background Variables */
+    --grid-color: rgba(255, 255, 255, 0.05);
+
+    /* Floating Navbar */
+    --nav-bg: rgba(15, 23, 42, 0.7);
+    --nav-border: rgba(148, 163, 184, 0.1);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+
+    /* Spacing & Layout */
+    --container-width: 1200px;
+    --header-height: 90px;
+    --radius-md: 0.75rem;
+    --radius-lg: 1.5rem;
+    --radius-full: 9999px;
+
+    /* Transitions */
+    --transition-fast: 0.2s ease;
+    --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Semantic Theme Variables (Dark Default) */
+    --text-header: #ffffff;
+    --text-body: #94a3b8;
+    --card-bg: rgba(255, 255, 255, 0.03);
+    --card-border: rgba(255, 255, 255, 0.08);
+    --card-hover-bg: rgba(255, 255, 255, 0.06);
+    --card-hover-border: rgba(99, 102, 241, 0.4);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    --input-bg: rgba(255, 255, 255, 0.05);
+    --input-border: rgba(255, 255, 255, 0.1);
+}
+
+/* Light Mode Overrides */
+body.light-mode {
+    --bg-color: #f0f4f8;
+    --bg-secondary: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #475569;
+    --border-color: #cbd5e1;
+    --grid-color: rgba(0, 0, 0, 0.05);
+    --nav-bg: rgba(255, 255, 255, 0.85);
+    --nav-border: rgba(0, 0, 0, 0.1);
+
+    /* Semantic Light Mode Values */
+    --text-header: #1e293b;
+    --text-body: #334155;
+    --card-bg: rgba(255, 255, 255, 0.6);
+    --card-border: rgba(203, 213, 225, 0.6);
+    --card-hover-bg: rgba(255, 255, 255, 0.9);
+    --card-hover-border: rgba(99, 102, 241, 0.6);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+    --input-bg: rgba(255, 255, 255, 0.8);
+    --input-border: rgba(203, 213, 225, 0.8);
+}
+
+/* -------------------------------------------------- */
+/* 2. Reset & Global Styles                           */
+/* -------------------------------------------------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    line-height: 1.6;
+    position: relative;
+    /* Grid Background Pattern */
+    background-image:
+        linear-gradient(var(--grid-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+    background-size: 50px 50px;
+    min-height: 100vh;
+}
+
+/* Vignette Effect (Dark Overlay) */
+body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, transparent 0%, rgba(11, 15, 25, 0.8) 100%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: color var(--transition-fast);
+}
+
+ul {
+    list-style: none;
+}
+
+/* -------------------------------------------------- */
+/* 3. Floating Pill Navbar                            */
+/* -------------------------------------------------- */
+.header {
+    position: fixed;
+    top: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: var(--container-width);
+    height: auto;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.navbar {
+    width: 100%;
+    background: var(--nav-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--nav-border);
+    padding: 1rem 2rem;
+    border-radius: var(--radius-full);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--glass-shadow);
+}
+
+.nav-brand h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-header);
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Logo icon placeholder if needed */
+.nav-brand h2::before {
+    content: '';
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-color: var(--secondary-color);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--secondary-color);
+}
+
+.nav-menu {
+    display: flex;
+    gap: 2.5rem;
+    align-items: center;
+}
+
+.nav-menu a {
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    transition: color var(--transition-fast);
+}
+
+.nav-menu a:hover {
+    color: var(--text-header);
+}
+
+/* Highlight "Home" or Active Link */
+.nav-menu a.active {
+    color: var(--text-header);
+}
+
+/* Login/Action Buttons in Navbar */
+.nav-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-nav {
+    padding: 0.6rem 1.4rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: var(--radius-full);
+    transition: all var(--transition-smooth);
+}
+
+
+
+/* Hamburger Menu */
+.nav-toggle {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    gap: 6px;
+}
+
+.nav-toggle .bar {
+    width: 24px;
+    height: 2px;
+    background-color: var(--text-header);
+    border-radius: 2px;
+}
+
+/* -------------------------------------------------- */
+/* 4. Responsive Design (Mobile)                      */
+/* -------------------------------------------------- */
+@media (max-width: 968px) {
+    .header {
+        width: 95%;
+        top: 1rem;
+    }
+
+    .nav-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: var(--nav-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--nav-border);
+        border-radius: 1rem;
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 2rem;
+        margin-top: 1rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .nav-menu.active {
+        display: flex;
+        animation: slideDown 0.3s ease-out;
+    }
+
+    .nav-toggle {
+        display: flex;
+    }
+
+    .about-content-left {
+        padding-left: 0;
+        text-align: center;
+    }
+
+    .about-title {
+        font-size: 2rem;
+    }
+
+    /* Global Section Padding Reduction */
+    .hero,
+    .features,
+    .about,
+    .contact,
+    .FAQ {
+        padding: 4rem 0;
+    }
+}
+
+/* -------------------------------------------------- */
+/* 5. Theme Toggle Button                             */
+/* -------------------------------------------------- */
+.toggle-container {
+    display: flex;
+    align-items: center;
+}
+
+.theme-toggle {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--accent-color);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+    margin-right: 1rem;
+}
+
+.theme-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* -------------------------------------------------- */
+/* 6. Footer Styles                                   */
+/* -------------------------------------------------- */
+.footer {
+    background-color: transparent;
+    padding: 4rem 1rem 2rem;
+    border-top: 1px solid var(--border-color);
+    margin-top: auto;
+    position: relative;
+    z-index: 10;
+}
+
+.footer-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    /* Force one line on desktop */
+    gap: 5rem;
+}
+
+.footer-section {
+    flex: 0 1 auto;
+    /* Don't grow, allow shrink, wrap is disabled on content */
+    max-width: 320px;
+}
+
+.footer-section h3 {
+    color: #ffff;
+    /* Match red headers in reference */
+    margin-bottom: 1.25rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section li {
+    margin-bottom: 0.6rem;
+    color: var(--text-muted);
+}
+
+.footer-section a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.footer-section a:hover {
+    color: #ffff;
+}
+
+/* -------------------------------------------------- */
+/* 7. Centered Hero Section                           */
+/* -------------------------------------------------- */
+.hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8rem 1rem 4rem;
+    /* Top padding to account for fixed navbar */
+    z-index: 1;
+}
+
+/* Hero Badge */
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    background-color: rgba(6, 182, 212, 0.1);
+    color: var(--primary-color);
+    font-weight: 500;
+    font-size: 0.9rem;
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(6, 182, 212, 0.3);
+    margin-bottom: 2rem;
+    backdrop-filter: blur(4px);
+    animation: fadeDown 0.8s ease-out;
+}
+
+.hero-badge::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--primary-color);
+}
+
+/* Hero Heading */
+.hero h1 {
+    font-size: 4rem;
+    line-height: 1.1;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    color: var(--text-header);
+    max-width: 900px;
+    animation: fadeUp 0.8s ease-out 0.2s backwards;
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, #ffffff 0%, var(--primary-color) 50%, var(--secondary-color) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+.hero p {
+    font-size: 1.25rem;
+    color: var(--text-body);
+    max-width: 600px;
+    margin: 0 auto 3rem;
+    animation: fadeUp 0.8s ease-out 0.4s backwards;
+}
+
+/* Hero Buttons */
+.hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    animation: fadeUp 0.8s ease-out 0.6s backwards;
+}
+
+/* -------------------------------------------------- */
+/* Interactive Button Styles (Skew Slide Effect)      */
+/* -------------------------------------------------- */
+.btn {
+    outline: none;
+    cursor: pointer;
+    border: none;
+    padding: 0.9rem 2rem;
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    position: relative;
+    display: inline-block;
+    letter-spacing: 0.05rem;
+    font-weight: 700;
+    font-size: 17px;
+    border-radius: 500px;
+    overflow: hidden;
+    color: ghostwhite;
+    /* Default background for buttons if not specified */
+    background: var(--bg-secondary);
+}
+
+.btn span {
+    position: relative;
+    z-index: 10;
+    transition: color 0.4s;
+}
+
+.btn:hover span {
+    color: black;
+}
+
+.btn::before,
+.btn::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+/* The Sliding Overlay */
+.btn::before {
+    content: "";
+    background: #000;
+    /* Initial dark overlay */
+    width: 120%;
+    left: -10%;
+    transform: skew(30deg);
+    transition: transform 0.4s cubic-bezier(0.3, 1, 0.8, 1);
+}
+
+.btn:hover::before {
+    transform: translate3d(100%, 0, 0);
+}
+
+/* Specific Colors */
+.btn-primary {
+    background: var(--primary-color);
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+}
+
+.btn-secondary {
+    background: var(--secondary-color);
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+}
+
+.btn-lg {
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+}
+
+/* Animations */
+@keyframes fadeDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile Hero adjustments */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+
+    .btn-lg {
+        width: 100%;
+    }
+}
+
+/* 9. Modern Feature Cards (Glassmorphism)            */
+/* -------------------------------------------------- */
+.features {
+    padding: 6rem 0;
+    position: relative;
+    overflow: hidden;
+    z-index: 5;
+}
+
+/* Background glow for glass effect context */
+.features::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    height: 60%;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.05) 40%, rgba(0, 0, 0, 0) 70%);
+    z-index: 0;
+    pointer-events: none;
+}
+
+.features .title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 4rem;
+    color: var(--text-header);
+    position: relative;
+    z-index: 1;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.feature-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--card-border);
+    border-radius: 1rem;
+    padding: 2.5rem;
+    box-shadow: var(--glass-shadow);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        box-shadow 0.4s ease,
+        border-color 0.4s ease,
+        background 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+    border-color: var(--card-hover-border);
+    background: var(--card-hover-bg);
+}
+
+/* Glass card title gradient */
+.feature-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--text-header);
+}
+
+.feature-card p {
+    font-size: 1rem;
+    color: var(--text-body);
+    line-height: 1.6;
+}
+
+.footer-text {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #94a3b8;
+}
+
+.btn-card-action {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    border-radius: 0.5rem;
+    background: linear-gradient(to right, #6366f1, #a855f7);
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-header);
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3);
+    text-decoration: none;
+}
+
+.btn-card-action:hover {
+    background: linear-gradient(to right, #4f46e5, #9333ea);
+    transform: translateY(-1px);
+}
+
+/* -------------------------------------------------- */
+/* 10. About Section (Redesigned)                     */
+/* -------------------------------------------------- */
+.about {
+    padding: 6rem 0;
+    position: relative;
+    z-index: 5;
+    overflow: hidden;
+}
+
+.about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+@media (max-width: 968px) {
+    .about-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+}
+
+/* Left Content */
+.about-content-left {
+    padding-left: 2rem;
+    /* Move away from left edge */
+}
+
+.about-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    line-height: 1.2;
+    background: linear-gradient(135deg, var(--text-header) 0%, #a78bfa 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: block;
+    /* Changed from inline-block */
+    text-align: center;
+    /* Center the title */
+    width: 100%;
+}
+
+.about-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--card-border);
+    border-radius: 1.5rem;
+    padding: 3rem;
+    box-shadow: var(--glass-shadow);
+    position: relative;
+    overflow: hidden;
+}
+
+.about-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+    opacity: 0.8;
+}
+
+.about-text p {
+    font-size: 1.15rem;
+    color: var(--text-body);
+    line-height: 1.9;
+    margin-bottom: 1.5rem;
+    text-align: justify;
+}
+
+.about-text p:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 968px) {
+    .about-text p {
+        text-align: center;
+    }
+}
+
+/* Right Visual (Image) */
+.about-visual-right {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.about-image {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
+    animation: float 6s ease-in-out infinite;
+    transition: transform 0.3s ease;
+}
+
+.about-image:hover {
+    transform: scale(1.02);
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+
+
+
+
+/* -------------------------------------------------- */
+/* 11. FAQ Section (Accordion)                        */
+/* -------------------------------------------------- */
+.FAQ {
+    padding: 6rem 0;
+    position: relative;
+    z-index: 5;
+}
+
+.FAQ .title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 3rem;
+    color: var(--text-header);
+}
+
+.faq-content {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.faq-item {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.faq-item:hover {
+    border-color: var(--card-hover-border);
+    background: var(--card-hover-bg);
+}
+
+.faq-item summary {
+    padding: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    list-style: none;
+    user-select: none;
+}
+
+.faq-item summary::-webkit-details-marker {
+    display: none;
+}
+
+.faq-item h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-header);
+}
+
+.faq-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--primary-color);
+    transition: transform 0.3s ease;
+}
+
+.faq-item[open] .faq-icon {
+    transform: rotate(180deg);
+}
+
+.faq-answer {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    color: var(--text-body);
+    line-height: 1.6;
+    border-top: 1px solid var(--card-border);
+    margin-top: -0.5rem;
+    padding-top: 1rem;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* -------------------------------------------------- */
+/* 12. Contact Section (Redesigned)                   */
+/* -------------------------------------------------- */
+.contact {
+    padding: 6rem 0;
+    position: relative;
+    z-index: 5;
+}
+
+.contact .title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 4rem;
+    color: var(--text-header);
+}
+
+.contact-content-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.contact-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(12px);
+    border-radius: 1rem;
+    padding: 2.5rem;
+    flex: 1;
+    min-width: 280px;
+    max-width: 350px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.contact-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--card-hover-border);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15);
+    background: var(--card-hover-bg);
+}
+
+.contact-icon-box {
+    width: 4rem;
+    height: 4rem;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.1));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.1);
+}
+
+.contact-icon-box svg {
+    width: 2rem;
+    height: 2rem;
+}
+
+.contact-card h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--text-header);
+}
+
+.contact-card p {
+    color: var(--text-body);
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.contact-link {
+    margin-top: auto;
+    color: var(--primary-color);
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: gap 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.contact-link:hover {
+    gap: 0.75rem;
+    text-decoration: underline;
+}
+
+/* -------------------------------------------------- */
+/* 13. Advanced Footer                                */
+/* -------------------------------------------------- */
+.footer {
+    background-color: var(--bg-secondary);
+    padding: 4rem 1rem 2rem;
+    border-top: 1px solid var(--border-color);
+    margin-top: auto;
+    position: relative;
+    z-index: 10;
+}
+
+/* ... (Footer grid layout preserved) ... */
+
+.footer-column h3 {
+    color: var(--text-header);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.footer-column p {
+    color: var(--text-body);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.footer-column ul {
+    list-style: none;
+}
+
+.footer-column ul li {
+    margin-bottom: 0.75rem;
+    white-space: nowrap;
+}
+
+.footer-column ul li a {
+    color: var(--text-body);
+    transition: color 0.2s, padding-left 0.2s;
+}
+
+.footer-column ul li a:hover {
+    color: var(--primary-color);
+    padding-left: 5px;
+}
+
+.social-links {
+    display: flex;
+    gap: 1rem;
+}
+
+.social-icon {
+    font-size: 0.9rem;
+    color: var(--text-header);
+    background: var(--input-bg);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+.social-icon:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.newsletter-form {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.newsletter-form input {
+    flex: 1;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    color: var(--text-header);
+    font-family: inherit;
+}
+
+.newsletter-form input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.btn-subscribe {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+    /* ... rest of styles ... */
+}
+
+.footer-bottom {
+    text-align: center;
+    border-top: 1px solid var(--border-color);
+    padding-top: 2rem;
+    font-size: 0.9rem;
+    color: var(--text-body);
+}
