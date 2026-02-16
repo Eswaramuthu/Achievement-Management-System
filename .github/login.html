@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Achievement Portal</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+
+<style>
+
+/* DEFAULT THEME (DARK) */
+
+:root{
+
+--bg:#0a0a0c;
+--bg2:#1e1e26;
+
+--card:#16161a;
+
+--text:#ffffff;
+--textDim:#94a3b8;
+
+--border:#27272a;
+
+--input:#1f1f24;
+
+--student:#3b82f6;
+--teacher:#8b5cf6;
+--primary:#f59e0b;
+
+}
+
+
+/* LIGHT THEME */
+
+[data-theme="light"]{
+
+--bg:#f1f5f9;
+--bg2:#ffffff;
+
+--card:#ffffff;
+
+--text:#0f172a;
+--textDim:#475569;
+
+--border:#e2e8f0;
+
+--input:#f8fafc;
+
+}
+
+
+/* RESET */
+
+*{
+
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:'Outfit',sans-serif;
+
+}
+
+
+/* BODY */
+
+body{
+
+background:
+
+radial-gradient(circle,
+var(--bg2),
+var(--bg));
+
+min-height:100vh;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+padding:20px;
+
+color:var(--text);
+
+transition:0.3s;
+
+}
+
+
+/* CARD */
+
+.card{
+
+width:100%;
+max-width:450px;
+
+background:var(--card);
+
+padding:40px;
+
+border-radius:20px;
+
+border:1px solid var(--border);
+
+box-shadow:0 10px 40px rgba(0,0,0,0.2);
+
+transition:0.3s;
+
+}
+
+
+/* HEADER */
+
+.header{
+
+text-align:center;
+
+margin-bottom:25px;
+
+}
+
+.icon{
+
+font-size:40px;
+
+}
+
+
+/* TITLE GRADIENT */
+
+#title{
+
+font-size:28px;
+
+font-weight:700;
+
+background: linear-gradient(90deg,#3b82f6,#8b5cf6,#f59e0b);
+
+-webkit-background-clip:text;
+
+color:transparent;
+
+}
+
+
+.header p{
+
+color:var(--textDim);
+
+}
+
+
+/* ROLE BUTTON */
+
+.role{
+
+display:flex;
+
+background:var(--input);
+
+padding:5px;
+
+border-radius:12px;
+
+margin:20px 0;
+
+}
+
+.role button{
+
+flex:1;
+
+padding:12px;
+
+border:none;
+
+background:none;
+
+color:var(--textDim);
+
+border-radius:10px;
+
+font-weight:600;
+
+cursor:pointer;
+
+transition:0.3s;
+
+}
+
+.student.active{
+
+background:var(--student);
+
+color:white;
+
+}
+
+.teacher.active{
+
+background:var(--teacher);
+
+color:white;
+
+}
+
+
+/* INPUT */
+
+.group{
+
+margin-bottom:15px;
+
+}
+
+.group label{
+
+display:block;
+
+margin-bottom:5px;
+
+color:var(--textDim);
+
+}
+
+.group input{
+
+width:100%;
+
+padding:14px;
+
+border-radius:12px;
+
+border:1px solid var(--border);
+
+background:var(--input);
+
+color:var(--text);
+
+font-size:16px;
+
+}
+
+.group input:focus{
+
+outline:none;
+
+border-color:var(--primary);
+
+}
+
+
+/* BUTTON */
+
+.submit{
+
+width:100%;
+
+padding:15px;
+
+border:none;
+
+border-radius:12px;
+
+background:var(--primary);
+
+font-weight:700;
+
+cursor:pointer;
+
+transition:0.3s;
+
+}
+
+.submit:hover{
+
+transform:translateY(-2px);
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+
+<div class="card">
+
+
+<div class="header">
+
+
+<div class="icon">🏆</div>
+
+
+<h1 id="title">
+
+Achievement Portal
+
+</h1>
+
+
+<p>
+
+Your milestones managed smartly
+
+</p>
+
+
+</div>
+
+
+
+<div class="role">
+
+
+<button class="student active"
+id="studentBtn"
+onclick="setRole('student')">
+
+Student
+
+</button>
+
+
+
+<button class="teacher"
+id="teacherBtn"
+onclick="setRole('teacher')">
+
+Faculty
+
+</button>
+
+
+</div>
+
+
+
+<form>
+
+
+<div class="group">
+
+
+<label id="idLabel">
+
+Registration ID
+
+</label>
+
+
+<input required>
+
+
+</div>
+
+
+
+<div class="group">
+
+
+<label>
+
+Security Key
+
+</label>
+
+
+<input type="password" required>
+
+
+</div>
+
+
+
+<button class="submit">
+
+Unlock Portal
+
+</button>
+
+
+</form>
+
+
+</div>
+
+
+
+<script>
+
+
+function setRole(role){
+
+const s=document.getElementById("studentBtn")
+const t=document.getElementById("teacherBtn")
+
+const label=document.getElementById("idLabel")
+
+s.classList.remove("active")
+t.classList.remove("active")
+
+if(role==="teacher"){
+
+t.classList.add("active")
+
+label.innerHTML="Employee Code"
+
+}
+
+else{
+
+s.classList.add("active")
+
+label.innerHTML="Registration ID"
+
+}
+
+}
+
+
+
+/* OPTIONAL DEMO TOGGLE (remove if you already have one) */
+
+function toggleTheme(){
+
+const html=document.documentElement
+
+if(html.getAttribute("data-theme")==="dark"){
+
+html.setAttribute("data-theme","light")
+
+}else{
+
+html.setAttribute("data-theme","dark")
+
+}
+
+}
+
+
+</script>
+
+
+
+</body>
+
+</html>
