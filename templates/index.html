@@ -1,31 +1,126 @@
 <!DOCTYPE html>
-
 <html lang="en">
-    <head>
-        <title>Achievement Management System</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
-    </head>
+<head>
+<meta charset="UTF-8">
+<title>Achievement Management System</title>
 
-    <body>
-        <div class="heading">
-            <h1>Achievement Management System</h1>
-        </div>
+<style>
 
-        <h1>You want to login as</h1>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+}
 
-        <div class="student-row">
-            <div class="student-col">
-                <h3>Student</h3>
-            </div>
-        </div>
+/* Card container */
+.container {
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 40px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  text-align: center;
+}
 
-        <div class="teacher-row">
-            <div class="teacher-col">
-                <h3>Teacher</h3>
-            </div>
-        </div>
-    </body>
+/* Title */
+h1 {
+  margin-bottom: 10px;
+}
+
+h1::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 4px;
+  background: red;
+  margin: 8px auto;
+  border-radius: 5px;
+}
+
+/* Subtitle */
+p {
+  margin: 20px 0;
+  font-size: 18px;
+  color: #444;
+}
+
+/* Button area */
+.buttons {
+  margin-top: 30px;
+}
+
+/* Buttons */
+.role-btn {
+  display: inline-block;
+  padding: 14px 24px;
+  margin: 10px;
+
+  background: #d60000;
+  color: white;
+
+  border: none;
+  border-radius: 10px;
+
+  font-size: 16px;
+  font-weight: bold;
+
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Hover effect */
+.role-btn:hover {
+  background: #ff1a1a;
+  transform: scale(1.05);
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+  .role-btn {
+    display: block;
+    width: 100%;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>Achievement Management System</h1>
+
+  <p>
+    Welcome to the Achievement Management System.
+    Please select your role to continue.
+  </p>
+
+<div class="login-options">
+
+  <a href="{{ url_for('student') }}" class="login-button">
+    🎓 Student Login
+  </a>
+
+  <a href="{{ url_for('teacher') }}" class="login-button">
+    👩‍🏫 Teacher Login
+  </a>
+
+</div>
+
+
+<script>
+
+function goStudent() {
+  window.location.href = "/student_login";
+}
+
+function goTeacher() {
+  window.location.href = "/teacher_login";
+}
+
+</script>
+
+</body>
 </html>
