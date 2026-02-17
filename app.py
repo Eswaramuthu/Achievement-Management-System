@@ -5,9 +5,19 @@ import secrets
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
+from firebase_config import get_firebase_config
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(16))
+
+# Simple CSRF token function for templates
+@app.context_processor
+def utility_processor():
+    def csrf_token():
+        # Return empty string for now since we're not using proper CSRF protection
+        # In production, you should implement proper CSRF protection
+        return ""
+    return dict(csrf_token=csrf_token)
 
 # ✅ Portable DB path (works on Windows/Linux/Vercel)
 DB_PATH = os.path.join(os.path.dirname(__file__), "ams.db")
@@ -196,31 +206,34 @@ init_db()
 
 @app.route("/")
 def home():
-    return render_template("home.html")
+    firebase_config = get_firebase_config()
+    return render_template("home.html", firebase_config=firebase_config)
 
 
 @app.route("/student", methods=["GET", "POST"])
 def student():
+    firebase_config = get_firebase_config()
+    
     if request.method == "POST":
         student_id = request.form.get("sname")
         password = request.form.get("password")
 
         connection = sqlite3.connect(DB_PATH)
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM student WHERE student_id = ? AND password = ?", (student_id, password))
+        cursor.execute("SELECT * FROM student WHERE student_id = ?", (student_id,))
         student_data = cursor.fetchone()
         connection.close()
 
-        if student_data:
+        if student_data and check_password_hash(student_data[4], password):
             session["logged_in"] = True
             session["student_id"] = student_data[1]
             session["student_name"] = student_data[0]
             session["student_dept"] = student_data[6]
             return redirect(url_for("student-dashboard"))
         else:
-            return render_template("student.html", error="Invalid credentials. Please try again.")
+            return render_template("student.html", error="Invalid credentials. Please try again.", firebase_config=firebase_config)
 
-    return render_template("student.html")
+    return render_template("student.html", firebase_config=firebase_config)
 
 
 @app.route("/teacher", methods=["GET", "POST"])
@@ -231,11 +244,11 @@ def teacher():
 
         connection = sqlite3.connect(DB_PATH)
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM teacher WHERE teacher_id = ? AND password = ?", (teacher_id, password))
+        cursor.execute("SELECT * FROM teacher WHERE teacher_id = ?", (teacher_id,))
         teacher_data = cursor.fetchone()
         connection.close()
 
-        if teacher_data:
+        if teacher_data and check_password_hash(teacher_data[4], password):
             session["logged_in"] = True
             session["teacher_id"] = teacher_data[1]
             session["teacher_name"] = teacher_data[0]
@@ -250,12 +263,14 @@ def teacher():
 @app.route("/student-new", methods=["GET", "POST"])
 @app.route("/student_new", methods=["GET", "POST"])
 def student_new():
+    firebase_config = get_firebase_config()
+    
     if request.method == "POST":
         student_name = request.form.get("student_name")
         student_id = request.form.get("student_id")
         email = request.form.get("email")
         phone_number = request.form.get("phone_number")
-        password = request.form.get("password")
+        password = generate_password_hash(request.form.get("password"))
         student_gender = request.form.get("student_gender")
         student_dept = request.form.get("student_dept")
 
@@ -282,11 +297,11 @@ def student_new():
             connection.commit()
             return redirect(url_for("student"))
         except sqlite3.Error as e:
-            return render_template("student_new_2.html", error=f"Database error: {e}")
+            return render_template("student_new_2.html", error=f"Database error: {e}", firebase_config=firebase_config)
         finally:
             connection.close()
 
-    return render_template("student_new_2.html")
+    return render_template("student_new_2.html", firebase_config=firebase_config)
 
 
 @app.route("/teacher-new", endpoint="teacher-new", methods=["GET", "POST"])
@@ -296,7 +311,7 @@ def teacher_new():
         teacher_id = request.form.get("teacher_id")
         email = request.form.get("email")
         phone_number = request.form.get("phone_number")
-        password = request.form.get("password")
+        password = generate_password_hash(request.form.get("password"))
         teacher_gender = request.form.get("teacher_gender")
         teacher_dept = request.form.get("teacher_dept")
 
