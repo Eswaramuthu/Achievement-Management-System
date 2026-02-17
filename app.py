@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
 import sqlite3
 import os
 import secrets
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 
 app = Flask(__name__)
@@ -40,6 +41,34 @@ def ensure_achievements_schema(connection):
         print("created_at column added and backfilled successfully")
 
     connection.commit()
+
+
+def add_profile_picture_column():
+    """
+    Add profile_picture column to student table if it doesn't exist
+    """
+    try:
+        connection = sqlite3.connect(DB_PATH)
+        cursor = connection.cursor()
+
+        # Check if profile_picture column exists in student table
+        cursor.execute("PRAGMA table_info(student)")
+        columns = cursor.fetchall()
+        column_names = [column[1] for column in columns]
+
+        if "profile_picture" not in column_names:
+            print("Adding profile_picture column to student table...")
+            cursor.execute(
+                "ALTER TABLE student ADD COLUMN profile_picture TEXT"
+            )
+            connection.commit()
+            print("profile_picture column added successfully!")
+        else:
+            print("profile_picture column already exists in student table")
+
+        connection.close()
+    except sqlite3.Error as e:
+        print(f"Error adding profile_picture column: {e}")
 
 
 # Define a function to check allowed file extensions
@@ -219,6 +248,7 @@ def teacher():
 
 
 @app.route("/student-new", methods=["GET", "POST"])
+@app.route("/student_new", methods=["GET", "POST"])
 def student_new():
     if request.method == "POST":
         student_name = request.form.get("student_name")
@@ -421,6 +451,168 @@ def student_dashboard():
     return render_template("student_dashboard.html", student=student_data)
 
 
+@app.route("/student/profile", endpoint="student-profile")
+def student_profile():
+    # Check if user is logged in
+    if not session.get('logged_in') or not session.get('student_id'):
+        return redirect(url_for('student'))
+
+    # Get student ID from session
+    student_id = session.get('student_id')
+    
+    # Connect to database
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+    
+    # Get student data from database
+    cursor.execute("SELECT * FROM student WHERE student_id = ?", (student_id,))
+    student = cursor.fetchone()
+    
+    connection.close()
+    
+    if not student:
+        # Student not found in database (should not happen)
+        session.clear()
+        return redirect(url_for('student'))
+    
+    # Convert row to dict for easier template access
+    student_dict = dict(student)
+    
+    # Build profile picture URL if exists
+    profile_picture_url = None
+    if student_dict.get('profile_picture'):
+        profile_picture_url = url_for('static', filename=student_dict['profile_picture'])
+    
+    return render_template("student_profile.html", 
+                          student=student_dict, 
+                          profile_picture_url=profile_picture_url)
+
+
+@app.route("/student/profile/edit", endpoint="student_profile_edit", methods=["POST"])
+def student_profile_edit():
+    # Check if user is logged in
+    if not session.get('logged_in') or not session.get('student_id'):
+        return redirect(url_for('student'))
+    
+    student_id = session.get('student_id')
+    
+    try:
+        # Get form data
+        student_name = request.form.get('student_name')
+        email = request.form.get('email')
+        phone_number = request.form.get('phone_number')
+        student_gender = request.form.get('student_gender')
+        student_dept = request.form.get('student_dept')
+        current_password = request.form.get('current_password')
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+        
+        # Connect to database
+        connection = sqlite3.connect(DB_PATH)
+        cursor = connection.cursor()
+        
+        # Get current student data
+        cursor.execute("SELECT * FROM student WHERE student_id = ?", (student_id,))
+        student = cursor.fetchone()
+        
+        if not student:
+            connection.close()
+            session.clear()
+            return redirect(url_for('student'))
+        
+        # Handle password change if requested
+        if current_password and new_password and confirm_password:
+            # Verify current password
+            if not check_password_hash(student[4], current_password):
+                connection.close()
+                flash('Current password is incorrect', 'danger')
+                return redirect(url_for('student-profile'))
+            
+            # Verify new passwords match
+            if new_password != confirm_password:
+                connection.close()
+                flash('New passwords do not match', 'danger')
+                return redirect(url_for('student-profile'))
+            
+            # Verify password length
+            if len(new_password) < 6:
+                connection.close()
+                flash('New password must be at least 6 characters long', 'danger')
+                return redirect(url_for('student-profile'))
+            
+            # Hash new password
+            hashed_password = generate_password_hash(new_password)
+        else:
+            # Keep existing password
+            hashed_password = student[4]
+        
+        # Handle profile picture upload
+        profile_picture_path = None
+        if 'profile_picture' in request.files:
+            file = request.files['profile_picture']
+            if file and file.filename != '':
+                if allowed_file(file.filename):
+                    # Create a secure filename with timestamp to prevent duplicates
+                    timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+                    secure_name = f"profile_{student_id}_{timestamp}_{secure_filename(file.filename)}"
+                    
+                    # Create profiles subdirectory if it doesn't exist
+                    profiles_dir = os.path.join(UPLOAD_FOLDER, 'profiles')
+                    os.makedirs(profiles_dir, exist_ok=True)
+                    
+                    file_path = os.path.join(profiles_dir, secure_name)
+                    file.save(file_path)
+                    profile_picture_path = f"uploads/profiles/{secure_name}"
+                    
+                    # Delete old profile picture if exists
+                    if student[7]:  # profile_picture is at index 7
+                        old_picture_path = os.path.join('static', student[7])
+                        if os.path.exists(old_picture_path):
+                            try:
+                                os.remove(old_picture_path)
+                            except:
+                                pass  # Ignore error if file doesn't exist
+                else:
+                    connection.close()
+                    flash('Invalid file type. Please upload JPG, JPEG, or PNG files.', 'danger')
+                    return redirect(url_for('student-profile'))
+        
+        # Update student data in database
+        if profile_picture_path:
+            cursor.execute("""
+                UPDATE student 
+                SET student_name = ?, email = ?, phone_number = ?, 
+                    student_gender = ?, student_dept = ?, password = ?, 
+                    profile_picture = ?
+                WHERE student_id = ?
+            """, (student_name, email, phone_number, student_gender, 
+                  student_dept, hashed_password, profile_picture_path, student_id))
+        else:
+            cursor.execute("""
+                UPDATE student 
+                SET student_name = ?, email = ?, phone_number = ?, 
+                    student_gender = ?, student_dept = ?, password = ?
+                WHERE student_id = ?
+            """, (student_name, email, phone_number, student_gender, 
+                  student_dept, hashed_password, student_id))
+        
+        connection.commit()
+        connection.close()
+        
+        # Update session data
+        session['student_name'] = student_name
+        session['student_dept'] = student_dept
+        
+        flash('Profile updated successfully!', 'success')
+        return redirect(url_for('student-profile'))
+        
+    except Exception as e:
+        print(f"Error updating profile: {e}")
+        flash(f'Error updating profile: {str(e)}', 'danger')
+        return redirect(url_for('student-profile'))
+
+
 @app.route("/teacher-dashboard", endpoint="teacher-dashboard")
 def teacher_dashboard():
     if not session.get("logged_in"):
@@ -507,5 +699,6 @@ def all_achievements():
 
 if __name__ == "__main__":
     init_db()
+    add_profile_picture_column()
     app.run(debug=True)
 
