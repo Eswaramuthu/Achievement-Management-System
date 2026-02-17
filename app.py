@@ -1,3 +1,4 @@
+from firebase_config import get_firebase_config
 from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
 import os
@@ -172,6 +173,8 @@ def home():
 
 @app.route("/student", methods=["GET", "POST"])
 def student():
+    firebase_config = get_firebase_config()
+
     if request.method == "POST":
         student_id = request.form.get("sname")
         password = request.form.get("password")
@@ -189,9 +192,9 @@ def student():
             session["student_dept"] = student_data[6]
             return redirect(url_for("student-dashboard"))
         else:
-            return render_template("student.html", error="Invalid credentials. Please try again.")
-
-    return render_template("student.html")
+            # Authentication failed
+            return render_template("student.html", error="Invalid credentials. Please try again.", firebase_config=firebase_config)
+    return render_template("student.html", firebase_config=get_firebase_config())
 
 
 @app.route("/teacher", methods=["GET", "POST"])
@@ -408,7 +411,7 @@ def student_achievements():
     return render_template("student_achievements_1.html", student=student_data)
 
 
-@app.route("/student-dashboard", endpoint="student-dashboard")
+@app.route("/student-dashboard")
 def student_dashboard():
     if not session.get("logged_in"):
         return redirect(url_for("student"))

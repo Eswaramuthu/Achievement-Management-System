@@ -83,7 +83,18 @@
     .stat-label {
       font-size: 14px;
     }
-    
+
+    .student-warning {
+    display: none;
+    margin-top: 10px;
+    padding: 10px 15px;
+    border-radius: 8px;
+    background: rgba(255, 0, 0, 0.1);
+    color: #ff4d4d;
+    font-size: 14px;
+    border: 1px solid rgba(255, 0, 0, 0.3);
+}
+
     .filter-options {
       display: flex;
       gap: 15px;
@@ -168,7 +179,7 @@
       text-decoration: none;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 10px;
     }
     
     .download-btn {
@@ -223,15 +234,20 @@
   <div class="toggle-container">
     <button id="mode-toggle">Dark Mode 🌙</button>
   </div>
-<div class="achievement-box"
+<div class="achievement-box">
   <div class="achievement-container">
     <div class="dashboard-header">
       <div class="title">My Achievements</div>
       <div class="action-buttons">
+        <button id="add-achievement-btn" class="action-button view-btn">+ Add Achievements</button>
         <button class="action-button view-btn">Export All Achievements</button>
       </div>
     </div>
-    
+
+    <div id="student-warning" class="student-warning">
+    Please contact your teacher for adding additional achievements.
+</div>
+
     <div class="content">
       <div class="student-info">
         <div class="student-avatar">{{ student.name[0] }}</div>
@@ -379,6 +395,24 @@
       const achievementCards = document.querySelectorAll('.achievement-card');
       const noAchievements = document.querySelector('.no-achievements');
       
+      const addBtn = document.getElementById('add-achievement-btn');
+      const warningBox = document.getElementById("student-warning");
+      
+if (addBtn) {
+  addBtn.addEventListener('click', function() {
+   
+
+    if (warningBox) {
+      warningBox.style.display = 'block';
+
+      setTimeout(() => {
+        warningBox.style.display = 'none';
+      }, 3000);
+      }
+
+  });
+}
+
       function filterAchievements() {
         const typeValue = filterType.value.toLowerCase();
         const yearValue = filterYear.value;
@@ -426,6 +460,5 @@
 
 
   </script>
-</div>
 </body>
 </html>
