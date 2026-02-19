@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Teacher Dashboard - Achievement Management System</title>
   <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
   <script src="{{ url_for('static', filename = 'script.js') }}"></script>
@@ -11,16 +12,16 @@
     .dashboard-container {
       max-width: 1200px !important;
     }
-    
+
     /* Header Section Improvements */
     .dashboard-header {
       margin-bottom: 40px;
     }
-    
+
     .greeting-section {
       margin-bottom: 30px;
     }
-    
+
     .greeting-text {
       font-size: 28px;
       font-weight: 600;
@@ -30,13 +31,13 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-    
+
     .date-text {
       font-size: 14px;
       color: var(--text-secondary);
       font-weight: 400;
     }
-    
+
     .teacher-info {
       display: flex;
       align-items: center;
@@ -50,12 +51,12 @@
       box-shadow: var(--shadow-sm);
       transition: all 0.3s ease;
     }
-    
+
     .teacher-info:hover {
       box-shadow: var(--shadow-md);
       transform: translateY(-2px);
     }
-    
+
     .teacher-avatar {
       width: 100px;
       height: 100px;
@@ -71,19 +72,19 @@
       border: 3px solid rgba(255, 255, 255, 0.2);
       transition: all 0.3s ease;
     }
-    
+
     .teacher-info:hover .teacher-avatar {
       transform: scale(1.05);
       box-shadow: 0 6px 24px rgba(255, 28, 28, 0.4);
     }
-    
+
     .teacher-details h2 {
       margin: 0 0 8px 0;
       font-size: 26px;
       font-weight: 600;
       color: var(--text-color);
     }
-    
+
     .teacher-details p {
       margin: 0;
       font-size: 15px;
@@ -92,12 +93,12 @@
       align-items: center;
       gap: 8px;
     }
-    
+
     .teacher-details p i {
       font-size: 14px;
       color: var(--primary-color);
     }
-    
+
     /* Statistics Cards with Icons and Colors */
     .dashboard-stats {
       display: grid;
@@ -105,7 +106,7 @@
       gap: 24px;
       margin-bottom: 40px;
     }
-    
+
     .stat-card {
       position: relative;
       background: var(--glass-bg);
@@ -118,7 +119,7 @@
       -webkit-backdrop-filter: blur(10px);
       box-shadow: var(--shadow-sm);
     }
-    
+
     .stat-card::before {
       content: '';
       position: absolute;
@@ -131,37 +132,37 @@
       transform-origin: left;
       transition: transform 0.4s ease;
     }
-    
+
     .stat-card:hover::before {
       transform: scaleX(1);
     }
-    
+
     .stat-card:hover {
       transform: translateY(-8px);
       box-shadow: var(--shadow-lg);
       background: var(--glass-bg-hover);
       border-color: var(--stat-color);
     }
-    
+
     .stat-card.achievement {
       --stat-color: var(--stat-achievement);
     }
-    
+
     .stat-card.students {
       --stat-color: var(--stat-students);
     }
-    
+
     .stat-card.week {
       --stat-color: var(--stat-week);
     }
-    
+
     .stat-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 16px;
     }
-    
+
     .stat-icon {
       width: 56px;
       height: 56px;
@@ -175,12 +176,12 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       transition: all 0.3s ease;
     }
-    
+
     .stat-card:hover .stat-icon {
       transform: scale(1.1) rotate(5deg);
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
     }
-    
+
     .stat-number {
       font-size: 36px;
       font-weight: 700;
@@ -189,11 +190,11 @@
       margin-bottom: 8px;
       transition: color 0.3s ease;
     }
-    
+
     .stat-card:hover .stat-number {
       color: var(--stat-color);
     }
-    
+
     .stat-label {
       font-size: 15px;
       color: var(--text-secondary);
@@ -201,7 +202,7 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
-    
+
     /* Dashboard Actions with Primary Emphasis */
     .dashboard-actions {
       display: grid;
@@ -209,7 +210,7 @@
       gap: 24px;
       margin-top: 40px;
     }
-    
+
     .dashboard-action {
       position: relative;
       background: var(--glass-bg);
@@ -225,7 +226,7 @@
       box-shadow: var(--shadow-sm);
       overflow: hidden;
     }
-    
+
     .dashboard-action::before {
       content: '';
       position: absolute;
@@ -236,35 +237,35 @@
       background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
       transition: left 0.5s ease;
     }
-    
+
     .dashboard-action:hover::before {
       left: 100%;
     }
-    
+
     .dashboard-action:hover {
       transform: translateY(-8px);
       box-shadow: var(--shadow-lg);
       background: var(--glass-bg-hover);
     }
-    
+
     .dashboard-action.primary {
       background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
       border-color: var(--primary-color);
       color: white;
       box-shadow: var(--shadow-primary);
     }
-    
+
     .dashboard-action.primary:hover {
       box-shadow: 0 8px 32px rgba(255, 28, 28, 0.5);
       transform: translateY(-10px) scale(1.02);
     }
-    
+
     .dashboard-action.primary .action-icon,
     .dashboard-action.primary .action-title,
     .dashboard-action.primary .action-description {
       color: white;
     }
-    
+
     .action-icon {
       font-size: 48px;
       margin-bottom: 20px;
@@ -272,43 +273,43 @@
       transition: all 0.3s ease;
       display: inline-block;
     }
-    
+
     .dashboard-action:hover .action-icon {
       transform: scale(1.15) rotate(5deg);
     }
-    
+
     .action-title {
       font-size: 20px;
       font-weight: 600;
       margin-bottom: 12px;
       color: var(--text-color);
     }
-    
+
     .action-description {
       font-size: 14px;
       opacity: 0.85;
       line-height: 1.5;
       color: var(--text-secondary);
     }
-    
+
     /* Recent Section */
     .recent-section {
       margin-top: 50px;
     }
-    
+
     .section-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 24px;
     }
-    
+
     .section-title {
       font-size: 22px;
       font-weight: 600;
       color: var(--text-color);
     }
-    
+
     .view-all {
       color: var(--primary-color);
       text-decoration: none;
@@ -319,12 +320,12 @@
       gap: 6px;
       transition: all 0.3s ease;
     }
-    
+
     .view-all:hover {
       gap: 10px;
       color: var(--primary-hover);
     }
-    
+
     .recent-entries {
       background: var(--glass-bg);
       border-radius: 20px;
@@ -334,7 +335,7 @@
       -webkit-backdrop-filter: blur(10px);
       box-shadow: var(--shadow-sm);
     }
-    
+
     .entry-item {
       display: flex;
       justify-content: space-between;
@@ -343,29 +344,29 @@
       border-bottom: 1px solid var(--border-color);
       transition: all 0.3s ease;
     }
-    
+
     .entry-item:hover {
       background: var(--glass-bg-hover);
       transform: translateX(4px);
     }
-    
+
     .entry-item:last-child {
       border-bottom: none;
     }
-    
+
     .entry-details {
       display: flex;
       flex-direction: column;
       gap: 8px;
       flex: 1;
     }
-    
+
     .student-name {
       font-weight: 600;
       font-size: 16px;
       color: var(--text-color);
     }
-    
+
     .achievement-type {
       font-size: 13px;
       background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
@@ -377,13 +378,13 @@
       font-weight: 500;
       box-shadow: var(--shadow-sm);
     }
-    
+
     .entry-date {
       font-size: 14px;
       color: var(--text-secondary);
       font-weight: 400;
     }
-    
+
     .entry-action a {
       color: var(--primary-color);
       text-decoration: none;
@@ -394,32 +395,32 @@
       transition: all 0.3s ease;
       display: inline-block;
     }
-    
+
     .entry-action a:hover {
       background: rgba(255, 28, 28, 0.1);
       transform: translateX(2px);
     }
-    
+
     /* Empty State Improvements */
     .empty-state {
       text-align: center;
       padding: 60px 40px;
     }
-    
+
     .empty-state-icon {
       font-size: 80px;
       margin-bottom: 24px;
       opacity: 0.5;
       color: var(--text-secondary);
     }
-    
+
     .empty-state-message {
       font-size: 18px;
       color: var(--text-secondary);
       margin-bottom: 32px;
       font-weight: 500;
     }
-    
+
     .empty-state-cta {
       display: inline-block;
       padding: 14px 32px;
@@ -432,16 +433,16 @@
       box-shadow: var(--shadow-primary);
       transition: all 0.3s ease;
     }
-    
+
     .empty-state-cta:hover {
       transform: translateY(-3px);
       box-shadow: 0 8px 24px rgba(255, 28, 28, 0.4);
     }
-    
+
     .empty-state-cta i {
       margin-right: 8px;
     }
-    
+
     /* Logout Section */
     .logout-section {
       text-align: center;
@@ -449,7 +450,7 @@
       padding-top: 30px;
       border-top: 1px solid var(--border-color);
     }
-    
+
     .logout-section a {
       color: var(--text-secondary);
       text-decoration: none;
@@ -460,41 +461,41 @@
       align-items: center;
       gap: 8px;
     }
-    
+
     .logout-section a:hover {
       color: var(--primary-color);
       gap: 12px;
     }
-    
+
     /* Responsive Design */
     @media (max-width: 768px) {
       .dashboard-stats {
         grid-template-columns: 1fr;
       }
-      
+
       .dashboard-actions {
         grid-template-columns: 1fr;
       }
-      
+
       .entry-item {
         flex-direction: column;
         align-items: flex-start;
         gap: 16px;
       }
-      
+
       .entry-action {
         align-self: stretch;
       }
-      
+
       .entry-action a {
         display: block;
         text-align: center;
       }
-      
+
       .greeting-text {
         font-size: 24px;
       }
-      
+
       .teacher-info {
         flex-direction: column;
         text-align: center;
@@ -507,18 +508,19 @@
       right: 20px;
       z-index: 100;
     }
-    
+
     /* Smooth transitions for dark mode */
     * {
       transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
     }
   </style>
 </head>
+
 <body style="height: auto; align-items: flex-start; padding-top: 80px;">
   <div class="toggle-container">
     <button id="mode-toggle">Dark Mode 🌙</button>
   </div>
-  
+
   <div class="container dashboard-container">
     <div class="title">Teacher Dashboard</div>
     <div class="content">
@@ -528,7 +530,7 @@
           <div class="greeting-text" id="greeting">Good Morning, Teacher 👋</div>
           <div class="date-text" id="date"></div>
         </div>
-        
+
         <!-- Teacher Info -->
         <div class="teacher-info">
           <div class="teacher-avatar">{{ teacher.name[0] }}</div>
@@ -544,7 +546,7 @@
           </div>
         </div>
       </div>
-      
+
       <!-- Stats Cards with Icons -->
       <div class="dashboard-stats">
         <div class="stat-card achievement">
@@ -581,7 +583,7 @@
           </div>
         </div>
       </div>
-      
+
       <!-- Dashboard Actions with Primary Emphasis -->
       <div class="dashboard-actions">
         <a href="{{ url_for('teacher-achievements') }}" class="dashboard-action primary">
@@ -598,63 +600,63 @@
           <div class="action-title">Manage Students</div>
           <div class="action-description">View and manage student profiles</div>
         </a>
-        <a href="#" class="dashboard-action">
+        <a href="{{ url_for('all-achievements') }}" class="dashboard-action">
           <div class="action-icon">
             <i class="fas fa-chart-bar"></i>
           </div>
-          <div class="action-title">Reports</div>
-          <div class="action-description">Generate and view achievement reports</div>
+          <div class="action-title">All Achievements</div>
+          <div class="action-description">View all recorded achievements &amp; export CSV</div>
         </a>
       </div>
-      
+
       <!-- Recent Entries -->
       <div class="recent-section">
         <div class="section-header">
           <div class="section-title">Recent Entries</div>
-          <a href="#" class="view-all">
+          <a href="{{ url_for('all-achievements') }}" class="view-all">
             View All
             <i class="fas fa-arrow-right"></i>
           </a>
         </div>
-        
+
         <div class="recent-entries">
           {% if recent_entries %}
-            {% for entry in recent_entries %}
-              <div class="entry-item">
-                <div class="entry-details">
-                  <span class="student-name">{{ entry.student_name }}</span>
-                  <span class="achievement-type">{{ entry.achievement_type }}</span>
-                </div>
-                <div class="entry-date">
-                  <i class="fas fa-calendar"></i>
-                  {{ entry.achievement_date }}
-                </div>
-                <div class="entry-action">
-                  <a href="#">
-                    View Details
-                    <i class="fas fa-chevron-right"></i>
-                  </a>
-                </div>
-              </div>
-            {% endfor %}
-          {% else %}
-            <div class="empty-state">
-              <div class="empty-state-icon">
-                <i class="fas fa-inbox"></i>
-              </div>
-              <div class="empty-state-message">
-                No achievements have been recorded yet.<br>
-                Start by recording your first achievement!
-              </div>
-              <a href="{{ url_for('teacher-achievements') }}" class="empty-state-cta">
-                <i class="fas fa-plus"></i>
-                Record Achievement
+          {% for entry in recent_entries %}
+          <div class="entry-item">
+            <div class="entry-details">
+              <span class="student-name">{{ entry.student_name }}</span>
+              <span class="achievement-type">{{ entry.achievement_type }}</span>
+            </div>
+            <div class="entry-date">
+              <i class="fas fa-calendar"></i>
+              {{ entry.achievement_date }}
+            </div>
+            <div class="entry-action">
+              <a href="#">
+                View Details
+                <i class="fas fa-chevron-right"></i>
               </a>
             </div>
+          </div>
+          {% endfor %}
+          {% else %}
+          <div class="empty-state">
+            <div class="empty-state-icon">
+              <i class="fas fa-inbox"></i>
+            </div>
+            <div class="empty-state-message">
+              No achievements have been recorded yet.<br>
+              Start by recording your first achievement!
+            </div>
+            <a href="{{ url_for('teacher-achievements') }}" class="empty-state-cta">
+              <i class="fas fa-plus"></i>
+              Record Achievement
+            </a>
+          </div>
           {% endif %}
         </div>
       </div>
-      
+
       <!-- Logout Section -->
       <div class="logout-section">
         <a href="{{ url_for('home') }}">
@@ -664,7 +666,7 @@
       </div>
     </div>
   </div>
-  
+
   <script>
     // Dynamic greeting based on time of day
     function updateGreeting() {
@@ -672,7 +674,7 @@
       const greetingEl = document.getElementById('greeting');
       let greeting = 'Good Morning';
       let emoji = '🌅';
-      
+
       if (hour >= 12 && hour < 17) {
         greeting = 'Good Afternoon';
         emoji = '☀️';
@@ -683,25 +685,26 @@
         greeting = 'Good Night';
         emoji = '🌙';
       }
-      
+
       greetingEl.textContent = `${greeting}, Teacher ${emoji}`;
     }
-    
+
     // Format date
     function updateDate() {
       const dateEl = document.getElementById('date');
-      const options = { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
+      const options = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
       };
       dateEl.textContent = new Date().toLocaleDateString('en-US', options);
     }
-    
+
     // Initialize on page load
     updateGreeting();
     updateDate();
   </script>
 </body>
+
 </html>
