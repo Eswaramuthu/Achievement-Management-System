@@ -1,12 +1,16 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, Response
+from flask_wtf.csrf import CSRFProtect
 import sqlite3
 import os
 import secrets
+import csv
+import io
 from werkzeug.utils import secure_filename
 import datetime
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(16))
+csrf = CSRFProtect(app)
 
 # ✅ Portable DB path (works on Windows/Linux/Vercel)
 DB_PATH = os.path.join(os.path.dirname(__file__), "ams.db")
@@ -503,6 +507,67 @@ def all_achievements():
     connection.close()
 
     return render_template("all_achievements.html", achievements=achievements)
+
+
+@app.route("/export-csv", endpoint="export-csv")
+def export_csv():
+    if not session.get("logged_in"):
+        return redirect(url_for("teacher"))
+
+    teacher_id = session.get("teacher_id")
+    teacher_name = session.get("teacher_name", teacher_id)
+
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT a.id, s.student_name, a.student_id, a.achievement_type,
+               a.event_name, a.achievement_date, a.organizer,
+               a.position, a.achievement_description, a.created_at
+        FROM achievements a
+        JOIN student s ON a.student_id = s.student_id
+        WHERE a.teacher_id = ?
+        ORDER BY a.achievement_date DESC
+    """, (teacher_id,))
+
+    achievements = cursor.fetchall()
+    connection.close()
+
+    # Build CSV in memory
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    # Write header row
+    writer.writerow([
+        "#", "Student Name", "Student ID", "Achievement Type",
+        "Event Name", "Date", "Organizer", "Position",
+        "Description", "Recorded At"
+    ])
+
+    # Write data rows
+    for idx, row in enumerate(achievements, start=1):
+        writer.writerow([
+            idx,
+            row["student_name"],
+            row["student_id"],
+            row["achievement_type"],
+            row["event_name"],
+            row["achievement_date"],
+            row["organizer"],
+            row["position"],
+            row["achievement_description"] or "",
+            row["created_at"]
+        ])
+
+    output.seek(0)
+    filename = f"achievements_{teacher_id}.csv"
+
+    return Response(
+        output.getvalue(),
+        mimetype="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
 
 
 if __name__ == "__main__":

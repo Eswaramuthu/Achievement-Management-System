@@ -103,6 +103,62 @@
             border-radius: 10px;
             border: 1px solid var(--border-color);
         }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .achievement-count {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .export-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 20px;
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
+            transition: all 0.25s ease;
+            white-space: nowrap;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(22, 163, 74, 0.45);
+        }
+
+        .export-btn:active {
+            transform: translateY(0);
+        }
+
+        .filter-box select {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--glass-bg);
+            color: var(--text-color);
+            font-size: 14px;
+        }
     </style>
 </head>
 
@@ -123,17 +179,30 @@
 
         <div class="content">
 
-            <!-- Filter Section -->
-            <div class="filter-box">
-                <label><b>Filter by Achievement Type:</b></label>
-                <select id="typeFilter" onchange="filterAchievements()">
-                    <option value="all">All</option>
-                    <option value="hackathon">Hackathon</option>
-                    <option value="coding">Coding Competition</option>
-                    <option value="paper">Paper Presentation</option>
-                    <option value="conference">Conference</option>
-                    <option value="symposium">Symposium</option>
-                </select>
+            <!-- Toolbar: Filter + Count + Export -->
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <div class="filter-box" style="margin-bottom:0;">
+                        <label><b>Filter:</b></label>
+                        <select id="typeFilter" onchange="filterAchievements()">
+                            <option value="all">All Types</option>
+                            <option value="hackathon">Hackathon</option>
+                            <option value="coding">Coding Competition</option>
+                            <option value="paper">Paper Presentation</option>
+                            <option value="conference">Conference</option>
+                            <option value="symposium">Symposium</option>
+                        </select>
+                    </div>
+                    {% if achievements %}
+                    <span class="achievement-count">{{ achievements | length }} record(s)</span>
+                    {% endif %}
+                </div>
+
+                {% if achievements %}
+                <a href="{{ url_for('export-csv') }}" class="export-btn" title="Download all achievements as CSV">
+                    📥 Export CSV
+                </a>
+                {% endif %}
             </div>
 
             {% if achievements %}
