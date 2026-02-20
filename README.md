@@ -24,9 +24,6 @@ venv\Scripts\activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Initialize database
-python init_db.py
-
 # Run application
 python app.py
 ```
@@ -45,9 +42,6 @@ source venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
-
-# Initialize database
-python init_db.py
 
 # Run application
 python app.py
@@ -106,8 +100,10 @@ Now open → **http://localhost:5000**
 ```
 achievement-management-system/
 ├── app.py              → main flask app + routes
-├── init_db.py          → database initialization
+├── config.py           → configuration settings
 ├── requirements.txt    → python dependencies
+├── instance/
+│   └── ams.db          → SQLite database (auto-created)
 ├── static/
 │   ├── css/           → styles + themes
 │   ├── js/            → client-side logic
