@@ -6,3 +6,8 @@
 .env
 /instance/*
 .DS_Store
+ feature/add-sorting
+*.pyc
+static/uploads/
+ams.db
+main

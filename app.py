@@ -4,9 +4,36 @@ import os
 import secrets
 from werkzeug.utils import secure_filename
 import datetime
+from services.certificate_service import process_certificate
+from flask_wtf import CSRFProtect
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
+try:
+    from firebase_config import get_firebase_config
+except ImportError:
+    get_firebase_config = None
+
+# Default when Firebase is not configured (student page still renders)
+DEFAULT_FIREBASE_CONFIG = {
+    "apiKey": "", "authDomain": "", "databaseURL": "", "projectId": "",
+    "storageBucket": "", "messagingSenderId": "", "appId": "", "measurementId": "",
+}
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(16))
+
+# csrf = CSRFProtect(app)
+
+from firebase_config import get_firebase_config
+
+@app.context_processor
+def inject_firebase_config():
+    return dict(firebase_config=get_firebase_config())
 
 # ✅ Portable DB path (works on Windows/Linux/Vercel)
 DB_PATH = os.path.join(os.path.dirname(__file__), "ams.db")
@@ -17,29 +44,29 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
 def ensure_achievements_schema(connection):
-    """
-    ✅ Safe, non-destructive SQLite migration:
-    - Adds teacher_id if missing
-    - Adds created_at if missing
-    - Backfills created_at for old rows
-    """
     cursor = connection.cursor()
     cursor.execute("PRAGMA table_info(achievements)")
     columns = cursor.fetchall()
     column_names = [c[1] for c in columns]
 
+    # Add teacher_id if missing
     if "teacher_id" not in column_names:
-        print("Adding teacher_id column to achievements table...")
         cursor.execute("ALTER TABLE achievements ADD COLUMN teacher_id TEXT DEFAULT 'unknown'")
-        print("teacher_id column added successfully")
 
+    # Add created_at if missing
     if "created_at" not in column_names:
-        print("Adding created_at column to achievements table...")
         cursor.execute("ALTER TABLE achievements ADD COLUMN created_at TEXT")
         cursor.execute("UPDATE achievements SET created_at = CURRENT_TIMESTAMP WHERE created_at IS NULL")
-        print("created_at column added and backfilled successfully")
+
+    # Add certificate_hash if missing
+    if "certificate_hash" not in column_names:
+        cursor.execute("ALTER TABLE achievements ADD COLUMN certificate_hash TEXT")
+    
+    # This works even if the column was added via ALTER TABLE earlier
+    cursor.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_cert_hash ON achievements (certificate_hash)")
 
     connection.commit()
+
 
 
 # Define a function to check allowed file extensions
@@ -50,11 +77,11 @@ def allowed_file(filename):
 
 # Initialize database on startup
 def init_db():
-    if not os.path.exists(DB_PATH):
-        connection = sqlite3.connect(DB_PATH)
-        cursor = connection.cursor()
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
 
-        cursor.execute("""
+    # Student table
+    cursor.execute("""
         CREATE TABLE IF NOT EXISTS student (
             student_name TEXT NOT NULL,
             student_id TEXT PRIMARY KEY,
@@ -64,9 +91,10 @@ def init_db():
             student_gender TEXT,
             student_dept TEXT
         )
-        """)
+    """)
 
-        cursor.execute("""
+    # Teacher table
+    cursor.execute("""
         CREATE TABLE IF NOT EXISTS teacher (
             teacher_name TEXT NOT NULL,
             teacher_id TEXT PRIMARY KEY,
@@ -76,9 +104,10 @@ def init_db():
             teacher_gender TEXT,
             teacher_dept TEXT
         )
-        """)
+    """)
 
-        cursor.execute("""
+    # Achievements table
+    cursor.execute("""
         CREATE TABLE IF NOT EXISTS achievements (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             teacher_id TEXT NOT NULL,
@@ -90,7 +119,6 @@ def init_db():
             position TEXT NOT NULL,
             achievement_description TEXT,
             certificate_path TEXT,
-
             symposium_theme TEXT,
             programming_language TEXT,
             coding_platform TEXT,
@@ -103,71 +131,41 @@ def init_db():
             database_type TEXT,
             difficulty_level TEXT,
             other_description TEXT,
-
+            certificate_hash TEXT UNIQUE,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (student_id) REFERENCES student(student_id),
             FOREIGN KEY (teacher_id) REFERENCES teacher(teacher_id)
         )
-        """)
+    """)
 
-        connection.commit()
-        connection.close()
-        print(f"Created database at {DB_PATH}")
-    else:
-        connection = sqlite3.connect(DB_PATH)
-        cursor = connection.cursor()
-
-        # Ensure achievements table exists
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='achievements'")
-        if not cursor.fetchone():
-            cursor.execute("""
-            CREATE TABLE IF NOT EXISTS achievements (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                teacher_id TEXT NOT NULL,
-                student_id TEXT NOT NULL,
-                achievement_type TEXT NOT NULL,
-                event_name TEXT NOT NULL,
-                achievement_date DATE NOT NULL,
-                organizer TEXT NOT NULL,
-                position TEXT NOT NULL,
-                achievement_description TEXT,
-                certificate_path TEXT,
-
-                symposium_theme TEXT,
-                programming_language TEXT,
-                coding_platform TEXT,
-                paper_title TEXT,
-                journal_name TEXT,
-                conference_level TEXT,
-                conference_role TEXT,
-                team_size INTEGER,
-                project_title TEXT,
-                database_type TEXT,
-                difficulty_level TEXT,
-                other_description TEXT,
-
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (student_id) REFERENCES student(student_id),
-                FOREIGN KEY (teacher_id) REFERENCES teacher(teacher_id)
-            )
-            """)
-            connection.commit()
-            print("Created achievements table")
-
-        # ✅ IMPORTANT: fix old DBs missing columns (created_at issue)
-        ensure_achievements_schema(connection)
-
-        connection.close()
-        print(f"Database already exists at {DB_PATH}")
+    connection.commit()
+    connection.close()
+    print("Database initialized successfully")
 
 
 # Call initialization function
 init_db()
 
 
+@app.context_processor
+def inject_csrf():
+    """Provide csrf_token() for templates that expect it (e.g. tests)."""
+    return {"csrf_token": lambda: ""}
+
+
 @app.route("/")
 def home():
     return render_template("home.html")
+
+
+@app.route("/terms")
+def terms():
+    return render_template("terms.html")
+
+
+@app.route("/privacy-policy")
+def privacy_policy():
+    return render_template("privacy-policy.html")
 
 
 @app.route("/student", methods=["GET", "POST"])
@@ -189,9 +187,12 @@ def student():
             session["student_dept"] = student_data[6]
             return redirect(url_for("student-dashboard"))
         else:
-            return render_template("student.html", error="Invalid credentials. Please try again.")
+            ctx = {"error": "Invalid credentials. Please try again."}
+            ctx["firebase_config"] = get_firebase_config() if get_firebase_config else DEFAULT_FIREBASE_CONFIG
+            return render_template("student.html", **ctx)
 
-    return render_template("student.html")
+    ctx = {"firebase_config": get_firebase_config() if get_firebase_config else DEFAULT_FIREBASE_CONFIG}
+    return render_template("student.html", **ctx)
 
 
 @app.route("/teacher", methods=["GET", "POST"])
@@ -305,7 +306,7 @@ def teacher_achievements():
     return render_template("teacher_achievements_2.html")
 
 
-@app.route("/submit_achievements", endpoint="submit_achievements", methods=["GET", "POST"])
+@app.route("/submit_achievements", methods=["GET", "POST"])
 def submit_achievements():
     if not session.get("logged_in") or not session.get("teacher_id"):
         return redirect(url_for("teacher"))
@@ -314,6 +315,9 @@ def submit_achievements():
 
     if request.method == "POST":
         try:
+            import hashlib
+            
+            # Extract standard form data
             student_id = request.form.get("student_id")
             achievement_type = request.form.get("achievement_type")
             event_name = request.form.get("event_name")
@@ -321,78 +325,117 @@ def submit_achievements():
             organizer = request.form.get("organizer")
             position = request.form.get("position")
             achievement_description = request.form.get("achievement_description")
-
-            # Parse team_size
+            
+            # Handle numeric fields
             team_size = request.form.get("team_size")
             team_size = int(team_size) if team_size and team_size.strip() else None
 
-            symposium_theme = request.form.get("symposium_theme")
-            programming_language = request.form.get("programming_language")
-            coding_platform = request.form.get("coding_platform")
-            paper_title = request.form.get("paper_title")
-            journal_name = request.form.get("journal_name")
-            conference_level = request.form.get("conference_level")
-            conference_role = request.form.get("conference_role")
-            project_title = request.form.get("project_title")
-            database_type = request.form.get("database_type")
-            difficulty_level = request.form.get("difficulty_level")
-            other_description = request.form.get("other_description")
+            # Optional detail fields
+            details = {
+                "symposium_theme": request.form.get("symposium_theme"),
+                "programming_language": request.form.get("programming_language"),
+                "coding_platform": request.form.get("coding_platform"),
+                "paper_title": request.form.get("paper_title"),
+                "journal_name": request.form.get("journal_name"),
+                "conference_level": request.form.get("conference_level"),
+                "conference_role": request.form.get("conference_role"),
+                "project_title": request.form.get("project_title"),
+                "database_type": request.form.get("database_type"),
+                "difficulty_level": request.form.get("difficulty_level"),
+                "other_description": request.form.get("other_description")
+            }
 
-            # Handle certificate file upload
             certificate_path = None
+            certificate_hash = None
+
+            # -----------------------------
+            # FILE & HASH HANDLING
+            # -----------------------------
             if "certificate" in request.files:
                 file = request.files["certificate"]
+
                 if file and file.filename != "":
                     if not allowed_file(file.filename):
-                        return render_template("submit_achievements.html",
-                                               error="Invalid file type. Please upload PDF, PNG, JPG, or JPEG files.")
+                        return render_template("submit_achievements.html", error="Invalid file type.")
+
+                    # 1. Read bytes for hashing
+                    file.seek(0) 
+                    file_bytes = file.read()
+                    certificate_hash = hashlib.sha256(file_bytes).hexdigest()
+                    file.seek(0) # 2. Reset pointer so we can save it later
+
+                    # 3. DB Check for existing Hash
+                    with sqlite3.connect(DB_PATH) as check_conn:
+                        cursor = check_conn.cursor()
+                        cursor.execute("SELECT id FROM achievements WHERE certificate_hash = ?", (certificate_hash,))
+                        if cursor.fetchone():
+                            return render_template("submit_achievements.html", 
+                                                 error="Duplicate detected! This certificate is already registered.")
+
+                    # 4. Save File if check passed
                     timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
                     secure_name = f"{timestamp}_{secure_filename(file.filename)}"
                     file_path = os.path.join(UPLOAD_FOLDER, secure_name)
                     file.save(file_path)
                     certificate_path = f"uploads/{secure_name}"
 
+                    # 5. Optional OCR
+                    try:
+                        res = process_certificate(file_path)
+                        parsed = res.get("parsed_data", {})
+                        event_name = event_name or parsed.get("event_name")
+                        achievement_date = achievement_date or parsed.get("achievement_date")
+                    except Exception as ocr_err:
+                        print(f"OCR failed: {ocr_err}")
+
+            # -----------------------------
+            # DATABASE INSERT
+            # -----------------------------
             with sqlite3.connect(DB_PATH) as connection:
                 cursor = connection.cursor()
-
-                # ✅ Ensure schema is correct before inserting (fixes old DB)
                 ensure_achievements_schema(connection)
 
-                # Validate student exists
-                cursor.execute("SELECT student_id, student_name FROM student WHERE student_id = ?", (student_id,))
-                student_data = cursor.fetchone()
-                if not student_data:
-                    return render_template("submit_achievements.html", error="Student ID does not exist in the system.")
+                # Validate Student
+                cursor.execute("SELECT student_name FROM student WHERE student_id = ?", (student_id,))
+                student_row = cursor.fetchone()
+                if not student_row:
+                    return render_template("submit_achievements.html", error="Student ID not found.")
+                
+                student_name = student_row[0]
 
-                student_name = student_data[1]
-
-                # ✅ Insert with created_at so dashboard ordering never breaks
-                cursor.execute("""
-                INSERT INTO achievements (
+                query = """
+                    INSERT INTO achievements (
+                        student_id, teacher_id, achievement_type, event_name, achievement_date,
+                        organizer, position, achievement_description, certificate_path,
+                        symposium_theme, programming_language, coding_platform, paper_title,
+                        journal_name, conference_level, conference_role, team_size,
+                        project_title, database_type, difficulty_level, other_description,
+                        certificate_hash
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """
+                
+                params = (
                     student_id, teacher_id, achievement_type, event_name, achievement_date,
                     organizer, position, achievement_description, certificate_path,
-                    symposium_theme, programming_language, coding_platform, paper_title,
-                    journal_name, conference_level, conference_role, team_size,
-                    project_title, database_type, difficulty_level, other_description,
-                    created_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-                """, (
-                    student_id, teacher_id, achievement_type, event_name, achievement_date,
-                    organizer, position, achievement_description, certificate_path,
-                    symposium_theme, programming_language, coding_platform, paper_title,
-                    journal_name, conference_level, conference_role, team_size,
-                    project_title, database_type, difficulty_level, other_description
-                ))
+                    details["symposium_theme"], details["programming_language"], 
+                    details["coding_platform"], details["paper_title"], details["journal_name"], 
+                    details["conference_level"], details["conference_role"], team_size,
+                    details["project_title"], details["database_type"], 
+                    details["difficulty_level"], details["other_description"], certificate_hash
+                )
 
+                cursor.execute(query, params)
                 connection.commit()
 
-            success_message = f"Achievement of {student_name} has been successfully registered!!"
-            return render_template("submit_achievements.html", success=success_message)
+            return render_template("submit_achievements.html", 
+                                 success=f"Success! Achievement for {student_name} recorded.")
 
+        except sqlite3.IntegrityError:
+            return render_template("submit_achievements.html", error="Database error: Duplicate certificate hash.")
         except Exception as e:
-            return render_template("submit_achievements.html", error=f"An error occurred: {e}")
+            return render_template("submit_achievements.html", error=f"Error: {str(e)}")
 
-    return redirect(url_for("teacher-dashboard", success="Achievement submitted successfully!"))
+    return render_template("submit_achievements.html")
 
 
 @app.route("/student-achievements", endpoint="student-achievements")

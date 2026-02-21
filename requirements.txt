@@ -7,3 +7,5 @@ python-dotenv
 pytest
 pytest-cov
 pytest-mock
+pytesseract
+Pillow

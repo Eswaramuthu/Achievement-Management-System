@@ -12,15 +12,41 @@
     <button id="mode-toggle">Dark Mode 🌙</button>
   </div>
 
-  <div class="container">
-    <div class="title">Achievement Submission</div>
-    <div class="content">
+  {% if error %}
+      <div class="error-box" style="background-color: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; border: 1px solid #ef9a9a; margin-bottom: 20px; text-align: center; font-weight: bold;">
+        ⚠️ {{ error }}
+      </div>
+      {% endif %}
+
+      {% if success %}
       <div class="welcome-text">
-        <p>Congratulations! <br> {{ success }}</p>
+        <p style="color: #2e7d32; font-weight: bold;">Congratulations! <br> {{ success }}</p>
       </div>
       <div class="button">
-        <a href="/teacher-dashboard" style="text-decoration: none; display: block; width: 100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: 500; cursor: pointer; text-align: center;">Back to Dashboard</a>
+        <a href="/teacher-dashboard" class="btn-primary">Back to Dashboard</a>
       </div>
+      {% else %}
+
+      <form action="/submit_achievements" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        
+        <div class="user-details">
+          <div class="input-box">
+            <span class="details">Student ID</span>
+            <input type="text" name="student_id" placeholder="Enter Student ID" required>
+          </div>
+          <div class="input-box">
+            <span class="details">Certificate File</span>
+            <input type="file" name="certificate" required>
+          </div>
+        </div>
+
+        <div class="button">
+          <input type="submit" value="Register Achievement">
+        </div>
+      </form>
+      {% endif %}
+
     </div>
   </div>
 </body>
