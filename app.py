@@ -1,7 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, make_response
 import sqlite3
 import os
 import secrets
+import csv
+import io
 from werkzeug.utils import secure_filename
 import datetime
 from services.certificate_service import process_certificate
@@ -546,6 +548,57 @@ def all_achievements():
     connection.close()
 
     return render_template("all_achievements.html", achievements=achievements)
+
+
+
+@app.route("/export_achievements", endpoint="export_achievements")
+def export_achievements():
+    if not session.get("logged_in") or not session.get("teacher_id"):
+        return redirect(url_for("teacher"))
+
+    teacher_id = session.get("teacher_id")
+
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+
+    # Query all achievements for this teacher
+    cursor.execute("""
+        SELECT s.student_name, s.student_id, a.achievement_type, a.event_name, 
+               a.achievement_date, a.position, a.organizer, a.achievement_description
+        FROM achievements a
+        JOIN student s ON a.student_id = s.student_id
+        WHERE a.teacher_id = ?
+        ORDER BY a.achievement_date DESC
+    """, (teacher_id,))
+
+    achievements = cursor.fetchall()
+    connection.close()
+
+    # Create CSV in memory
+    si = io.StringIO()
+    cw = csv.writer(si)
+    
+    # Write Header
+    cw.writerow(["Student Name", "Student ID", "Type", "Event Name", "Date", "Position", "Organizer", "Description"])
+    
+    # Write Data
+    for achievement in achievements:
+        cw.writerow([
+            achievement["student_name"],
+            achievement["student_id"],
+            achievement["achievement_type"],
+            achievement["event_name"],
+            achievement["achievement_date"],
+            achievement["position"],
+            achievement["organizer"],
+            achievement["achievement_description"]
+        ])
+
+    output = make_response(si.getvalue())
+    output.headers["Content-Disposition"] = "attachment; filename=achievements_export.csv"
+    output.headers["Content-type"] = "text/csv"
+    return output
 
 
 if __name__ == "__main__":
