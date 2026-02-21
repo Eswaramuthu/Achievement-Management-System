@@ -124,6 +124,10 @@
             <input type="password" id="confirm-password" placeholder="Confirm your password" required />
             <small id="password-message" style="font-size: 14px;"></small>
           </div>
+          <div class="input-box" style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+            <input type="checkbox" id="toggle-password-checkbox" style="width: 18px; height: 18px; cursor: pointer;">
+            <span class="details" style="font-size: 14px; cursor: pointer; color: white;">Show Passwords</span>
+          </div>
           <!-- Put these fields inside the user-details div -->
           <div class="input-box">
             <span class="details">Gender</span>
@@ -201,6 +205,27 @@
     });
 
     console.log("✅ Firebase Google Sign-In initialized on Student Registration page");
+  </script>
+  <script>
+    // 1. Find the checkbox
+    const toggleCheckbox = document.getElementById('toggle-password-checkbox');
+    
+    // 2. Find the password fields (matching your IDs)
+    const passwordField = document.getElementById('password');
+    const confirmField = document.getElementById('confirm-password');
+  
+    // 3. Listen for the click
+    if (toggleCheckbox) {
+      toggleCheckbox.addEventListener('change', function() {
+        // Toggle the type
+        const type = this.checked ? 'text' : 'password';
+        passwordField.type = type;
+        confirmField.type = type;
+        console.log("Passwords are now: " + type);
+      });
+    } else {
+      console.error("Oops! The checkbox ID 'toggle-password-checkbox' wasn't found.");
+    }
   </script>
 </body>
 </html>
