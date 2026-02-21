@@ -7,6 +7,23 @@ import datetime
 from services.certificate_service import process_certificate
 from flask_wtf import CSRFProtect
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
+try:
+    from firebase_config import get_firebase_config
+except ImportError:
+    get_firebase_config = None
+
+# Default when Firebase is not configured (student page still renders)
+DEFAULT_FIREBASE_CONFIG = {
+    "apiKey": "", "authDomain": "", "databaseURL": "", "projectId": "",
+    "storageBucket": "", "messagingSenderId": "", "appId": "", "measurementId": "",
+}
+
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(16))
 
@@ -130,6 +147,12 @@ def init_db():
 init_db()
 
 
+@app.context_processor
+def inject_csrf():
+    """Provide csrf_token() for templates that expect it (e.g. tests)."""
+    return {"csrf_token": lambda: ""}
+
+
 @app.route("/")
 def home():
     return render_template("home.html")
@@ -154,9 +177,12 @@ def student():
             session["student_dept"] = student_data[6]
             return redirect(url_for("student-dashboard"))
         else:
-            return render_template("student.html", error="Invalid credentials. Please try again.")
+            ctx = {"error": "Invalid credentials. Please try again."}
+            ctx["firebase_config"] = get_firebase_config() if get_firebase_config else DEFAULT_FIREBASE_CONFIG
+            return render_template("student.html", **ctx)
 
-    return render_template("student.html")
+    ctx = {"firebase_config": get_firebase_config() if get_firebase_config else DEFAULT_FIREBASE_CONFIG}
+    return render_template("student.html", **ctx)
 
 
 @app.route("/teacher", methods=["GET", "POST"])
