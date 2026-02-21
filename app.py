@@ -158,6 +158,16 @@ def home():
     return render_template("home.html")
 
 
+@app.route("/terms")
+def terms():
+    return render_template("terms.html")
+
+
+@app.route("/privacy-policy")
+def privacy_policy():
+    return render_template("privacy-policy.html")
+
+
 @app.route("/student", methods=["GET", "POST"])
 def student():
     if request.method == "POST":
