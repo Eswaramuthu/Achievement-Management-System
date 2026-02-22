@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Achievement Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #3b82f6;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .sidebar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            min-height: 100vh;
+            position: fixed;
+            width: 250px;
+            transition: all 0.3s;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-header h3 {
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        .sidebar-header .badge {
+            background: rgba(255,255,255,0.2);
+            font-size: 0.7rem;
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 0.75rem 1.5rem;
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: white;
+            background: rgba(255,255,255,0.1);
+            border-left-color: white;
+        }
+        
+        .nav-link i {
+            width: 20px;
+            margin-right: 10px;
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+        
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1rem 1.5rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+            border: none;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-students .stat-icon { background: rgba(59, 130, 246, 0.1); color: var(--info-color); }
+        .stat-teachers .stat-icon { background: rgba(16, 185, 129, 0.1); color: var(--success-color); }
+        .stat-achievements .stat-icon { background: rgba(245, 158, 11, 0.1); color: var(--warning-color); }
+        .stat-pending .stat-icon { background: rgba(239, 68, 68, 0.1); color: var(--danger-color); }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .card {
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-radius: 10px;
+        }
+        
+        .card-header {
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+        }
+        
+        .table th {
+            border-top: none;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .badge-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .badge-approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        .welcome-card {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .welcome-card h1 {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .welcome-card p {
+            opacity: 0.9;
+            margin-bottom: 0;
+        }
+        
+        .quick-actions .btn {
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                margin-left: -250px;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .sidebar.active {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header d-flex align-items-center">
+            <div>
+                <h3>Admin Panel</h3>
+                <span class="badge">{{ 'Super Admin' if is_superuser else 'Admin' }}</span>
+            </div>
+        </div>
+        
+        <ul class="nav flex-column mt-4">
+            <li class="nav-item">
+                <a class="nav-link active" href="{{ url_for('admin_dashboard') }}">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('admin_users') }}?type=students">
+                    <i class="bi bi-people"></i> Manage Users
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('admin_departments') }}">
+                    <i class="bi bi-building"></i> Departments
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('admin_categories') }}">
+                    <i class="bi bi-tags"></i> Categories
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('admin_export') }}?type=students">
+                    <i class="bi bi-download"></i> Export Data
+                </a>
+            </li>
+            {% if is_superuser %}
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="bi bi-gear"></i> System Settings
+                </a>
+            </li>
+            {% endif %}
+            <li class="nav-item mt-4">
+                <a class="nav-link" href="{{ url_for('admin_logout') }}">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <button class="btn btn-outline-primary d-lg-none" type="button" id="sidebarToggle">
+                    <i class="bi bi-list"></i>
+                </button>
+                
+                <div class="d-flex align-items-center ms-auto">
+                    <div class="user-avatar me-2">
+                        {{ admin_name[0] if admin_name else 'A' }}
+                    </div>
+                    <div>
+                        <div class="fw-bold">{{ admin_name }}</div>
+                        <small class="text-muted">Administrator</small>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Welcome Card -->
+        <div class="welcome-card">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1>Welcome back, {{ admin_name }}!</h1>
+                    <p>Here's what's happening with your system today.</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="quick-actions">
+                        <a href="{{ url_for('admin_users') }}?type=students&status=pending" class="btn btn-light me-2">
+                            <i class="bi bi-clock"></i> Review Pending
+                        </a>
+                        <a href="{{ url_for('admin_export') }}" class="btn btn-outline-light">
+                            <i class="bi bi-download"></i> Export Data
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="stat-card stat-students">
+                    <div class="stat-icon">
+                        <i class="bi bi-person"></i>
+                    </div>
+                    <div class="stat-number">{{ stats.total_students }}</div>
+                    <div class="stat-label">Total Students</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card stat-teachers">
+                    <div class="stat-icon">
+                        <i class="bi bi-person-badge"></i>
+                    </div>
+                    <div class="stat-number">{{ stats.total_teachers }}</div>
+                    <div class="stat-label">Total Teachers</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card stat-achievements">
+                    <div class="stat-icon">
+                        <i class="bi bi-trophy"></i>
+                    </div>
+                    <div class="stat-number">{{ stats.total_achievements }}</div>
+                    <div class="stat-label">Total Achievements</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card stat-pending">
+                    <div class="stat-icon">
+                        <i class="bi bi-clock"></i>
+                    </div>
+                    <div class="stat-number">{{ stats.pending_student_approvals + stats.pending_teacher_approvals }}</div>
+                    <div class="stat-label">Pending Approvals</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Recent Activities -->
+            <div class="col-lg-8 mb-4">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Recent Activities</span>
+                        <a href="{{ url_for('admin_users') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Name</th>
+                                        <th>ID</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for activity in recent_activities %}
+                                    <tr>
+                                        <td>
+                                            <span class="badge {% if activity.type == 'student' %}bg-info{% else %}bg-success{% endif %}">
+                                                {{ activity.type|title }}
+                                            </span>
+                                        </td>
+                                        <td>{{ activity.name }}</td>
+                                        <td><code>{{ activity.id }}</code></td>
+                                        <td>
+                                            <span class="badge {% if activity.is_approved %}badge-approved{% else %}badge-pending{% endif %}">
+                                                {{ 'Approved' if activity.is_approved else 'Pending' }}
+                                            </span>
+                                        </td>
+                                        <td>{{ activity.created_at[:10] }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Department Statistics -->
+            <div class="col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <span>Top Departments</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group list-group-flush">
+                            {% for dept in dept_stats %}
+                            <div class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-2">
+                                <div>
+                                    <div class="fw-bold">{{ dept.dept_name }}</div>
+                                    <small class="text-muted">{{ dept.dept_code }}</small>
+                                </div>
+                                <span class="badge bg-primary rounded-pill">{{ dept.count }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <span>Quick Actions</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="{{ url_for('admin_users') }}?type=students&status=pending" class="btn btn-outline-warning">
+                                <i class="bi bi-clock me-2"></i>Review Student Approvals
+                            </a>
+                            <a href="{{ url_for('admin_users') }}?type=teachers&status=pending" class="btn btn-outline-warning">
+                                <i class="bi bi-clock me-2"></i>Review Teacher Approvals
+                            </a>
+                            <a href="{{ url_for('admin_departments') }}" class="btn btn-outline-primary">
+                                <i class="bi bi-building me-2"></i>Manage Departments
+                            </a>
+                            <a href="{{ url_for('admin_categories') }}" class="btn btn-outline-primary">
+                                <i class="bi bi-tags me-2"></i>Manage Categories
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toggle sidebar on mobile
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        });
+        
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(function() {
+            var alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
+</body>
+</html>
