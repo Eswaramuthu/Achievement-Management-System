@@ -125,6 +125,36 @@ body {
   background: #cc0000;
 }
 
+/* Login page auth links (Register, Back to Home) */
+.auth-links {
+  margin-top: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.auth-links .register-cta {
+  font-size: 14px;
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-links .register-cta:hover {
+  text-decoration: underline;
+}
+
+.auth-links .back-home {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.auth-links .back-home:hover {
+  text-decoration: underline;
+}
+
 /* Home page */
 
 .home-container {

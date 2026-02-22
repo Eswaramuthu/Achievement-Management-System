@@ -7,12 +7,34 @@
   <title>Teacher Login - Achievement Management System</title>
   <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
   <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+  <style>
+    .theme-toggle {
+      position: fixed;
+      top: 16px;
+      right: 20px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: none;
+      background: #ffffff;
+      color: #000;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 9999;
+    }
+    body:not(.light-mode) .theme-toggle {
+      background: #1f1f1f;
+      color: #fff;
+    }
+  </style>
 </head>
 
 <body>
-  <div class="toggle-container">
-    <button id="mode-toggle">Dark Mode 🌙</button>
-  </div>
+  <button id="mode-toggle" class="theme-toggle" title="Toggle theme">🌙</button>
 
   <div class="container login-container">
     <div class="title">Teacher Login</div>
@@ -30,18 +52,39 @@
           </div>
         </div>
 
+        {% if error %}
+        <div class="error-message" style="color: red; text-align: center; margin-bottom: 15px;">
+          {{ error }}
+        </div>
+        {% endif %}
+
         <div class="button">
           <input type="submit" value="Login" />
         </div>
       </form>
-      <div class="register-link">
-        <p>New teacher? <a href="{{ url_for('teacher-new') }}">Register here</a></p>
-      </div>
-      <div class="back-link">
-        <a href="{{ url_for('home') }}">Back to Home</a>
+
+      <div class="auth-links">
+        <a class="register-cta" href="{{ url_for('teacher-new') }}">New teacher? Register here</a>
+        <a class="back-home" href="{{ url_for('home') }}">← Back to Home</a>
       </div>
     </div>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var themeToggle = document.getElementById('mode-toggle');
+      var body = document.body;
+      var savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') body.classList.remove('light-mode');
+      else body.classList.add('light-mode');
+      themeToggle.addEventListener('click', function () {
+        body.classList.toggle('light-mode');
+        localStorage.setItem('theme', body.classList.contains('light-mode') ? 'light' : 'dark');
+        themeToggle.textContent = body.classList.contains('light-mode') ? '🌙' : '☀️';
+      });
+      themeToggle.textContent = body.classList.contains('light-mode') ? '🌙' : '☀️';
+    });
+  </script>
 </body>
 
 </html>
