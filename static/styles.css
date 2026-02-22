@@ -10,6 +10,79 @@
   --primary-hover: #ff3d3d;
   --border-color: rgba(255, 255, 255, 0.15);
 }
+.contact {
+    padding: 80px 0;
+    background: linear-gradient(135deg, #1e293b);
+    
+    color: #ffffff;
+}
+
+.contact .title {
+    text-align: center;
+    margin-bottom: 50px;
+    font-size: 32px;
+}
+
+.contact-content {
+    display: flex;
+    justify-content: space-between;
+    gap: 50px;
+    flex-wrap: wrap;
+}
+
+.contact-info,
+.contact-form {
+    flex: 1;
+    min-width: 280px;
+}
+
+.contact-desc {
+    margin-bottom: 25px;
+    color: #cbd5e1;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+.info-item i {
+    margin-right: 12px;
+    color: #38bdf8;
+    font-size: 18px;
+}
+
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 8px;
+    outline: none;
+}
+
+.contact-form button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background-color:  #ff1c1c;;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.contact-form button:hover {
+    background-color: #0ea5e9;
+}
+#contact .container {
+    background: transparent;
+}
+
 
 body.light-mode {
   --bg-color: #f5f7fa;
