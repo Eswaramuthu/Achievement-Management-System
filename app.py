@@ -288,7 +288,7 @@ def teacher_new():
 
         try:
             cursor.execute("""
-                INSERT INTO teacher (teacher_name, teacher_id, email, phone_number, password, teacher_gender, teacher_dept)
+                INSERT INTO teacher (teacher_name, teacher_id , email, phone_number, password, teacher_gender, teacher_dept)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
             """, (teacher_name, teacher_id, email, phone_number, password, teacher_gender, teacher_dept))
             connection.commit()
