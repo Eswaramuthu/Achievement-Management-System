@@ -549,9 +549,10 @@ def submit_achievements():
                         
                 # Parse team_size
                 team_size = request.form.get("team_size")
-                team_size = int(team_size) 
-                if team_size and team_size.isdigit() 
-                else None
+               if team_size and team_size.isdigit():
+                team_size = int(team_size)
+               else:
+                team_size = None
                     
                 # Get other form fields
                 symposium_theme = request.form.get("symposium_theme")
