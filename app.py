@@ -110,6 +110,7 @@ def allowed_file(filename):
 
 
 # Initialize database on startup
+# Initialize database on startup
 def init_db():
     connection = sqlite3.connect(DB_PATH)
     cursor = connection.cursor()
@@ -123,7 +124,9 @@ def init_db():
             phone_number TEXT,
             password TEXT NOT NULL,
             student_gender TEXT,
-            student_dept TEXT
+            student_dept TEXT,
+            is_approved BOOLEAN DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
 
@@ -136,7 +139,42 @@ def init_db():
             phone_number TEXT,
             password TEXT NOT NULL,
             teacher_gender TEXT,
-            teacher_dept TEXT
+            teacher_dept TEXT,
+            is_approved BOOLEAN DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    # Admin table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS admin (
+            admin_name TEXT NOT NULL,
+            admin_id TEXT PRIMARY KEY,
+            email TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            is_superuser BOOLEAN DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    # Departments table for admin management
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS departments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            dept_code TEXT UNIQUE NOT NULL,
+            dept_name TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    # Achievement categories table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS achievement_categories (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            category_code TEXT UNIQUE NOT NULL,
+            category_name TEXT NOT NULL,
+            description TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
 
@@ -172,19 +210,163 @@ def init_db():
         )
     """)
 
+    # Insert default super admin if not exists
+    cursor.execute("SELECT COUNT(*) FROM admin WHERE admin_id = 'superadmin'")
+    if cursor.fetchone()[0] == 0:
+        default_password = generate_password_hash("admin123")
+        cursor.execute("""
+            INSERT INTO admin (admin_name, admin_id, email, password, is_superuser)
+            VALUES (?, ?, ?, ?, ?)
+        """, ("Super Administrator", "superadmin", "admin@system.com", default_password, 1))
+
+    # Insert default departments if not exists
+    default_departments = [
+        ("CSE", "Computer Science and Engineering"),
+        ("ECE", "Electronics and Communication Engineering"),
+        ("EEE", "Electrical and Electronics Engineering"),
+        ("MECH", "Mechanical Engineering"),
+        ("CIVIL", "Civil Engineering"),
+        ("IT", "Information Technology")
+    ]
+
+    for dept_code, dept_name in default_departments:
+        cursor.execute("SELECT COUNT(*) FROM departments WHERE dept_code = ?", (dept_code,))
+        if cursor.fetchone()[0] == 0:
+            cursor.execute("INSERT INTO departments (dept_code, dept_name) VALUES (?, ?)", (dept_code, dept_name))
+
+    # Insert default achievement categories if not exists
+    default_categories = [
+        ("CODING", "Coding Competition", "Programming and coding competitions"),
+        ("HACKATHON", "Hackathon", "Hackathon events"),
+        ("PAPER", "Paper Presentation", "Research paper presentations"),
+        ("PROJECT", "Project Exhibition", "Project exhibitions and demos"),
+        ("SPORTS", "Sports Achievement", "Sports and athletic achievements"),
+        ("CULTURAL", "Cultural Event", "Cultural and arts events"),
+        ("INTERNSHIP", "Internship", "Internship completions"),
+        ("CERTIFICATION", "Certification", "Professional certifications")
+    ]
+
+    for cat_code, cat_name, description in default_categories:
+        cursor.execute("SELECT COUNT(*) FROM achievement_categories WHERE category_code = ?", (cat_code,))
+        if cursor.fetchone()[0] == 0:
+            cursor.execute("INSERT INTO achievement_categories (category_code, category_name, description) VALUES (?, ?, ?)",
+                          (cat_code, cat_name, description))
+
     connection.commit()
     connection.close()
     print("Database initialized successfully")
 
 
+
 # Call initialization function
 init_db()
+
+# Permission decorators for RBAC
+def login_required(f):
+    """Decorator to check if user is logged in"""
+    from functools import wraps
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("logged_in"):
+            return redirect(url_for("home"))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def admin_required(f):
+    """Decorator to check if user is admin"""
+    from functools import wraps
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("logged_in") or not session.get("admin_id"):
+            return redirect(url_for("home"))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def superadmin_required(f):
+    """Decorator to check if user is super admin"""
+    from functools import wraps
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("logged_in") or not session.get("admin_id") or not session.get("is_superuser"):
+            return redirect(url_for("admin_dashboard"))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def student_required(f):
+    """Decorator to check if user is student"""
+    from functools import wraps
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("logged_in") or not session.get("student_id"):
+            return redirect(url_for("student"))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def teacher_required(f):
+    """Decorator to check if user is teacher"""
+    from functools import wraps
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("logged_in") or not session.get("teacher_id"):
+            return redirect(url_for("teacher"))
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 @app.context_processor
 def inject_csrf():
     """Provide csrf_token() for templates that expect it (e.g. tests)."""
     return {"csrf_token": lambda: ""}
+# Permission decorators for RBAC
+def login_required(f):
+    """Decorator to check if user is logged in"""
+    from functools import wraps
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("logged_in"):
+            return redirect(url_for("home"))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def admin_required(f):
+    """Decorator to check if user is admin"""
+    from functools import wraps
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("logged_in") or not session.get("admin_id"):
+            return redirect(url_for("home"))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def superadmin_required(f):
+    """Decorator to check if user is super admin"""
+    from functools import wraps
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("logged_in") or not session.get("admin_id") or not session.get("is_superuser"):
+            return redirect(url_for("admin_dashboard"))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def student_required(f):
+    """Decorator to check if user is student"""
+    from functools import wraps
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("logged_in") or not session.get("student_id"):
+            return redirect(url_for("student"))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def teacher_required(f):
+    """Decorator to check if user is teacher"""
+    from functools import wraps
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("logged_in") or not session.get("teacher_id"):
+            return redirect(url_for("teacher"))
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 @app.route("/")
@@ -203,143 +385,17 @@ def privacy_policy():
     return render_template("privacy-policy.html")
 
 
-@app.route("/student", methods=["GET", "POST"])
-def student():
-    if FIREBASE_AVAILABLE:
-        firebase_config = get_firebase_config()
-    else:
-        firebase_config = DEFAULT_FIREBASE_CONFIG
-    
-    if request.method == "POST":
-        student_id = request.form.get("sname")
-        password = request.form.get("password")
-
-        connection = sqlite3.connect(DB_PATH)
-        cursor = connection.cursor()
-        cursor.execute("SELECT * FROM student WHERE student_id = ?", (student_id,))
-        student_data = cursor.fetchone()
-        connection.close()
-
-        if student_data and check_password_hash(student_data[4], password):
-            session["logged_in"] = True
-            session["student_id"] = student_data[1]
-            session["student_name"] = student_data[0]
-            session["student_dept"] = student_data[6]
-            return redirect(url_for("student-dashboard"))
-        else:
-            return render_template("student.html", error="Invalid credentials. Please try again.", firebase_config=firebase_config)
-
-    return render_template("student.html", firebase_config=firebase_config)
 
 
 
-@app.route("/teacher", methods=["GET", "POST"])
-def teacher():
-    if request.method == "POST":
-        teacher_id = request.form.get("tname")
-        password = request.form.get("password")
-
-        connection = sqlite3.connect(DB_PATH)
-        cursor = connection.cursor()
-        cursor.execute("SELECT * FROM teacher WHERE teacher_id = ?", (teacher_id,))
-        teacher_data = cursor.fetchone()
-        connection.close()
-
-        if teacher_data and check_password_hash(teacher_data[4], password):
-            session["logged_in"] = True
-            session["teacher_id"] = teacher_data[1]
-            session["teacher_name"] = teacher_data[0]
-            session["teacher_dept"] = teacher_data[6]
-            return redirect(url_for("teacher-dashboard"))
-        else:
-            return render_template("teacher.html", error="Invalid credentials. Please try again.")
-
-    return render_template("teacher.html")
 
 
-@app.route("/student-new", methods=["GET", "POST"])
-@app.route("/student_new", methods=["GET", "POST"])
-def student_new():
-    firebase_config = get_firebase_config()
-    
-    if request.method == "POST":
-        student_name = request.form.get("student_name")
-        student_id = request.form.get("student_id")
-        email = request.form.get("email")
-        phone_number = request.form.get("phone_number")
-        password = generate_password_hash(request.form.get("password"))
-        student_gender = request.form.get("student_gender")
-        student_dept = request.form.get("student_dept")
-
-        connection = sqlite3.connect(DB_PATH)
-        cursor = connection.cursor()
-
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS student (
-            student_name TEXT NOT NULL,
-            student_id TEXT PRIMARY KEY,
-            email TEXT UNIQUE NOT NULL,
-            phone_number TEXT,
-            password TEXT NOT NULL,
-            student_gender TEXT,
-            student_dept TEXT
-        )
-        """)
-
-        try:
-            cursor.execute("""
-                INSERT INTO student (student_name, student_id, email, phone_number, password, student_gender, student_dept)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (student_name, student_id, email, phone_number, password, student_gender, student_dept))
-            connection.commit()
-            return redirect(url_for("student"))
-        except sqlite3.Error as e:
-            return render_template("student_new_2.html", error=f"Database error: {e}", firebase_config=firebase_config)
-        finally:
-            connection.close()
-
-    return render_template("student_new_2.html", firebase_config=firebase_config)
 
 
-@app.route("/teacher-new", endpoint="teacher-new", methods=["GET", "POST"])
-def teacher_new():
-    if request.method == "POST":
-        teacher_name = request.form.get("teacher_name")
-        teacher_id = request.form.get("teacher_id")
-        email = request.form.get("email")
-        phone_number = request.form.get("phone_number")
-        password = generate_password_hash(request.form.get("password"))
-        teacher_gender = request.form.get("teacher_gender")
-        teacher_dept = request.form.get("teacher_dept")
 
-        connection = sqlite3.connect(DB_PATH)
-        cursor = connection.cursor()
 
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS teacher (
-            teacher_name TEXT NOT NULL,
-            teacher_id TEXT PRIMARY KEY,
-            email TEXT UNIQUE NOT NULL,
-            phone_number TEXT,
-            password TEXT NOT NULL,
-            teacher_gender TEXT,
-            teacher_dept TEXT
-        )
-        """)
 
-        try:
-            cursor.execute("""
-                INSERT INTO teacher (teacher_name, teacher_id, email, phone_number, password, teacher_gender, teacher_dept)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (teacher_name, teacher_id, email, phone_number, password, teacher_gender, teacher_dept))
-            connection.commit()
-            return redirect(url_for("teacher"))
-        except sqlite3.Error as e:
-            return render_template("teacher_new_2.html", error=f"Database error: {e}")
-        finally:
-            connection.close()
 
-    return render_template("teacher_new_2.html")
 
 
 @app.route("/teacher-achievements", endpoint="teacher-achievements")
@@ -749,6 +805,602 @@ def all_achievements():
     connection.close()
 
     return render_template("all_achievements.html", achievements=achievements)
+
+
+# ==================== ADMIN ROUTES ====================
+
+@app.route("/admin", methods=["GET", "POST"])
+def admin_login():
+    """Admin login page"""
+    if request.method == "POST":
+        admin_id = request.form.get("admin_id")
+        password = request.form.get("password")
+
+        connection = sqlite3.connect(DB_PATH)
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM admin WHERE admin_id = ?", (admin_id,))
+        admin_data = cursor.fetchone()
+        connection.close()
+
+        if admin_data and check_password_hash(admin_data[3], password):
+            session["logged_in"] = True
+            session["admin_id"] = admin_data[1]
+            session["admin_name"] = admin_data[0]
+            session["is_superuser"] = bool(admin_data[4])
+            return redirect(url_for("admin_dashboard"))
+        else:
+            return render_template("admin_login.html", error="Invalid credentials. Please try again.")
+
+    return render_template("admin_login.html")
+
+
+@app.route("/admin/dashboard")
+@admin_required
+def admin_dashboard():
+    """Admin dashboard with system statistics"""
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+
+    # System statistics
+    cursor.execute("SELECT COUNT(*) FROM student")
+    total_students = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM teacher")
+    total_teachers = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM achievements")
+    total_achievements = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM student WHERE is_approved = 0")
+    pending_student_approvals = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM teacher WHERE is_approved = 0")
+    pending_teacher_approvals = cursor.fetchone()[0]
+
+    # Recent activities
+    cursor.execute("""
+        SELECT type, name, id, is_approved, created_at FROM (
+            SELECT 'student' as type, student_name as name, student_id as id, is_approved, created_at 
+            FROM student 
+            ORDER BY created_at DESC 
+            LIMIT 5
+        )
+        UNION ALL
+        SELECT type, name, id, is_approved, created_at FROM (
+            SELECT 'teacher' as type, teacher_name as name, teacher_id as id, is_approved, created_at 
+            FROM teacher 
+            ORDER BY created_at DESC 
+            LIMIT 5
+        )
+        ORDER BY created_at DESC 
+        LIMIT 10
+    """)
+    recent_activities = cursor.fetchall()
+
+    # Department statistics
+    cursor.execute("""
+        SELECT student_dept, COUNT(*) as count 
+        FROM student 
+        WHERE student_dept IS NOT NULL AND student_dept != ''
+        GROUP BY student_dept 
+        ORDER BY count DESC 
+        LIMIT 5
+    """)
+    dept_stats = cursor.fetchall()
+
+    connection.close()
+
+    stats = {
+        "total_students": total_students,
+        "total_teachers": total_teachers,
+        "total_achievements": total_achievements,
+        "pending_student_approvals": pending_student_approvals,
+        "pending_teacher_approvals": pending_teacher_approvals,
+    }
+
+    return render_template(
+        "admin_dashboard.html",
+        stats=stats,
+        recent_activities=recent_activities,
+        dept_stats=dept_stats,
+        admin_name=session.get("admin_name"),
+        is_superuser=session.get("is_superuser", False)
+    )
+
+
+@app.route("/admin/users")
+@admin_required
+def admin_users():
+    """Manage users (students and teachers)"""
+    user_type = request.args.get("type", "students")
+    status = request.args.get("status", "all")
+    
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+
+    if user_type == "students":
+        query = "SELECT * FROM student WHERE 1=1"
+        params = []
+        
+        if status == "pending":
+            query += " AND is_approved = 0"
+        elif status == "approved":
+            query += " AND is_approved = 1"
+        
+        query += " ORDER BY created_at DESC"
+        cursor.execute(query, params)
+        users = cursor.fetchall()
+        user_type_name = "Students"
+    else:
+        query = "SELECT * FROM teacher WHERE 1=1"
+        params = []
+        
+        if status == "pending":
+            query += " AND is_approved = 0"
+        elif status == "approved":
+            query += " AND is_approved = 1"
+        
+        query += " ORDER BY created_at DESC"
+        cursor.execute(query, params)
+        users = cursor.fetchall()
+        user_type_name = "Teachers"
+
+    connection.close()
+
+    return render_template(
+        "admin_users.html",
+        users=users,
+        user_type=user_type,
+        user_type_name=user_type_name,
+        status=status,
+        admin_name=session.get("admin_name")
+    )
+
+
+@app.route("/admin/user/approve", methods=["POST"])
+@admin_required
+def admin_approve_user():
+    """Approve or reject a user"""
+    user_id = request.form.get("user_id")
+    user_type = request.form.get("user_type")
+    action = request.form.get("action")  # "approve" or "reject"
+
+    if user_type not in ["student", "teacher"]:
+        return jsonify({"success": False, "error": "Invalid user type"}), 400
+
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
+
+    if action == "approve":
+        if user_type == "student":
+            cursor.execute("UPDATE student SET is_approved = 1 WHERE student_id = ?", (user_id,))
+        else:
+            cursor.execute("UPDATE teacher SET is_approved = 1 WHERE teacher_id = ?", (user_id,))
+        message = f"{user_type.capitalize()} approved successfully"
+    else:
+        if user_type == "student":
+            cursor.execute("DELETE FROM student WHERE student_id = ?", (user_id,))
+        else:
+            cursor.execute("DELETE FROM teacher WHERE teacher_id = ?", (user_id,))
+        message = f"{user_type.capitalize()} rejected and removed"
+
+    connection.commit()
+    connection.close()
+
+    return jsonify({"success": True, "message": message})
+
+
+@app.route("/admin/departments")
+@admin_required
+def admin_departments():
+    """Manage departments"""
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT * FROM departments ORDER BY dept_name")
+    departments = cursor.fetchall()
+
+    # Get department usage statistics
+    cursor.execute("""
+        SELECT d.dept_code, d.dept_name, 
+               COUNT(s.student_id) as student_count,
+               COUNT(t.teacher_id) as teacher_count
+        FROM departments d
+        LEFT JOIN student s ON d.dept_code = s.student_dept
+        LEFT JOIN teacher t ON d.dept_code = t.teacher_dept
+        GROUP BY d.dept_code, d.dept_name
+        ORDER BY d.dept_name
+    """)
+    dept_stats = cursor.fetchall()
+
+    connection.close()
+
+    return render_template(
+        "admin_departments.html",
+        departments=departments,
+        dept_stats=dept_stats,
+        admin_name=session.get("admin_name"),
+        is_superuser=session.get("is_superuser", False)
+    )
+
+
+@app.route("/admin/department/add", methods=["POST"])
+@admin_required
+def admin_add_department():
+    """Add a new department"""
+    if not session.get("is_superuser"):
+        return jsonify({"success": False, "error": "Permission denied"}), 403
+
+    dept_code = request.form.get("dept_code")
+    dept_name = request.form.get("dept_name")
+
+    if not dept_code or not dept_name:
+        return jsonify({"success": False, "error": "Department code and name are required"}), 400
+
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute("INSERT INTO departments (dept_code, dept_name) VALUES (?, ?)", (dept_code, dept_name))
+        connection.commit()
+        connection.close()
+        return jsonify({"success": True, "message": "Department added successfully"})
+    except sqlite3.IntegrityError:
+        connection.close()
+        return jsonify({"success": False, "error": "Department code already exists"}), 400
+    except Exception as e:
+        connection.close()
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/admin/department/delete", methods=["POST"])
+@superadmin_required
+def admin_delete_department():
+    """Delete a department (super admin only)"""
+    dept_id = request.form.get("dept_id")
+
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
+
+    # Check if department is in use
+    cursor.execute("SELECT COUNT(*) FROM student WHERE student_dept = (SELECT dept_code FROM departments WHERE id = ?)", (dept_id,))
+    student_count = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM teacher WHERE teacher_dept = (SELECT dept_code FROM departments WHERE id = ?)", (dept_id,))
+    teacher_count = cursor.fetchone()[0]
+
+    if student_count > 0 or teacher_count > 0:
+        connection.close()
+        return jsonify({"success": False, "error": "Cannot delete department that is in use"}), 400
+
+    try:
+        cursor.execute("DELETE FROM departments WHERE id = ?", (dept_id,))
+        connection.commit()
+        connection.close()
+        return jsonify({"success": True, "message": "Department deleted successfully"})
+    except Exception as e:
+        connection.close()
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/admin/categories")
+@admin_required
+def admin_categories():
+    """Manage achievement categories"""
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT * FROM achievement_categories ORDER BY category_name")
+    categories = cursor.fetchall()
+
+    # Get category usage statistics
+    cursor.execute("""
+        SELECT c.category_code, c.category_name, 
+               COUNT(a.id) as achievement_count
+        FROM achievement_categories c
+        LEFT JOIN achievements a ON c.category_code = a.achievement_type
+        GROUP BY c.category_code, c.category_name
+        ORDER BY c.category_name
+    """)
+    category_stats = cursor.fetchall()
+
+    connection.close()
+
+    return render_template(
+        "admin_categories.html",
+        categories=categories,
+        category_stats=category_stats,
+        admin_name=session.get("admin_name"),
+        is_superuser=session.get("is_superuser", False)
+    )
+
+
+@app.route("/admin/category/add", methods=["POST"])
+@admin_required
+def admin_add_category():
+    """Add a new achievement category"""
+    category_code = request.form.get("category_code")
+    category_name = request.form.get("category_name")
+    description = request.form.get("description", "")
+
+    if not category_code or not category_name:
+        return jsonify({"success": False, "error": "Category code and name are required"}), 400
+
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute("INSERT INTO achievement_categories (category_code, category_name, description) VALUES (?, ?, ?)", 
+                      (category_code, category_name, description))
+        connection.commit()
+        connection.close()
+        return jsonify({"success": True, "message": "Category added successfully"})
+    except sqlite3.IntegrityError:
+        connection.close()
+        return jsonify({"success": False, "error": "Category code already exists"}), 400
+    except Exception as e:
+        connection.close()
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/admin/export")
+@admin_required
+def admin_export():
+    """Export system data"""
+    export_type = request.args.get("type", "students")
+    
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+
+    if export_type == "students":
+        cursor.execute("SELECT * FROM student ORDER BY student_name")
+        data = cursor.fetchall()
+        filename = "students_export.csv"
+        headers = ["Student ID", "Name", "Email", "Phone", "Gender", "Department", "Approved", "Created At"]
+        
+        # Create CSV content
+        import io
+        import csv
+        
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(headers)
+        
+        for row in data:
+            writer.writerow([
+                row["student_id"],
+                row["student_name"],
+                row["email"],
+                row["phone_number"] or "",
+                row["student_gender"] or "",
+                row["student_dept"] or "",
+                "Yes" if row["is_approved"] else "No",
+                row["created_at"]
+            ])
+        
+        content = output.getvalue()
+        output.close()
+        
+    elif export_type == "teachers":
+        cursor.execute("SELECT * FROM teacher ORDER BY teacher_name")
+        data = cursor.fetchall()
+        filename = "teachers_export.csv"
+        headers = ["Teacher ID", "Name", "Email", "Phone", "Gender", "Department", "Approved", "Created At"]
+        
+        import io
+        import csv
+        
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(headers)
+        
+        for row in data:
+            writer.writerow([
+                row["teacher_id"],
+                row["teacher_name"],
+                row["email"],
+                row["phone_number"] or "",
+                row["teacher_gender"] or "",
+                row["teacher_dept"] or "",
+                "Yes" if row["is_approved"] else "No",
+                row["created_at"]
+            ])
+        
+        content = output.getvalue()
+        output.close()
+        
+    else:  # achievements
+        cursor.execute("""
+            SELECT a.*, s.student_name, t.teacher_name
+            FROM achievements a
+            JOIN student s ON a.student_id = s.student_id
+            JOIN teacher t ON a.teacher_id = t.teacher_id
+            ORDER BY a.achievement_date DESC
+        """)
+        data = cursor.fetchall()
+        filename = "achievements_export.csv"
+        headers = ["ID", "Student ID", "Student Name", "Teacher ID", "Teacher Name", 
+                  "Achievement Type", "Event Name", "Date", "Organizer", "Position", 
+                  "Description", "Certificate Path", "Created At"]
+        
+        import io
+        import csv
+        
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(headers)
+        
+        for row in data:
+            writer.writerow([
+                row["id"],
+                row["student_id"],
+                row["student_name"],
+                row["teacher_id"],
+                row["teacher_name"],
+                row["achievement_type"],
+                row["event_name"],
+                row["achievement_date"],
+                row["organizer"],
+                row["position"],
+                row["achievement_description"] or "",
+                row["certificate_path"] or "",
+                row["created_at"]
+            ])
+        
+        content = output.getvalue()
+        output.close()
+
+    connection.close()
+
+    from flask import Response
+    return Response(
+        content,
+        mimetype="text/csv",
+        headers={"Content-Disposition": f"attachment;filename={filename}"}
+    )
+
+
+@app.route("/admin/logout")
+def admin_logout():
+    """Admin logout"""
+    session.clear()
+    return redirect(url_for("admin_login"))
+
+
+# ==================== UPDATE EXISTING ROUTES FOR RBAC ====================
+
+# Update student registration to require approval
+@app.route("/student-new", methods=["GET", "POST"])
+@app.route("/student_new", methods=["GET", "POST"])
+def student_new():
+    firebase_config = get_firebase_config()
+    
+    if request.method == "POST":
+        student_name = request.form.get("student_name")
+        student_id = request.form.get("student_id")
+        email = request.form.get("email")
+        phone_number = request.form.get("phone_number")
+        password = generate_password_hash(request.form.get("password"))
+        student_gender = request.form.get("student_gender")
+        student_dept = request.form.get("student_dept")
+
+        connection = sqlite3.connect(DB_PATH)
+        cursor = connection.cursor()
+
+        try:
+            cursor.execute("""
+                INSERT INTO student (student_name, student_id, email, phone_number, password, student_gender, student_dept, is_approved)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (student_name, student_id, email, phone_number, password, student_gender, student_dept, 0))
+            connection.commit()
+            return render_template("student_new_2.html", 
+                                 success="Registration submitted! Your account will be activated after admin approval.",
+                                 firebase_config=firebase_config)
+        except sqlite3.Error as e:
+            return render_template("student_new_2.html", error=f"Database error: {e}", firebase_config=firebase_config)
+        finally:
+            connection.close()
+
+    return render_template("student_new_2.html", firebase_config=firebase_config)
+
+
+# Update teacher registration to require approval
+@app.route("/teacher-new", endpoint="teacher-new", methods=["GET", "POST"])
+def teacher_new():
+    if request.method == "POST":
+        teacher_name = request.form.get("teacher_name")
+        teacher_id = request.form.get("teacher_id")
+        email = request.form.get("email")
+        phone_number = request.form.get("phone_number")
+        password = generate_password_hash(request.form.get("password"))
+        teacher_gender = request.form.get("teacher_gender")
+        teacher_dept = request.form.get("teacher_dept")
+
+        connection = sqlite3.connect(DB_PATH)
+        cursor = connection.cursor()
+
+        try:
+            cursor.execute("""
+                INSERT INTO teacher (teacher_name, teacher_id, email, phone_number, password, teacher_gender, teacher_dept, is_approved)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (teacher_name, teacher_id, email, phone_number, password, teacher_gender, teacher_dept, 0))
+            connection.commit()
+            return render_template("teacher_new_2.html", 
+                                 success="Registration submitted! Your account will be activated after admin approval.")
+        except sqlite3.Error as e:
+            return render_template("teacher_new_2.html", error=f"Database error: {e}")
+        finally:
+            connection.close()
+
+    return render_template("teacher_new_2.html")
+
+
+# Update student login to check approval status
+@app.route("/student", methods=["GET", "POST"])
+def student():
+    if FIREBASE_AVAILABLE:
+        firebase_config = get_firebase_config()
+    else:
+        firebase_config = DEFAULT_FIREBASE_CONFIG
+    
+    if request.method == "POST":
+        student_id = request.form.get("sname")
+        password = request.form.get("password")
+
+        connection = sqlite3.connect(DB_PATH)
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM student WHERE student_id = ?", (student_id,))
+        student_data = cursor.fetchone()
+        connection.close()
+
+        if student_data and check_password_hash(student_data[4], password):
+            # Check if student is approved
+            if not student_data[7]:  # is_approved is at index 7
+                return render_template("student.html", error="Your account is pending admin approval. Please wait for activation.", firebase_config=firebase_config)
+            
+            session["logged_in"] = True
+            session["student_id"] = student_data[1]
+            session["student_name"] = student_data[0]
+            session["student_dept"] = student_data[6]
+            return redirect(url_for("student-dashboard"))
+        else:
+            return render_template("student.html", error="Invalid credentials. Please try again.", firebase_config=firebase_config)
+
+    return render_template("student.html", firebase_config=firebase_config)
+
+
+# Update teacher login to check approval status
+@app.route("/teacher", methods=["GET", "POST"])
+def teacher():
+    if request.method == "POST":
+        teacher_id = request.form.get("tname")
+        password = request.form.get("password")
+
+        connection = sqlite3.connect(DB_PATH)
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM teacher WHERE teacher_id = ?", (teacher_id,))
+        teacher_data = cursor.fetchone()
+        connection.close()
+
+        if teacher_data and check_password_hash(teacher_data[4], password):
+            # Check if teacher is approved
+            if not teacher_data[7]:  # is_approved is at index 7
+                return render_template("teacher.html", error="Your account is pending admin approval. Please wait for activation.")
+            
+            session["logged_in"] = True
+            session["teacher_id"] = teacher_data[1]
+            session["teacher_name"] = teacher_data[0]
+            session["teacher_dept"] = teacher_data[6]
+            return redirect(url_for("teacher-dashboard"))
+        else:
+            return render_template("teacher.html", error="Invalid credentials. Please try again.")
+
+    return render_template("teacher.html")
 
 
 if __name__ == "__main__":
