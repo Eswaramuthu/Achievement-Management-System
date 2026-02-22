@@ -138,9 +138,65 @@ def init_db():
         )
     """)
 
+        main
+        connection.commit()
+        connection.close()
+    else:
+      main
+        # Check if the achievements table exists and create it if not
+        connection = sqlite3.connect(DB_PATH)
+        cursor = connection.cursor()
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='achievements'")
+        if not cursor.fetchone():
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS achievements (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                teacher_id TEXT NOT NULL,
+                student_id TEXT NOT NULL,
+                achievement_type TEXT NOT NULL,
+                event_name TEXT NOT NULL,
+                achievement_date DATE NOT NULL,
+                organizer TEXT NOT NULL,
+                position TEXT NOT NULL,
+                achievement_description TEXT,
+                certificate_path TEXT,
+                
+                /* Common additional fields */
+                symposium_theme TEXT,
+                programming_language TEXT,
+                coding_platform TEXT,
+                paper_title TEXT,
+                journal_name TEXT,
+                conference_level TEXT,
+                conference_role TEXT,
+                team_size INTEGER,
+                project_title TEXT,
+                database_type TEXT,
+                difficulty_level TEXT,
+                other_description TEXT,
+                
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (student_id) REFERENCES student(student_id),
+                FOREIGN KEY (teacher_id) REFERENCES teacher(teacher_id)
+
+            )
+            ''')
+
+            migrate_achievements_table()
+            connection.commit()
+            print("Created achievements table")
+        connection.close()
+        print(f"Database already exists at {DB_PATH}")
+
+        add_teacher_id_column()
+        main
+
+        
+
     connection.commit()
     connection.close()
     print("Database initialized successfully")
+ main
 
 
 # Call initialization function
@@ -180,11 +236,35 @@ def student():
         student_data = cursor.fetchone()
         connection.close()
 
+        main
+        if student_data and check_password_hash(student_data[4], password):
+            # Store user information in session
+         main
+            session['role'] = 'student'
+            # OR
+            session['role'] = 'teacher'
+            if session.get('role') != 'teacher':
+              return redirect(url_for('teacher'))
+
+
+            session.permanent = True
+            session['logged_in'] = True
+            main
+            session['student_id'] = student_data[1]
+            session['student_name'] = student_data[0]
+            session['student_dept'] = student_data[6]
+
+            # Authentication successful - store student info in session
+            @app.route("/student-dashboard", endpoint="student_dashboard")
+            def student_dashboard()
+
+
         if student_data:
             session["logged_in"] = True
             session["student_id"] = student_data[1]
             session["student_name"] = student_data[0]
             session["student_dept"] = student_data[6]
+            main
             return redirect(url_for("student-dashboard"))
         else:
             ctx = {"error": "Invalid credentials. Please try again."}
@@ -395,11 +475,65 @@ def submit_achievements():
                 cursor = connection.cursor()
                 ensure_achievements_schema(connection)
 
+            main
+
+                # Debug: Check if achievements table exists
+                cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='achievements'")
+                table_exists = cursor.fetchone()
+                print(f"Achievements table exists: {table_exists is not None}")
+
+                # Check if student ID exists - fixed parameter passing
+                cursor.execute("SELECT student_id, student_name FROM student WHERE student_id = ?", (student_id,))
+                student_data = cursor.fetchone()
+                    
+                if not student_data:
+                    connection.close()
+                    return render_template("submit_achievements.html", error="Student ID does not exist in the system.")
+                
+                student_name = student_data[1]
+            
+                # Handle certificate file upload
+                certificate_path = None
+                if 'certificate' in request.files:
+                    file = request.files['certificate']
+                    if file and file.filename != '':
+                        if allowed_file(file.filename):
+                            # Create a secure filename with timestamp to prevent duplicates
+                            timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+                            secure_name = f"{timestamp}_{secure_filename(file.filename)}"
+                            file_path = os.path.join(UPLOAD_FOLDER, secure_name)
+                            file.save(file_path)
+                            certificate_path = os.path.join("uploads", secure_name)
+                        else:
+                            connection.close()
+                            return render_template("submit_achievements.html", error="Invalid file type. Please upload PDF, PNG, JPG, or JPEG files.")
+                        
+                # Parse team_size
+                team_size = request.form.get("team_size")
+               if team_size and team_size.isdigit():
+                team_size = int(team_size)
+               else:
+                team_size = None
+                    
+                # Get other form fields
+                symposium_theme = request.form.get("symposium_theme")
+                programming_language = request.form.get("programming_language")
+                coding_platform = request.form.get("coding_platform")
+                paper_title = request.form.get("paper_title")
+                journal_name = request.form.get("journal_name")
+                conference_level = request.form.get("conference_level")
+                conference_role = request.form.get("conference_role")
+                project_title = request.form.get("project_title")
+                database_type = request.form.get("database_type")
+                difficulty_level = request.form.get("difficulty_level")
+                other_description = request.form.get("other_description")
+
                 # Validate Student
                 cursor.execute("SELECT student_name FROM student WHERE student_id = ?", (student_id,))
                 student_row = cursor.fetchone()
                 if not student_row:
                     return render_template("submit_achievements.html", error="Student ID not found.")
+                main
                 
                 student_name = student_row[0]
 
@@ -550,5 +684,11 @@ def all_achievements():
 
 if __name__ == "__main__":
     init_db()
+     main
+    # migrate_achievements_table()
+    migrate_achievements_table()
+    add_teacher_id_column()
+
+    main
     app.run(debug=True)
 
