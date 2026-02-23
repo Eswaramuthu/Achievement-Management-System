@@ -1,98 +1,203 @@
 {% extends "base.html" %}
 
 {% block content %}
-
 <!-- Hero Section -->
 <section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-grid"></div>
+
     <div class="hero-content">
-        <h1>Welcome to Achievement Management System</h1>
-        <p>A centralized platform where students and teachers track academic achievements in one place. Students view their accomplishments, teachers record them, and everyone gets a clear picture of academic progress — all automated and organized.</p>
+        <h1 class="hero-title">
+            Track. Manage. Showcase.
+            <span>All Achievements in One Place.</span>
+        </h1>
+
+        <p class="hero-subtitle">
+            A centralized platform where students and teachers track academic
+            achievements seamlessly. Smart dashboards, organized certificates,
+            and powerful analytics — all automated and structured.
+        </p>
+
         <div class="hero-buttons">
-            <a href="{{ url_for('student') }}" class="btn btn-primary">Student Login</a>
-            <a href="{{ url_for('teacher') }}" class="btn btn-secondary">Teacher Login</a>
+            <a href="{{ url_for('student') }}" class="btn btn-primary glow-btn">
+                Student Login
+            </a>
+            <a href="{{ url_for('teacher') }}" class="btn btn-secondary">
+                Teacher Login
+            </a>
         </div>
     </div>
+
+    <!-- Floating decorative shapes -->
+    <div class="hero-shape shape-1"></div>
+    <div class="hero-shape shape-2"></div>
 </section>
 
 <!-- Features Section -->
 <section id="features" class="features">
-    <div class="container">
-        <h2 class="title">Key Features</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <h3>Student Dashboard</h3>
-                <p>View all achievements at a glance with analytics and filtering options.</p>
-            </div>
-            <div class="feature-card">
-                <h3>Teacher Management</h3>
-                <p>Quick entry forms for recording achievements with auto-complete functionality.</p>
-            </div>
-            <div class="feature-card">
-                <h3>Certificate Management</h3>
-                <p>Upload and download certificates in various formats (PDF, JPG, PNG).</p>
-            </div>
-            <div class="feature-card">
-                <h3>Analytics Dashboard</h3>
-                <p>Visual representation of achievement metrics by type, year, and position.</p>
-            </div>
-        </div>
+  <div class="container">
+    <h2 class="title">Key Features</h2>
+    <p class="subtitle">Explore the core functionalities of our platform designed to enhance learning and management.</p>
+    
+    <div class="features-grid">
+      <!-- Feature Card 1 -->
+      <div class="feature-card" data-tilt data-tilt-max="15">
+        <div class="icon">🎓</div>
+        <h3>Student Dashboard</h3>
+        <p>View all achievements at a glance with analytics and filtering options.</p>
+      </div>
+
+      <!-- Feature Card 2 -->
+      <div class="feature-card" data-tilt data-tilt-max="15">
+        <div class="icon">👩‍🏫</div>
+        <h3>Teacher Management</h3>
+        <p>Quick entry forms for recording achievements with auto-complete functionality.</p>
+      </div>
+
+      <!-- Feature Card 3 -->
+      <div class="feature-card" data-tilt data-tilt-max="15">
+        <div class="icon">📜</div>
+        <h3>Certificate Management</h3>
+        <p>Upload and download certificates in various formats (PDF, JPG, PNG).</p>
+      </div>
+
+      <!-- Feature Card 4 -->
+      <div class="feature-card" data-tilt data-tilt-max="15">
+        <div class="icon">📊</div>
+        <h3>Analytics Dashboard</h3>
+        <p>Visual representation of achievement metrics by type, year, and position.</p>
+      </div>
     </div>
+  </div>
 </section>
 
 <!-- About Section -->
 <section id="about" class="about">
-    <div class="container">
+  <div class="container">
+    <div class="about-wrapper">
+      
+      <!-- Left Side: Text -->
+      <div class="about-text">
         <h2 class="title">About Our System</h2>
-        <div class="about-content">
-            <div class="about-text">
-                <p>Academic achievements are scattered everywhere — certificates in folders, emails buried in inboxes, paper records collecting dust. Students struggle to showcase their accomplishments during placements or applications. Teachers waste time managing spreadsheets and physical documents. Nobody has a clear, organized view of what students have actually achieved.</p>
-                <p>Our Achievement Management System centralizes everything. Students see all their achievements in one dashboard with analytics. Teachers input achievements through simple forms with auto-complete. The system tracks hackathons, coding competitions, paper presentations, conferences, and symposiums — complete with certificates, dates, positions, and detailed descriptions. Clean, fast, and organized.</p>
-            </div>
-        </div>
-    </div>
-</section>
+        <p class="highlight">Centralized, smart, and interactive achievement management for students and teachers.</p>
+        <p>Academic achievements are scattered everywhere — certificates in folders, emails buried in inboxes, paper records collecting dust. Students struggle to showcase their accomplishments during placements or applications. Teachers waste time managing spreadsheets and physical documents. Nobody has a clear, organized view of what students have actually achieved.</p>
+        <p>Our Achievement Management System centralizes everything. Students see all their achievements in one dashboard with analytics. Teachers input achievements through simple forms with auto-complete. The system tracks hackathons, coding competitions, paper presentations, conferences, and symposiums — complete with certificates, dates, positions, and detailed descriptions. Clean, fast, and organized.</p>
+      </div>
 
+      <!-- Right Side: Animated Cards -->
+      <div class="about-cards">
+        <div class="card" data-tilt>
+          <div class="icon">🎓</div>
+          <h3>Student Dashboard</h3>
+          <p>View achievements with analytics and filters.</p>
+        </div>
+        <div class="card" data-tilt>
+          <div class="icon">👩‍🏫</div>
+          <h3>Teacher Management</h3>
+          <p>Input achievements via smart forms.</p>
+        </div>
+        <div class="card" data-tilt>
+          <div class="icon">📜</div>
+          <h3>Certificates</h3>
+          <p>Upload and download in multiple formats.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
 <!-- FAQ Section -->
 <section id="FAQ" class="FAQ">
-    <div class="container">
-        <h2 class="title">Frequently Asked Questions</h2>
-        <div class="faq-content">
-            <div class="faq-item">
-                <h3>What is Achievement Management System?</h3>
-                <p>It is a centralized platform designed to help students and teachers track academic achievements efficiently.</p>
-            </div>
-            <div class="faq-item">
-                <h3>Who can use this platform?</h3>
-                <p>Both students and teachers can use this system for recording and monitoring academic accomplishments.</p>
-            </div>
-            <div class="faq-item">
-                <h3>Can certificates be uploaded?</h3>
-                <p>Yes, users can upload digital certificates which remain accessible anytime.</p>
-            </div>
-            <div class="faq-item">
-                <h3>Is my data secure?</h3>
-                <p>The system uses authentication and structured data storage practices to keep information secure.</p>
-            </div>
+  <div class="container">
+    <h2 class="title">Frequently Asked Questions</h2>
+    <p class="subtitle">Find answers to common queries about our Achievement Management System.</p>
+
+    <div class="faq-accordion">
+      <!-- FAQ Item 1 -->
+      <div class="faq-item">
+        <button class="faq-question">
+          What is Achievement Management System?
+          <span class="arrow">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>It is a centralized platform designed to help students and teachers track academic achievements efficiently.</p>
         </div>
+      </div>
+
+      <!-- FAQ Item 2 -->
+      <div class="faq-item">
+        <button class="faq-question">
+          Who can use this platform?
+          <span class="arrow">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Both students and teachers can use this system for recording and monitoring academic accomplishments.</p>
+        </div>
+      </div>
+
+      <!-- FAQ Item 3 -->
+      <div class="faq-item">
+        <button class="faq-question">
+          Can certificates be uploaded?
+          <span class="arrow">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Yes, users can upload digital certificates which remain accessible anytime.</p>
+        </div>
+      </div>
+
+      <!-- FAQ Item 4 -->
+      <div class="faq-item">
+        <button class="faq-question">
+          Is my data secure?
+          <span class="arrow">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>The system uses authentication and structured data storage practices to keep information secure.</p>
+        </div>
+      </div>
     </div>
+  </div>
 </section>
 
 <!-- Contact Section -->
 <section id="contact" class="contact">
-    <div class="container">
-        <h2 class="title">Contact Us</h2>
-        <div class="contact-content">
-            <div class="contact-info">
-                <h3>Get In Touch</h3>
-                <p>Have questions or feedback? Reach out to us!</p>
-                <ul>
-                    <li>Email: info@achievement-system.com</li>
-                    <li>Phone: +1 (123) 456-7890</li>
-                    <li>Location: SRM Institute of Science and Technology</li>
-                </ul>
-            </div>
-        </div>
+  <div class="container">
+    <h2 class="title">Contact Us</h2>
+    <p class="subtitle">We’d love to hear from you! Reach out with questions, feedback, or suggestions.</p>
+
+    <div class="contact-wrapper">
+      <!-- Contact Info -->
+      <div class="contact-info">
+        <h3>Get In Touch</h3>
+        <p>Have questions or feedback? Our team is here to help you!</p>
+        <ul>
+          <li><span class="icon">📧</span> Email: <a href="mailto:info@achievement-system.com">info@achievement-system.com</a></li>
+          <li><span class="icon">📞</span> Phone: <a href="tel:+11234567890">+1 (123) 456-7890</a></li>
+          <li><span class="icon">📍</span> Location: SRM Institute of Science and Technology</li>
+        </ul>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="contact-form">
+        <form id="contactForm">
+          <div class="form-group">
+            <input type="text" name="name" placeholder="Your Name" required>
+          </div>
+          <div class="form-group">
+            <input type="email" name="email" placeholder="Your Email" required>
+          </div>
+          <div class="form-group">
+            <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
+          </div>
+          <button type="submit" class="btn-submit">Send Message</button>
+        </form>
+      </div>
     </div>
+  </div>
 </section>
+
+
+<script src="{{ url_for('static', filename='js/faq.js') }}"></script>
 
 {% endblock %}
