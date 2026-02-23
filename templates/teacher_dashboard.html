@@ -606,7 +606,217 @@
           <div class="action-description">Generate and view achievement reports</div>
         </a>
       </div>
+
+    <!-- ============================= -->
+    <!-- 📊 CLASS PERFORMANCE DASHBOARD -->
+    <!-- ============================= -->
+
+    <div class="recent-section">
+     <div class="section-header">
+       <div class="section-title">📊 Class-wise Performance Dashboard</div>
+     </div>
+   
+    <!-- Cards -->
+    <div class="dashboard-stats">
+   
+      <div class="stat-card achievement">
+        <div class="stat-number">{{ top_count }}</div>
+        <div class="stat-label">🏆 Top Performers</div>
+      </div>
+   
+      <div class="stat-card students">
+        <div class="stat-number">{{ avg_count }}</div>
+        <div class="stat-label">📈 Average Students</div>
+      </div>
+   
+      <div class="stat-card week">
+        <div class="stat-number">{{ low_count }}</div>
+        <div class="stat-label">⚠️ Need Improvement</div>
+      </div>
+   
+    </div>
+   
+    <!-- Chart -->
+    <div style="display:flex; gap:30px; flex-wrap:wrap; margin-top:20px">
+
+    <!-- Left Chart -->
+    <div style="flex:1; min-width:300px; background:var(--glass-bg); padding:20px; border-radius:16px;">
+      <h3 style="margin-bottom:10px">📊 Performance Distribution</h3>
+      <canvas 
+        id="performanceChart"
+        height="180"
+        data-top="{{ top_count|default(0) }}"
+        data-avg="{{ avg_count|default(0) }}"
+        data-low="{{ low_count|default(0) }}">
+      </canvas>
+    </div>
+    
+    <!-- Right Chart -->
+    <div style="flex:1; min-width:300px; background:var(--glass-bg); padding:20px; border-radius:16px;">
+      <h3 style="margin-bottom:10px">🏆 Achievement Activity</h3>
+      <canvas 
+        id="activityChart"
+        height="180"
+        data-total="{{ stats.total_achievements|default(0) }}"
+        data-week="{{ stats.this_week|default(0) }}">
+      </canvas>
+    </div>
+    
+    </div>
+   
+    <!-- ================= STUDENT PERFORMANCE LIST ================= -->
+    <div style="margin-top:35px">
+    
+    <div style="
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
+      gap:20px;
+      align-items:start;
+    ">
+    
+    <!-- 🏆 TOP PERFORMERS (LEFT) -->
+    <div style="
+      background:var(--glass-bg);
+      padding:18px;
+      border-radius:16px;
+      border:1px solid var(--border-color);
+      box-shadow:var(--shadow-sm);
+    ">
+    <h3 style="margin-bottom:12px;color:#10b981">🏆 Top Performers</h3>
+    
+    {% for s in top_students %}
+      <div style="padding:6px 0;border-bottom:1px solid var(--border-color)">
+        {{ s[0] }} 
+        <span style="float:right;color:#10b981;font-weight:600">
+          {{ s[1] }}
+        </span>
+      </div>
+    {% else %}
+      <div>No top performers yet</div>
+    {% endfor %}
+    
+    </div>
+    
+    <!-- 📈 AVERAGE (CENTER) -->
+    <div style="
+      background:var(--glass-bg);
+      padding:18px;
+      border-radius:16px;
+      border:1px solid var(--border-color);
+      box-shadow:var(--shadow-sm);
+    ">
+    <h3 style="margin-bottom:12px;color:#3b82f6">📈 Average Students</h3>
+    
+    {% for s in avg_students %}
+      <div style="padding:6px 0;border-bottom:1px solid var(--border-color)">
+        {{ s[0] }}
+        <span style="float:right;color:#3b82f6;font-weight:600">
+          {{ s[1] }}
+        </span>
+      </div>
+    {% else %}
+      <div>No data</div>
+    {% endfor %}
+    
+    </div>
+    
+    <!-- ⚠️ NEED IMPROVEMENT (RIGHT) -->
+    <div style="
+      background:var(--glass-bg);
+      padding:18px;
+      border-radius:16px;
+      border:1px solid var(--border-color);
+      box-shadow:var(--shadow-sm);
+    ">
+    <h3 style="margin-bottom:12px;color:#ef4444">⚠️ Need Improvement</h3>
+    
+    {% for s in low_students %}
+      <div style="padding:6px 0;border-bottom:1px solid var(--border-color)">
+        {{ s[0] }}
+        <span style="float:right;color:#ef4444;font-weight:600">
+          {{ s[1] }}
+        </span>
+      </div>
+    {% else %}
+      <div>No data</div>
+    {% endfor %}
+    
+    </div>
+    
+    </div>
+    </div>
       
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+    
+      // ================= LEFT PIE CHART =================
+      const perfCanvas = document.getElementById("performanceChart");
+    
+      const top = parseInt(perfCanvas.dataset.top) || 0;
+      const avg = parseInt(perfCanvas.dataset.avg) || 0;
+      const low = parseInt(perfCanvas.dataset.low) || 0;
+    
+      new Chart(perfCanvas, {
+          type: "pie",
+          data: {
+              labels: ["Top", "Average", "Need Improvement"],
+              datasets: [{
+                  data: [top, avg, low],
+                  backgroundColor:['#ff4d4d','#ffce56','#4caf50'],
+              }]
+          },
+          options: { responsive: true }
+      });
+    
+      // ================= RIGHT BAR CHART =================
+      const actCanvas = document.getElementById("activityChart");
+    
+      const total = parseInt(actCanvas.dataset.total) || 0;
+      const week = parseInt(actCanvas.dataset.week) || 0;
+    
+      new Chart(actCanvas, {
+          type: "bar",
+          data: {
+              labels: ["Total Achievements", "This Week"],
+              datasets: [{
+                  data: [total, week],
+                  backgroundColor: ["#ff3b3b", "#f59e0b"]
+              }]
+          },
+          options: {
+              responsive: true,
+              plugins: { legend: { display:false } }
+          }
+      });
+    
+    });
+    </script>
+    <!-- ================= BEST STUDENT ================= -->
+    <div style="margin-top:30px">
+    
+    <h3 style="margin-bottom:15px">🥇 Best Student</h3>
+    
+    {% if top_students %}
+    <div style="
+     background:linear-gradient(135deg,#6366f1,#4f46e5);
+     padding:18px;
+     border-radius:14px;
+     color:white;
+     margin-bottom:20px;
+     width:fit-content;
+     min-width:250px;
+    ">
+      <div style="font-size:20px;font-weight:600">
+        {{ top_students[0][0] }}
+      </div>
+      <div style="opacity:.9">
+        {{ top_students[0][1] }} achievements
+      </div>
+    </div>
+    {% endif %}
+  
       <!-- Recent Entries -->
       <div class="recent-section">
         <div class="section-header">
