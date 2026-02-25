@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 import os
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -44,7 +44,7 @@ class ProductionConfig(Config):
                 "SECRET_KEY environment variable must be set in production"
             )
 
-=======
+
 import os
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -90,4 +90,3 @@ class ProductionConfig(Config):
                 "SECRET_KEY environment variable must be set in production"
             )
 
->>>>>>> c2e9f6021e5aa3f405794a69358b5d36c0350970
