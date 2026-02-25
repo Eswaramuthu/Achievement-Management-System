@@ -505,20 +505,62 @@ def teacher_dashboard():
     """, (teacher_id,))
     recent_entries = cursor.fetchall()
 
-    connection.close()
-
+    # ===============================
+    # BASIC STATS (required for dashboard)
+    # ===============================
     stats = {
         "total_achievements": total_achievements,
         "students_managed": students_managed,
         "this_week": this_week_count,
     }
-
+    # ===============================
+    # 📊 PERFORMANCE ANALYTICS COUNTS
+    # ===============================
+        
+    cursor.execute("""
+        SELECT student_id, COUNT(*) as total
+        FROM achievements
+        WHERE teacher_id = ?
+        GROUP BY student_id
+    """, (teacher_id,))
+    rows = cursor.fetchall()
+    
+    top_students = []
+    avg_students = []
+    low_students = []
+    
+    for r in rows:
+        sid = r["student_id"]
+        total = r["total"]
+    
+        cursor.execute("SELECT student_name FROM student WHERE student_id = ?", (sid,))
+        name_row = cursor.fetchone()
+        name = name_row["student_name"] if name_row else sid
+    
+        if total >= 5:
+            top_students.append((name, total))
+        elif total >= 2:
+            avg_students.append((name, total))
+        else:
+            low_students.append((name, total))
+    
+    # counts for chart
+    top_count = len(top_students)
+    avg_count = len(avg_students)
+    low_count = len(low_students)
+        
     return render_template(
-        "teacher_dashboard.html",
+       "teacher_dashboard.html",
         teacher=teacher_data,
         stats=stats,
         recent_entries=recent_entries,
-    )
+        top_students=top_students,
+        avg_students=avg_students,
+        low_students=low_students,
+        top_count=top_count,
+        avg_count=avg_count,
+        low_count=low_count
+       )
 
 
 @app.route("/all-achievements", endpoint="all-achievements")
