@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # tests/conftest.py
 import os
 import tempfile
@@ -116,7 +116,7 @@ def test_db(test_app):
         conn = sqlite3.connect(test_app.config['DATABASE'])
         yield conn
         conn.close()
-=======
+
 # tests/conftest.py
 import os
 import tempfile
@@ -234,5 +234,5 @@ def test_db(test_app):
         conn = sqlite3.connect(test_app.config['DATABASE'])
         yield conn
         conn.close()
->>>>>>> c2e9f6021e5aa3f405794a69358b5d36c0350970
+
         
