@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Achievement Entry - Achievement Management System</title>
-  
+
   <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
   <script src="{{ url_for('static', filename = 'script.js') }}"></script>
 
@@ -12,12 +13,12 @@
     function toggleAchievementFields() {
       const achievementType = document.getElementById("achievement-type").value;
       const allFields = document.querySelectorAll('.achievement-specific-field');
-      
+
       // Hide all specific fields first
       allFields.forEach(field => {
         field.style.display = 'none';
       });
-      
+
       // Show fields relevant to the selected achievement type
       if (achievementType) {
         const fieldsToShow = document.querySelectorAll(`.${achievementType}-field`);
@@ -27,7 +28,7 @@
       }
     }
   </script>
-  
+
   <style>
     /* Only include specific styles that aren't in the main CSS file */
     body.form-page {
@@ -36,11 +37,11 @@
       padding-top: 80px;
       padding-bottom: 40px;
     }
-    
+
     .achievement-container {
       max-width: 800px;
     }
-    
+
     /* Consistent form element styling */
     select {
       width: 100%;
@@ -59,24 +60,24 @@
       background-repeat: no-repeat;
       background-position: right 10px top 50%;
     }
-    
+
     /* Fix dropdown option colors for dark mode visibility */
     select option {
       background-color: var(--bg-color);
       color: var(--text-color);
       padding: 10px;
     }
-    
+
     /* Light mode specific style correction */
     body.light-mode select {
       background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
     }
-    
+
     select:focus {
       border-color: var(--primary-color);
       outline: none;
     }
-    
+
     textarea {
       width: 100%;
       min-height: 100px;
@@ -88,12 +89,12 @@
       transition: all 0.3s ease;
       font-family: 'Poppins', sans-serif;
     }
-    
+
     textarea:focus {
       border-color: var(--primary-color);
       outline: none;
     }
-    
+
     /* File input consistent styling */
     input[type="file"] {
       width: 100%;
@@ -103,7 +104,7 @@
       border-radius: 10px;
       border: 1px solid #ccc;
     }
-    
+
     /* More specific rules to enforce contrast */
     body.form-page select,
     body.form-page textarea,
@@ -115,6 +116,7 @@
     }
   </style>
 </head>
+
 <body class="form-page">
   <div class="toggle-container">
     <button id="mode-toggle">Dark Mode 🌙</button>
@@ -124,12 +126,14 @@
     <div class="title">Enter Student Achievement</div>
     <div class="content">
       <form method="POST" action="{{ url_for('submit_achievements') }}" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div class="user-details">
           <div class="input-box">
             <span class="details">Student ID</span>
-            <input type="text" id="student-id" name="student_id" placeholder="Enter student ID (e.g., STU001)" required />
+            <input type="text" id="student-id" name="student_id" placeholder="Enter student ID (e.g., STU001)"
+              required />
           </div>
-          
+
           <div class="input-box full-width">
             <span class="details">Achievement Type</span>
             <select id="achievement-type" name="achievement_type" onchange="toggleAchievementFields()" required>
@@ -143,7 +147,7 @@
               <option value="other">Other</option>
             </select>
           </div>
-        
+
           <div class="input-box">
             <span class="details">Event Name</span>
             <input type="text" name="event_name" placeholder="Enter event name" required />
@@ -160,13 +164,13 @@
             <span class="details">Position/Award</span>
             <input type="text" name="position" placeholder="e.g., First Place, Participant" required />
           </div>
-          
+
           <!-- Symposium specific fields -->
           <div class="input-box full-width achievement-specific-field symposium-field" style="display: none;">
             <span class="details">Symposium Theme</span>
             <input type="text" name="symposium_theme" placeholder="Enter symposium theme" />
           </div>
-          
+
           <!-- Coding competition specific fields -->
           <div class="input-box achievement-specific-field coding-field" style="display: none;">
             <span class="details">Programming Language</span>
@@ -176,7 +180,7 @@
             <span class="details">Platform</span>
             <input type="text" name="coding_platform" placeholder="Enter platform (e.g., HackerRank)" />
           </div>
-          
+
           <!-- Paper presentation specific fields -->
           <div class="input-box full-width achievement-specific-field paper-field" style="display: none;">
             <span class="details">Paper Title</span>
@@ -186,7 +190,7 @@
             <span class="details">Journal/Conference Name</span>
             <input type="text" name="journal_name" placeholder="Enter journal or conference name" />
           </div>
-          
+
           <!-- Conference specific fields -->
           <div class="input-box achievement-specific-field conference-field" style="display: none;">
             <span class="details">Conference Level</span>
@@ -203,7 +207,7 @@
             <span class="details">Role</span>
             <input type="text" name="conference_role" placeholder="Enter role (presenter, attendee)" />
           </div>
-          
+
           <!-- Hackathon specific fields -->
           <div class="input-box achievement-specific-field hackathon-field" style="display: none;">
             <span class="details">Team Size</span>
@@ -213,7 +217,7 @@
             <span class="details">Project Title</span>
             <input type="text" name="project_title" placeholder="Enter project title" />
           </div>
-          
+
           <!-- SQL specific fields -->
           <div class="input-box achievement-specific-field sql-field" style="display: none;">
             <span class="details">Database Type</span>
@@ -229,33 +233,35 @@
               <option value="expert">Expert</option>
             </select>
           </div>
-          
+
           <!-- Other achievement type field -->
           <div class="input-box full-width achievement-specific-field other-field" style="display: none;">
             <span class="details">Achievement Type Description</span>
             <input type="text" name="other_description" placeholder="Describe achievement type" />
           </div>
-          
+
           <div class="input-box full-width">
             <span class="details">Achievement Description</span>
-            <textarea name="achievement_description" placeholder="Enter detailed description of the achievement"></textarea>
+            <textarea name="achievement_description"
+              placeholder="Enter detailed description of the achievement"></textarea>
           </div>
         </div>
-        
+
         <div class="input-box full-width">
           <span class="details">Upload Certificate/Proof</span>
           <input type="file" name="certificate" accept=".pdf,.jpg,.jpeg,.png" />
         </div>
-        
+
         <div class="button">
           <input type="submit" value="Submit Achievement" />
         </div>
       </form>
-      
+
       <div class="back-link">
         <a href="{{ url_for('teacher-dashboard') }}">Back to Dashboard</a>
       </div>
     </div>
   </div>
 </body>
+
 </html>
