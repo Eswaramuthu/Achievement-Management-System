@@ -4,6 +4,31 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Student Achievements - Achievement Management System</title>
+
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+  <style>
+    <p style="color:red">DEBUG: {{ achievements|length }}</p>
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding: 20px;
+      margin: 0;
+    }
+
+    .achievement-container {
+      max-width: 1000px;
+      width: 100%;
+      margin-top: 40px;
+    }
+
+
   <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
   <script src="{{ url_for('static', filename = 'script.js') }}"></script>
   <style>
@@ -26,21 +51,23 @@
       margin-bottom: 40px;
       transition: background-color 0.3s ease;
     }
-    
+
     .dashboard-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 20px;
     }
-    
+
+
+
     .student-info {
       display: flex;
       align-items: center;
       gap: 15px;
       margin-bottom: 25px;
     }
-    
+
     .student-avatar {
       width: 80px;
       height: 80px;
@@ -53,26 +80,37 @@
       font-size: 32px;
       font-weight: bold;
     }
+
     
     .student-details h2 {
       margin: 0;
       font-size: 22px;
     }
-    
+
     .student-stats {
       display: flex;
       gap: 20px;
       margin-bottom: 30px;
+
+      flex-wrap: wrap;
+    }
+
+    .stat-card {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.08);
+
     }
     
     .stat-card {
       flex: 1;
       background: rgba(255, 0, 0, 0.1);
+
       border-radius: 10px;
       padding: 15px;
       text-align: center;
       border: 1px solid var(--border-color);
     }
+
     
     .stat-number {
       font-size: 24px;
@@ -102,13 +140,150 @@
     .achievement-list {
       margin-top: 20px;
     }
-    
+  
     .achievement-card {
       background: var(--glass-bg);
       border-radius: 10px;
       padding: 20px;
       margin-bottom: 15px;
       border: 1px solid var(--border-color);
+
+    }
+
+    .achievement-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .achievement-type {
+      background: var(--primary-color);
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 5px;
+      font-size: 13px;
+    }
+
+    .achievement-actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .action-button {
+      padding: 8px 12px;
+      border-radius: 5px;
+      text-decoration: none;
+      cursor: pointer;
+      font-size: 14px;
+      border: none;
+    }
+
+    .download-btn {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .view-btn {
+      background: rgba(255,255,255,0.2);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+    }
+
+    .no-achievements {
+      text-align: center;
+      padding: 30px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    .toggle-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="toggle-container">
+  <button id="mode-toggle">Dark Mode 🌙</button>
+</div>
+
+<div class="achievement-container">
+
+  <div class="dashboard-header">
+    <h2>My Achievements</h2>
+    <button class="action-button view-btn">Export All</button>
+  </div>
+
+  <div class="student-info">
+    <div class="student-avatar">{{ student.name[0] }}</div>
+    <div>
+      <h3>{{ student.name }}</h3>
+      <p>ID: {{ student.id }} • {{ student.dept }}</p>
+    </div>
+  </div>
+
+  <div class="student-stats">
+    <div class="stat-card">
+      <div class="stat-number">{{ achievements|length }}</div>
+      <div>Total Achievements</div>
+    </div>
+  </div>
+
+  <!-- ================= ACHIEVEMENTS LIST ================= -->
+  <div class="achievement-list">
+
+{% if achievements and achievements|length > 0 %}
+  {% for a in achievements %}
+    <div class="achievement-card">
+
+      <div class="achievement-header">
+        <span class="achievement-type">{{ a.achievement_type }}</span>
+        <span>{{ a.achievement_date }}</span>
+      </div>
+
+      <h4>{{ a.event_name }}</h4>
+      <p><strong>Organizer:</strong> {{ a.organizer }}</p>
+      <p><strong>Position:</strong> {{ a.position }}</p>
+
+      <div class="achievement-actions">
+
+        {% if a.certificate_path %}
+          <a href="{{ url_for('static', filename=a.certificate_path) }}"
+             class="action-button download-btn"
+             target="_blank">
+            View Certificate
+          </a>
+        {% endif %}
+
+        <!-- ✅ EDIT BUTTON (CORRECT PLACE) -->
+        <a href="{{ url_for('edit_achievement', achievement_id=a.id) }}"
+           class="action-button view-btn">
+          ✏ Edit
+        </a>
+
+      </div>
+    </div>
+  {% endfor %}
+{% else %}
+  <div class="no-achievements">
+    <p>You haven't recorded any achievements yet.</p>
+  </div>
+{% endif %}
+
+  </div>
+  <!-- ==================================================== -->
+
+  <div style="margin-top:20px;">
+    <a href="{{ url_for('student_dashboard') }}">← Back to Dashboard</a>
+  </div>
+
+</div>
+
+
       transition: transform 0.3s ease;
     }
     
@@ -427,5 +602,6 @@
 
   </script>
 </div>
+
 </body>
 </html>

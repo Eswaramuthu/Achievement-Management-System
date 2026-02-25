@@ -1,3 +1,5 @@
+
+
 import sqlite3
 from app import app
 
@@ -15,3 +17,4 @@ def test_tables_exist():
             (table,)
         )
         assert cur.fetchone() is not None
+

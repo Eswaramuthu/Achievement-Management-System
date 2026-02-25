@@ -340,6 +340,24 @@
       </div>
       
       <!-- Stats Cards -->
+
+<div class="dashboard-stats">
+  <div class="stat-card">
+    <div class="stat-number">{{ total_achievements }}</div>
+    <div class="stat-label">Total Achievements</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-number">{{ first_positions }}</div>
+    <div class="stat-label">First Positions</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-number">{{ this_semester }}</div>
+    <div class="stat-label">This Semester</div>
+  </div>
+</div>
+
       <div class="dashboard-stats">
         <div class="stat-card">
           <div class="stat-number">12</div>
@@ -354,6 +372,7 @@
           <div class="stat-label">This Semester</div>
         </div>
       </div>
+
       
       <!-- Dashboard Actions -->
       <div class="dashboard-actions">
@@ -382,6 +401,20 @@
         </div>
         
         <div class="recent-achievements">
+
+  {% if achievements %}
+    {% for a in achievements %}
+      <div class="recent-achievement">
+        <div class="achievement-tag">{{ a['achievement_type'] }}</div>
+        <div class="achievement-name">{{ a['event_name'] }}</div>
+        <div class="achievement-date">{{ a['achievement_date'] }}</div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No achievements recorded yet.</p>
+  {% endif %}
+</div>
+
           <div class="recent-achievement">
             <div class="achievement-tag">Hackathon</div>
             <div class="achievement-name">National Code Challenge</div>
@@ -399,6 +432,7 @@
             <div class="achievement-name">CodeFest 2025</div>
             <div class="achievement-date">January 10, 2025</div>
           </div>
+
         </div>
       </div>
       

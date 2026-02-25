@@ -5,6 +5,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Teacher Registration</title>
+
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    <script>
+
     <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
     <script src="{{ url_for('static', filename = 'script.js') }}"></script>
     <script>
@@ -17,10 +24,27 @@
             });
         });
 
+
         function validatePasswords(event) {
             const password = document.getElementById("password").value;
             const confirmPassword = document.getElementById("confirm-password").value;
             const message = document.getElementById("password-message");
+
+
+            if (password !== confirmPassword) {
+                event.preventDefault();
+                message.textContent = "❌ Passwords do not match!";
+                message.style.color = "red";
+                return false;
+            }
+
+            message.textContent = "✅ Passwords match!";
+            message.style.color = "limegreen";
+            return true;
+        }
+    </script>
+
+    <style>
 
             console.log("Validating passwords...");
 
@@ -40,6 +64,7 @@
     </script>
     <style>
         /* Additional styles to make select elements match input styling */
+
         .input-box select {
             width: 100%;
             height: 45px;
@@ -48,6 +73,9 @@
             border-radius: 10px;
             background-color: rgba(255, 255, 255, 0.1);
             color: var(--text-color);
+
+            appearance: none;
+
             transition: all 0.3s ease;
             /* Remove default styling */
             appearance: none;
@@ -55,9 +83,15 @@
             -moz-appearance: none;
             /* Add custom dropdown arrow for dark mode */
             background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+
             background-repeat: no-repeat;
             background-position: right 10px center;
         }
+
+
+        .input-box select option {
+            background-color: var(--bg-color);
+            color: var(--text-color);
 
         .input-box select:focus {
             border-color: var(--primary-color);
@@ -73,17 +107,39 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             padding: 10px;
+
         }
     </style>
 </head>
 
 <body>
+
+
     <div class="toggle-container">
         <button id="mode-toggle">Dark Mode 🌙</button>
     </div>
 
     <div class="container">
         <div class="title">Teacher Registration</div>
+
+
+        <div class="content">
+
+            {% if error %}
+            <div style="color:red;text-align:center;margin-bottom:10px;font-weight:bold;">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form action="/teacher-new" method="POST" onsubmit="return validatePasswords(event)">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="user-details">
+
+                    <div class="input-box">
+                        <span class="details">Full Name</span>
+                        <input type="text" name="teacher_name" required>
+
         <div class="content">
             <form action="/teacher-new" method="POST" onsubmit="return validatePasswords(event)">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
@@ -92,27 +148,43 @@
                         <span class="details">Full Name</span>
                         <input autocomplete="off" autofocus type="text" name="teacher_name"
                             placeholder="Enter your full name" required>
+
                     </div>
 
                     <div class="input-box">
                         <span class="details">Teacher ID</span>
+
+                        <input type="text" name="teacher_id" required>
+
                         <input autocomplete="off" type="text" name="teacher_id" placeholder="Enter your Teacher ID"
                             required>
+
                     </div>
 
                     <div class="input-box">
                         <span class="details">Email</span>
+
+                        <input type="email" name="email" required>
+
                         <input autocomplete="off" type="email" name="email" placeholder="Enter your email" required>
+
                     </div>
 
                     <div class="input-box">
                         <span class="details">Phone Number</span>
+
+                        <input type="tel" name="phone_number" required>
+
                         <input autocomplete="off" type="tel" name="phone_number" placeholder="Enter your phone number"
                             required>
+
                     </div>
 
                     <div class="input-box">
                         <span class="details">Password</span>
+
+                        <input type="password" id="password" name="password" required>
+
                         <input autocomplete="off" type="password" id="password" name="password"
                             placeholder="Enter your Password" required>
                     </div>
@@ -169,28 +241,57 @@
                     <div class="input-box">
                         <span class="details">Password</span>
                         <input autocomplete="off" type="password" id="password" name="password"
-                            placeholder="Enter your Password" required>
+                            
                     </div>
 
                     <div class="input-box">
                         <span class="details">Confirm Password</span>
+
+                        <input type="password" id="confirm-password" required>
+                        <small id="password-message"></small>
+
                         <input type="password" id="confirm-password" placeholder="Confirm your password" required>
                         <small id="password-message" style="font-size: 14px;"></small>
+
                     </div>
 
                     <div class="input-box">
                         <span class="details">Gender</span>
                         <select name="teacher_gender" required>
+
+                            <option disabled selected value="">Select</option>
+                            <option>Male</option>
+                            <option>Female</option>
+                            <option>Other</option>
+
                             <option disabled selected value="">Gender</option>
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
                             <option value="Other">Other</option>
+
                         </select>
                     </div>
 
                     <div class="input-box">
                         <span class="details">Department</span>
                         <select name="teacher_dept" required>
+
+                            <option disabled selected value="">Select</option>
+                            <option>CSE</option>
+                            <option>CSE(E Tech)</option>
+                            <option>ECE</option>
+                            <option>MECH</option>
+                        </select>
+                    </div>
+
+                    <div class="input-box" style="width:100%;">
+                        <span class="details">
+                            Teacher Code <small>(Required for verification)</small>
+                        </span>
+                        <input type="password" name="teacher_code" required>
+                    </div>
+
+
                             <option disabled selected value="">Department</option>
                             <option value="CSE">CSE</option>
                             <option value="CSE(E Tech)">CSE(E Tech)</option>
@@ -198,11 +299,13 @@
                             <option value="MECH">MECH</option>
                         </select>
                     </div>
+
                 </div>
 
                 <div class="button">
                     <input type="submit" value="Register">
                 </div>
+
 
                     <div class="input-box" style="margin-top: 20px; width: 100%;">
                         <span class="details">Teacher Code <small>(Required for verification)</small></span>
@@ -214,13 +317,22 @@
                 <div class="button">
                     <input type="submit" value="Register">
                 </div>
+
             </form>
 
             <div class="back-link">
                 <a href="{{ url_for('teacher') }}">Back to Login</a>
             </div>
+
+
+        </div>
+    </div>
+
+</body>
+
         </div>
     </div>
 </body>
+
 
 </html>

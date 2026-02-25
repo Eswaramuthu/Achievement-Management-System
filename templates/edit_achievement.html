@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Edit Achievement</title>
+</head>
+<body>
+
+<h2>Edit Achievement</h2>
+
+<form method="POST" enctype="multipart/form-data">
+
+  <label>Event Name</label>
+  <input type="text" name="event_name"
+         value="{{ achievement.event_name }}" required>
+
+  <label>Date</label>
+  <input type="date" name="achievement_date"
+         value="{{ achievement.achievement_date }}" required>
+
+  <label>Organizer</label>
+  <input type="text" name="organizer"
+         value="{{ achievement.organizer }}" required>
+
+  <label>Position</label>
+  <input type="text" name="position"
+         value="{{ achievement.position }}" required>
+
+  <label>Description</label>
+  <textarea name="achievement_description">{{ achievement.achievement_description }}</textarea>
+
+  <label>Update Certificate (optional)</label>
+  <input type="file" name="certificate">
+
+  {% if achievement.certificate_path %}
+    <p>
+      Current Certificate:
+      <a href="{{ url_for('static', filename=achievement.certificate_path) }}"
+         target="_blank">
+        View
+      </a>
+    </p>
+  {% endif %}
+
+  <br><br>
+  <button type="submit">✅ Update Achievement</button>
+
+</form>
+
+</body>
+</html>

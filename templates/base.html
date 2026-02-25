@@ -34,7 +34,11 @@
           {% if session.get('student_id') %}
           <li><a href="{{ url_for('student_dashboard') }}">Dashboard</a></li>
           {% elif session.get('teacher_id') %}
+
+          <li><a href="{{ url_for('teacher-dashboard') }}">Dashboard</a></li>
+
           <li><a href="{{ url_for('teacher_dashboard') }}">Dashboard</a></li>
+
           {% else %}
           <li><a href="{{ url_for('student') }}">Student Login</a></li>
           <li><a href="{{ url_for('teacher') }}">Teacher Login</a></li>

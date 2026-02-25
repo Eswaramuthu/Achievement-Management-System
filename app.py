@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+
 import sqlite3
 import os
 import secrets
@@ -185,7 +187,11 @@ def student():
             session["student_id"] = student_data[1]
             session["student_name"] = student_data[0]
             session["student_dept"] = student_data[6]
+
+            return redirect(url_for("student_dashboard"))
+
             return redirect(url_for("student-dashboard"))
+
         else:
             ctx = {"error": "Invalid credentials. Please try again."}
             ctx["firebase_config"] = get_firebase_config() if get_firebase_config else DEFAULT_FIREBASE_CONFIG
@@ -438,6 +444,170 @@ def submit_achievements():
     return render_template("submit_achievements.html")
 
 
+@app.route("/edit-achievement/<int:achievement_id>", methods=["GET", "POST"])
+def edit_achievement(achievement_id):
+
+    if not session.get("logged_in"):
+        return redirect(url_for("student"))
+
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+
+    # GET existing achievement
+    cur.execute(
+        "SELECT * FROM achievements WHERE id = ?",
+        (achievement_id,)
+    )
+    achievement = cur.fetchone()
+
+    if not achievement:
+        conn.close()
+        return "Achievement not found", 404
+
+    if request.method == "POST":
+        event_name = request.form.get("event_name")
+        achievement_date = request.form.get("achievement_date")
+        organizer = request.form.get("organizer")
+        position = request.form.get("position")
+        achievement_description = request.form.get("achievement_description")
+
+        # Optional certificate update
+        certificate_path = achievement["certificate_path"]
+
+        if "certificate" in request.files:
+            file = request.files["certificate"]
+            if file and file.filename != "":
+                filename = secure_filename(file.filename)
+                filepath = os.path.join(UPLOAD_FOLDER, filename)
+                file.save(filepath)
+                certificate_path = f"uploads/{filename}"
+
+        cur.execute("""
+            UPDATE achievements
+            SET event_name = ?,
+                achievement_date = ?,
+                organizer = ?,
+                position = ?,
+                achievement_description = ?,
+                certificate_path = ?
+            WHERE id = ?
+        """, (
+            event_name,
+            achievement_date,
+            organizer,
+            position,
+            achievement_description,
+            certificate_path,
+            achievement_id
+        ))
+
+        conn.commit()
+        conn.close()
+
+        return redirect(url_for("student-achievements"))
+
+    conn.close()
+    return render_template(
+        "edit_achievement.html",
+        achievement=achievement
+    )
+
+@app.route("/student-achievements", endpoint="student-achievements")
+def student_achievements():
+    print("✅ student-achievements route HIT")
+
+    if not session.get("logged_in"):
+        print("❌ Not logged in")
+        return redirect(url_for("student"))
+
+    student_id = session.get("student_id")
+    print("🧪 SESSION student_id =", student_id)
+
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+
+    cur.execute(
+        "SELECT * FROM achievements WHERE student_id = ?",
+        (student_id,)
+    )
+
+    achievements = cur.fetchall()
+    print("🧪 ACHIEVEMENTS COUNT =", len(achievements))
+
+    conn.close()
+
+    return render_template(
+        "student_achievements_1.html",
+        student={
+            "id": session.get("student_id"),
+            "name": session.get("student_name"),
+            "dept": session.get("student_dept"),
+        },
+        achievements=achievements
+    )
+    
+
+@app.route("/student-dashboard")
+def student_dashboard():
+    if "student_id" not in session:
+        return redirect(url_for("student"))
+
+    student_id = session["student_id"]
+
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+
+    # TOTAL ACHIEVEMENTS
+    cur.execute(
+        "SELECT COUNT(*) FROM achievements WHERE student_id = ?",
+        (student_id,)
+    )
+    total_achievements = cur.fetchone()[0]
+
+    # FIRST POSITIONS
+    cur.execute(
+        "SELECT COUNT(*) FROM achievements WHERE student_id = ? AND position = 'First'",
+        (student_id,)
+    )
+    first_positions = cur.fetchone()[0]
+
+    # THIS SEMESTER (example: last 6 months)
+    six_months_ago = (datetime.datetime.now() - datetime.timedelta(days=180)).strftime("%Y-%m-%d")
+    cur.execute(
+        "SELECT COUNT(*) FROM achievements WHERE student_id = ? AND achievement_date >= ?",
+        (student_id, six_months_ago)
+    )
+    this_semester = cur.fetchone()[0]
+
+    # RECENT ACHIEVEMENTS (REAL DATA)
+    cur.execute("""
+        SELECT achievement_type, event_name, achievement_date
+        FROM achievements
+        WHERE student_id = ?
+        ORDER BY achievement_date DESC
+        LIMIT 5
+    """, (student_id,))
+    achievements = cur.fetchall()
+
+    conn.close()
+
+    return render_template(
+        "student_dashboard.html",
+        student={
+            "id": session.get("student_id"),
+            "name": session.get("student_name"),
+            "dept": session.get("student_dept")
+        },
+        total_achievements=total_achievements,
+        first_positions=first_positions,
+        this_semester=this_semester,
+        achievements=achievements
+    )
+
+
 @app.route("/student-achievements", endpoint="student-achievements")
 def student_achievements():
     if not session.get("logged_in"):
@@ -462,6 +632,7 @@ def student_dashboard():
         "dept": session.get("student_dept"),
     }
     return render_template("student_dashboard.html", student=student_data)
+
 
 
 @app.route("/teacher-dashboard", endpoint="teacher-dashboard")
@@ -546,6 +717,60 @@ def all_achievements():
     connection.close()
 
     return render_template("all_achievements.html", achievements=achievements)
+
+
+@app.route("/api/achievements/filter")
+def filter_achievements():
+    achievement_type = request.args.get("type")
+    year = request.args.get("year")
+    student_name = request.args.get("student_name")
+
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+
+    query = """
+        SELECT 
+            a.id,
+            a.event_name,
+            a.achievement_type,
+            a.position,
+            a.achievement_date,
+            s.student_name
+        FROM achievements a
+        JOIN student s ON a.student_id = s.student_id
+        WHERE 1=1
+    """
+    params = []
+
+    if achievement_type:
+        query += " AND a.achievement_type = ?"
+        params.append(achievement_type)
+
+    if year:
+        query += " AND strftime('%Y', a.achievement_date) = ?"
+        params.append(year)
+
+    if student_name:
+        query += " AND s.student_name LIKE ?"
+        params.append(f"%{student_name}%")
+
+    cur.execute(query, params)
+    rows = cur.fetchall()
+    conn.close()
+
+    return jsonify([
+        {
+            "id": r["id"],
+            "title": r["event_name"],
+            "category": r["achievement_type"],
+            "position": r["position"],
+            "student_name": r["student_name"],
+            "date": r["achievement_date"]
+        }
+        for r in rows
+    ])
+
 
 
 if __name__ == "__main__":

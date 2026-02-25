@@ -24,6 +24,43 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-
-
 });
+
+/* 👇👇 MUST BE OUTSIDE */
+function applyFilter() {
+  console.log("Filter clicked");
+
+  const type = document.getElementById("type").value;
+  const year = document.getElementById("year").value;
+  const student = document.getElementById("student_name").value;
+
+  fetch(`/api/achievements/filter?type=${type}&year=${year}&student_name=${student}`)
+    .then(res => res.json())
+    .then(data => {
+      console.log("Filtered data:", data);
+
+      const container = document.getElementById("achievement-list");
+      container.innerHTML = "";
+
+      if (data.length === 0) {
+        container.innerHTML = "<p>No achievements found</p>";
+        return;
+      }
+
+      data.forEach(a => {
+        container.innerHTML += `
+          <div class="card">
+            <h4>${a.title}</h4>
+            <p>Type: ${a.category}</p>
+            <p>Student: ${a.student_name}</p>
+            <p>Position: ${a.position}</p>
+          </div>
+        `;
+      });
+    });
+}
+
+
+
+
+
