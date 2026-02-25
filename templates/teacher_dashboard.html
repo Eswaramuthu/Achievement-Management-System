@@ -730,21 +730,20 @@
     ">
     <h3 style="margin-bottom:12px;color:#ef4444">⚠️ Need Improvement</h3>
     
-    {% for s in low_students %}
-      <div style="padding:6px 0;border-bottom:1px solid var(--border-color)">
-        {{ s[0] }}
-        <span style="float:right;color:#ef4444;font-weight:600">
-          {{ s[1] }}
-        </span>
-      </div>
-    {% else %}
+      {% for s in low_students %}
+         <div style="padding:6px 0;border-bottom:1px solid var(--border-color)">
+            {{ s[0] }}
+           <span style="float:right;color:#ef4444;font-weight:600">
+             {{ s[1] }}
+           </span>
+        </div>
+     {% else %}
       <div>No data</div>
-    {% endfor %}
-    
-    </div>
-    
-    </div>
-    </div>
+     {% endfor %}
+      
+   </div>
+ </div>
+      
       
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
