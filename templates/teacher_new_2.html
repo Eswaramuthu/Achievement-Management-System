@@ -5,13 +5,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Teacher Registration</title>
-<<<<<<< HEAD
+
 
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 
     <script>
-=======
+
     <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
     <script src="{{ url_for('static', filename = 'script.js') }}"></script>
     <script>
@@ -24,13 +24,13 @@
             });
         });
 
->>>>>>> c2e9f6021e5aa3f405794a69358b5d36c0350970
+
         function validatePasswords(event) {
             const password = document.getElementById("password").value;
             const confirmPassword = document.getElementById("confirm-password").value;
             const message = document.getElementById("password-message");
 
-<<<<<<< HEAD
+
             if (password !== confirmPassword) {
                 event.preventDefault();
                 message.textContent = "❌ Passwords do not match!";
@@ -45,7 +45,7 @@
     </script>
 
     <style>
-=======
+
             console.log("Validating passwords...");
 
             if (password !== confirmPassword) {
@@ -64,7 +64,7 @@
     </script>
     <style>
         /* Additional styles to make select elements match input styling */
->>>>>>> c2e9f6021e5aa3f405794a69358b5d36c0350970
+
         .input-box select {
             width: 100%;
             height: 45px;
@@ -73,9 +73,9 @@
             border-radius: 10px;
             background-color: rgba(255, 255, 255, 0.1);
             color: var(--text-color);
-<<<<<<< HEAD
+
             appearance: none;
-=======
+
             transition: all 0.3s ease;
             /* Remove default styling */
             appearance: none;
@@ -83,16 +83,16 @@
             -moz-appearance: none;
             /* Add custom dropdown arrow for dark mode */
             background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
->>>>>>> c2e9f6021e5aa3f405794a69358b5d36c0350970
+
             background-repeat: no-repeat;
             background-position: right 10px center;
         }
 
-<<<<<<< HEAD
+
         .input-box select option {
             background-color: var(--bg-color);
             color: var(--text-color);
-=======
+
         .input-box select:focus {
             border-color: var(--primary-color);
         }
@@ -107,23 +107,21 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             padding: 10px;
->>>>>>> c2e9f6021e5aa3f405794a69358b5d36c0350970
+
         }
     </style>
 </head>
 
 <body>
-<<<<<<< HEAD
 
-=======
->>>>>>> c2e9f6021e5aa3f405794a69358b5d36c0350970
+
     <div class="toggle-container">
         <button id="mode-toggle">Dark Mode 🌙</button>
     </div>
 
     <div class="container">
         <div class="title">Teacher Registration</div>
-<<<<<<< HEAD
+
 
         <div class="content">
 
@@ -141,7 +139,7 @@
                     <div class="input-box">
                         <span class="details">Full Name</span>
                         <input type="text" name="teacher_name" required>
-=======
+
         <div class="content">
             <form action="/teacher-new" method="POST" onsubmit="return validatePasswords(event)">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
@@ -150,43 +148,43 @@
                         <span class="details">Full Name</span>
                         <input autocomplete="off" autofocus type="text" name="teacher_name"
                             placeholder="Enter your full name" required>
->>>>>>> c2e9f6021e5aa3f405794a69358b5d36c0350970
+
                     </div>
 
                     <div class="input-box">
                         <span class="details">Teacher ID</span>
-<<<<<<< HEAD
+
                         <input type="text" name="teacher_id" required>
-=======
+
                         <input autocomplete="off" type="text" name="teacher_id" placeholder="Enter your Teacher ID"
                             required>
->>>>>>> c2e9f6021e5aa3f405794a69358b5d36c0350970
+
                     </div>
 
                     <div class="input-box">
                         <span class="details">Email</span>
-<<<<<<< HEAD
+
                         <input type="email" name="email" required>
-=======
+
                         <input autocomplete="off" type="email" name="email" placeholder="Enter your email" required>
->>>>>>> c2e9f6021e5aa3f405794a69358b5d36c0350970
+
                     </div>
 
                     <div class="input-box">
                         <span class="details">Phone Number</span>
-<<<<<<< HEAD
+
                         <input type="tel" name="phone_number" required>
-=======
+
                         <input autocomplete="off" type="tel" name="phone_number" placeholder="Enter your phone number"
                             required>
->>>>>>> c2e9f6021e5aa3f405794a69358b5d36c0350970
+
                     </div>
 
                     <div class="input-box">
                         <span class="details">Password</span>
-<<<<<<< HEAD
+
                         <input type="password" id="password" name="password" required>
-=======
+
                         <input autocomplete="off" type="password" id="password" name="password"
                             placeholder="Enter your Password" required>
                     </div>
@@ -243,42 +241,41 @@
                     <div class="input-box">
                         <span class="details">Password</span>
                         <input autocomplete="off" type="password" id="password" name="password"
-                            placeholder="Enter your Password" required>
->>>>>>> c2e9f6021e5aa3f405794a69358b5d36c0350970
+                            
                     </div>
 
                     <div class="input-box">
                         <span class="details">Confirm Password</span>
-<<<<<<< HEAD
+
                         <input type="password" id="confirm-password" required>
                         <small id="password-message"></small>
-=======
+
                         <input type="password" id="confirm-password" placeholder="Confirm your password" required>
                         <small id="password-message" style="font-size: 14px;"></small>
->>>>>>> c2e9f6021e5aa3f405794a69358b5d36c0350970
+
                     </div>
 
                     <div class="input-box">
                         <span class="details">Gender</span>
                         <select name="teacher_gender" required>
-<<<<<<< HEAD
+
                             <option disabled selected value="">Select</option>
                             <option>Male</option>
                             <option>Female</option>
                             <option>Other</option>
-=======
+
                             <option disabled selected value="">Gender</option>
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
                             <option value="Other">Other</option>
->>>>>>> c2e9f6021e5aa3f405794a69358b5d36c0350970
+
                         </select>
                     </div>
 
                     <div class="input-box">
                         <span class="details">Department</span>
                         <select name="teacher_dept" required>
-<<<<<<< HEAD
+
                             <option disabled selected value="">Select</option>
                             <option>CSE</option>
                             <option>CSE(E Tech)</option>
@@ -294,7 +291,7 @@
                         <input type="password" name="teacher_code" required>
                     </div>
 
-=======
+
                             <option disabled selected value="">Department</option>
                             <option value="CSE">CSE</option>
                             <option value="CSE(E Tech)">CSE(E Tech)</option>
@@ -302,15 +299,14 @@
                             <option value="MECH">MECH</option>
                         </select>
                     </div>
->>>>>>> c2e9f6021e5aa3f405794a69358b5d36c0350970
+
                 </div>
 
                 <div class="button">
                     <input type="submit" value="Register">
                 </div>
 
-<<<<<<< HEAD
-=======
+
                     <div class="input-box" style="margin-top: 20px; width: 100%;">
                         <span class="details">Teacher Code <small>(Required for verification)</small></span>
                         <input autocomplete="off" type="password" name="teacher_code" placeholder="Enter Teacher Code"
@@ -321,22 +317,22 @@
                 <div class="button">
                     <input type="submit" value="Register">
                 </div>
->>>>>>> c2e9f6021e5aa3f405794a69358b5d36c0350970
+
             </form>
 
             <div class="back-link">
                 <a href="{{ url_for('teacher') }}">Back to Login</a>
             </div>
-<<<<<<< HEAD
+
 
         </div>
     </div>
 
 </body>
-=======
+
         </div>
     </div>
 </body>
 
->>>>>>> c2e9f6021e5aa3f405794a69358b5d36c0350970
+
 </html>
