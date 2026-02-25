@@ -551,17 +551,16 @@ def teacher_dashboard():
         
     return render_template(
        "teacher_dashboard.html",
-       teacher=teacher_data,
-       stats=stats,
-       recent_entries=recent_entries,
-       top_students=top_students,
-       avg_students=avg_students,
-       low_students=low_students,
-       top_count=top_count,
-       avg_count=avg_count,
-       low_count=low_count
-       
-    )
+        teacher=teacher_data,
+        stats=stats,
+        recent_entries=recent_entries,
+        top_students=top_students,
+        avg_students=avg_students,
+        low_students=low_students,
+        top_count=top_count,
+        avg_count=avg_count,
+        low_count=low_count
+       )
 
 
 @app.route("/all-achievements", endpoint="all-achievements")
