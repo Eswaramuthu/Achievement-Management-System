@@ -1,21 +1,26 @@
+/* -------------------- GOOGLE FONT -------------------- */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
 
+/* -------------------- ROOT VARIABLES -------------------- */
 :root {
-  --bg-color: #0d0d0d;
-  --glass-bg: rgba(255, 255, 255, 0.1);
-  --text-color: #fff;
+  --bg-color-dark: #0d0d0d;
+  --glass-bg-dark: rgba(255, 255, 255, 0.1);
+  --text-color-dark: #fff;
+  --text-secondary-dark: #ccc;
   --primary-color: #ff1c1c;
-  --border-color: rgba(255, 255, 255, 0.2);
+  --primary-hover: #ff3d3d;
+  --border-color-dark: rgba(255, 255, 255, 0.2);
+
+  --bg-color-light: #f0f0f0;
+  --glass-bg-light: rgba(255, 255, 255, 0.7);
+  --text-color-light: #000;
+  --text-secondary-light: #555;
+  --primary-color-light: #d40000;
+  --primary-hover-light: #ff1c1c;
+  --border-color-light: rgba(0, 0, 0, 0.2);
 }
 
-body.light-mode {
-  --bg-color: #f0f0f0;
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --text-color: #000;
-  --primary-color: #d40000;
-  --border-color: rgba(0, 0, 0, 0.2);
-}
-
+/* -------------------- RESET & BODY -------------------- */
 * {
   margin: 0;
   padding: 0;
@@ -24,16 +29,17 @@ body.light-mode {
 }
 
 body {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: var(--bg-color);
-  transition: background-color 0.3s ease;
-  color: var(--text-color);
+  background-color: var(--bg-color-dark);
+  color: var(--text-color-dark);
   padding: 20px;
+  transition: all 0.3s ease;
 }
 
+/* -------------------- THEME TOGGLE -------------------- */
 .toggle-container {
   position: absolute;
   top: 20px;
@@ -45,67 +51,70 @@ body {
   border: none;
   border-radius: 10px;
   color: white;
-  padding: 10px;
-  font-size: 18px;
+  padding: 10px 16px;
+  font-size: 16px;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .toggle-container button:hover {
-  background-color: #cc0000;
+  background-color: var(--primary-hover);
+  transform: scale(1.05);
 }
 
+/* -------------------- CONTAINERS -------------------- */
 .container {
   max-width: 700px;
   width: 100%;
-  background: var(--glass-bg);
+  background: var(--glass-bg-dark);
   border-radius: 20px;
   padding: 30px;
   box-shadow: 0 8px 32px rgba(255, 0, 0, 0.2);
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-color-dark);
+  transition: all 0.3s ease;
 }
+
+/* Special achievement container */
 .achievement .container {
   max-width: 900px;
   margin: 50px auto;
   padding: 40px;
   background-color: #2c2c2c;
   border-radius: 20px;
-  box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
-  color: #ffffff;
+  box-shadow: 0 0 25px rgba(255, 0, 0, 0.5);
   border: 1px solid #444;
 }
 
-
+/* -------------------- TITLE -------------------- */
 .title {
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 600;
   position: relative;
-  margin-bottom: 20px;
-  color: var(--text-color);
+  margin-bottom: 25px;
+  color: var(--text-color-dark);
 }
 
 .title::before {
   content: "";
   position: absolute;
-  bottom: -6px;
+  bottom: -8px;
   left: 0;
-  width: 50px;
-  height: 3px;
+  width: 60px;
+  height: 4px;
   background: var(--primary-color);
   border-radius: 5px;
 }
 
+/* -------------------- FORM INPUTS -------------------- */
 .user-details {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  gap: 20px;
 }
 
 .input-box {
-  width: calc(100% / 2 - 20px);
-  margin-bottom: 20px;
+  width: calc(50% - 10px);
 }
 
 .input-box.full-width {
@@ -115,24 +124,27 @@ body {
 .input-box span.details {
   display: block;
   font-weight: 500;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
+  color: var(--text-secondary-dark);
 }
 
 .input-box input {
   width: 100%;
   height: 45px;
   padding-left: 15px;
-  border: 1px solid #ccc;
   border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.1);
-  color: var(--text-color);
+  border: 1px solid #ccc;
+  background: rgba(255,255,255,0.1);
+  color: var(--text-color-dark);
   transition: all 0.3s ease;
 }
 
 .input-box input:focus {
   border-color: var(--primary-color);
+  outline: none;
 }
 
+/* Radio buttons / categories */
 .gender-details, .dept-details {
   margin-top: 20px;
 }
@@ -146,6 +158,7 @@ body {
 .category {
   display: flex;
   gap: 20px;
+  flex-wrap: wrap;
 }
 
 .category label {
@@ -156,52 +169,68 @@ body {
 }
 
 .dot {
-  height: 16px;
-  width: 16px;
+  height: 18px;
+  width: 18px;
   border-radius: 50%;
   background: #ccc;
   border: 4px solid transparent;
   transition: all 0.3s ease;
 }
 
-#dot-1:checked ~ .category label .one,
-#dot-2:checked ~ .category label .two,
-#dot-3:checked ~ .category label .three,
-#dot-4:checked ~ .category label .four,
-#dot-5:checked ~ .category label .five,
-#dot-6:checked ~ .category label .six, 
-#dot-7:checked ~ .category label .seven {
-  background: var(--primary-color);
-  border-color: #ccc;
-}
-
 input[type="radio"] {
   display: none;
 }
 
+input[type="radio"]:checked + label .dot {
+  background: var(--primary-color);
+  border-color: #fff;
+}
+
+/* -------------------- BUTTONS -------------------- */
 .button {
   margin-top: 30px;
 }
 
 .button input {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   background: var(--primary-color);
   color: white;
   border: none;
   border-radius: 10px;
   font-size: 18px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .button input:hover {
-  background: #cc0000;
+  background: var(--primary-hover);
+  transform: translateY(-2px);
 }
 
-/* Home page specific styles */
-.home-container {
+/* -------------------- DASHBOARD / ACHIEVEMENT CARDS -------------------- */
+.achievement-card,
+.achievement-box,
+.dashboard-box {
+  background-color: #1c1c1c;
+  padding: 30px;
+  margin-bottom: 20px;
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+  border: 1px solid #333;
+  color: #fff;
+  transition: transform 0.3s;
+}
+
+.achievement-card:hover,
+.achievement-box:hover,
+.dashboard-box:hover {
+  transform: translateY(-5px);
+}
+
+/* -------------------- HOME & LOGIN -------------------- */
+.home-container, .login-container {
   text-align: center;
 }
 
@@ -220,28 +249,22 @@ input[type="radio"] {
 .login-button {
   display: block;
   width: 45%;
-  padding: 15px 0;
+  padding: 14px 0;
   background: var(--primary-color);
   color: white;
-  border: none;
   border-radius: 10px;
   font-size: 18px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s ease;
   text-decoration: none;
-  text-align: center;
+  transition: all 0.3s ease;
 }
 
 .login-button:hover {
-  background: #cc0000;
+  background: var(--primary-hover);
 }
 
-/* Login page specific styles */
-.login-container {
-  max-width: 500px;
-}
-
+/* Back / Register links */
 .register-link, .back-link {
   text-align: center;
   margin-top: 20px;
@@ -257,11 +280,12 @@ input[type="radio"] {
   text-decoration: underline;
 }
 
-@media (max-width: 600px) {
+/* -------------------- RESPONSIVE -------------------- */
+@media (max-width: 768px) {
   .input-box {
     width: 100%;
   }
-
+  
   .category {
     flex-direction: column;
   }
@@ -274,33 +298,9 @@ input[type="radio"] {
   .login-button {
     width: 100%;
   }
-}
-.achievement-card {
-  background-color: #1e1e1e;
-  padding: 20px;
-  margin-bottom: 20px;
-  border-radius: 15px;
-  box-shadow: 0 0 12px rgba(255, 0, 0, 0.3);
-  border: 1px solid #333;
-}
-.achievement-box {
-  max-width: 1000px;
-  margin-top:800px;
-  padding: 40px;
-  background-color: #1c1c1c;
-  border-radius: 15px;
-  box-shadow: 0 0 12px rgba(255, 0, 0, 0.3);
-  border: 1px solid #333;
-  color: #fff;
-}
-.dashboard-box{
-  max-width: 1000px;
-  margin-top:10px;
-  margin-bottom:20px;
-  padding:40px;
-  background-color: #1c1c1c;
-  border-radius: 15px;
-  box-shadow: 0 0 12px rgba(255, 0, 0, 0.3);
-  border: 1px solid #333;
-  color: #fff;
+  
+  .achievement-box,
+  .dashboard-box {
+    padding: 20px;
+  }
 }

@@ -6,6 +6,7 @@
   <title>Teacher Registration</title>
   <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
   <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+
   <script>
     function validatePasswords(event) {
       const password = document.getElementById("password").value;
@@ -23,6 +24,7 @@
     }
   </script>
 </head>
+
 <body>
   <div class="toggle-container">
     <button id="mode-toggle">Dark Mode 🌙</button>
@@ -31,77 +33,87 @@
   <div class="container">
     <div class="title">Teacher Registration</div>
     <div class="content">
-      <form onsubmit="validatePasswords(event)">
+
+      <!-- IMPORTANT: method POST added -->
+      <form method="POST" onsubmit="validatePasswords(event)">
+
         <div class="user-details">
           <div class="input-box">
             <span class="details">Full Name</span>
-            <input type="text" placeholder="Enter your name" required />
+            <input type="text" name="fullname" placeholder="Enter your name" required />
           </div>
+
           <div class="input-box">
             <span class="details">Teacher ID</span>
-            <input type="text" placeholder="Enter your Teacher ID" required />
+            <input type="text" name="teacher_id" placeholder="Enter your Teacher ID" required />
           </div>
+
           <div class="input-box">
             <span class="details">Email</span>
-            <input type="email" placeholder="Enter your email" required />
+            <input type="email" name="email" placeholder="Enter your email" required />
           </div>
+
           <div class="input-box">
             <span class="details">Phone Number</span>
-            <input type="tel" placeholder="Enter your number" required />
+            <input type="tel" name="phone" placeholder="Enter your number" required />
           </div>
+
           <div class="input-box">
             <span class="details">Password</span>
-            <input type="password" id="password" placeholder="Enter your password" required />
+            <input type="password" id="password" name="password" placeholder="Enter your password" required />
           </div>
+
           <div class="input-box">
             <span class="details">Confirm Password</span>
-            <input type="password" id="confirm-password" placeholder="Confirm your password" required />
+            <input type="password" id="confirm-password" name="confirm_password" placeholder="Confirm your password" required />
             <small id="password-message" style="font-size: 14px;"></small>
           </div>
         </div>
 
+        <!-- Gender -->
         <div class="gender-details">
-          <input type="radio" name="gender" id="dot-1" />
-          <input type="radio" name="gender" id="dot-2" />
-          <input type="radio" name="gender" id="dot-3" />
           <span class="gender-title">Gender</span>
+
           <div class="category">
-            <label for="dot-1">
-              <span class="dot one"></span>
+            <label>
+              <input type="radio" name="gender" value="Male" required />
               <span class="gender">Male</span>
             </label>
-            <label for="dot-2">
-              <span class="dot two"></span>
+
+            <label>
+              <input type="radio" name="gender" value="Female" />
               <span class="gender">Female</span>
             </label>
-            <label for="dot-3">
-              <span class="dot three"></span>
+
+            <label>
+              <input type="radio" name="gender" value="Other" />
               <span class="gender">Other</span>
             </label>
           </div>
         </div>
 
+        <!-- Department -->
         <div class="dept-details">
-          <input type="radio" name="dept" id="dot-4" />
-          <input type="radio" name="dept" id="dot-5" />
-          <input type="radio" name="dept" id="dot-6" />
-          <input type="radio" name="dept" id="dot-7" />
           <span class="dept-title">Department</span>
+
           <div class="category">
-            <label for="dot-4">
-              <span class="dot four"></span>
+            <label>
+              <input type="radio" name="dept" value="CSE" required />
               <span class="dept">CSE</span>
             </label>
-            <label for="dot-5">
-              <span class="dot five"></span>
+
+            <label>
+              <input type="radio" name="dept" value="CSE (ETech)" />
               <span class="dept">CSE (ETech)</span>
             </label>
-            <label for="dot-6">
-              <span class="dot six"></span>
+
+            <label>
+              <input type="radio" name="dept" value="ECE" />
               <span class="dept">ECE</span>
             </label>
-            <label for="dot-7">
-              <span class="dot seven"></span>
+
+            <label>
+              <input type="radio" name="dept" value="MECH" />
               <span class="dept">MECH</span>
             </label>
           </div>
@@ -110,10 +122,13 @@
         <div class="button">
           <input type="submit" value="Register" />
         </div>
+
       </form>
+
       <div class="back-link">
         <a href="{{ url_for('teacher') }}">Back to Login</a>
       </div>
+
     </div>
   </div>
 </body>

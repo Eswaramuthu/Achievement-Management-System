@@ -11,28 +11,11 @@
     <!-- External JS -->
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 
-    <!-- Filter Script -->
-    <script>
-        function filterAchievements() {
-            const filter = document.getElementById("typeFilter").value.toLowerCase();
-            const rows = document.querySelectorAll(".achievement-row");
-
-            rows.forEach(row => {
-                const type = row.dataset.type.toLowerCase();
-
-                if (filter === "all" || type.includes(filter)) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
-            });
-        }
-    </script>
-
     <!-- Page Specific Styles -->
     <style>
         .dashboard-container {
             max-width: 1100px !important;
+            margin-top: 40px;
         }
 
         .page-header {
@@ -45,6 +28,12 @@
         .back-button {
             text-decoration: none;
             color: var(--primary-color);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .back-button:hover {
+            color: #ff4d4d;
         }
 
         .filter-box {
@@ -52,47 +41,85 @@
         }
 
         .filter-box select {
-            padding: 8px 12px;
-            border-radius: 6px;
+            padding: 8px 15px;
+            border-radius: 8px;
             border: 1px solid var(--border-color);
+            background: var(--glass-bg);
+            color: var(--text-color);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-box select:hover,
+        .filter-box select:focus {
+            border-color: var(--primary-color);
+            outline: none;
         }
 
         .achievements-table {
             width: 100%;
             border-collapse: collapse;
+            border-radius: 12px;
             overflow: hidden;
-            margin-bottom: 30px;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.1);
         }
 
         .achievements-table th,
         .achievements-table td {
             padding: 12px 15px;
             border-bottom: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        .achievements-table th {
+            background: var(--glass-bg);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .achievement-row:hover {
+            background: rgba(255, 28, 28, 0.05);
         }
 
         .achievement-type-badge {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 3px 10px;
-            border-radius: 5px;
-            font-size: 14px;
+            background: linear-gradient(135deg, #ff1c1c, #ff4d4d);
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: transform 0.2s ease;
+        }
+
+        .achievement-type-badge:hover {
+            transform: scale(1.1);
         }
 
         .view-button {
             background-color: var(--primary-color);
             color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
+            padding: 6px 12px;
+            border-radius: 8px;
             text-decoration: none;
-            font-size: 14px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .view-button:hover {
+            background-color: #cc0000;
+            transform: translateY(-2px);
         }
 
         .certificate-link {
             color: var(--primary-color);
-            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
         }
 
         .certificate-link:hover {
+            color: #ff4d4d;
             text-decoration: underline;
         }
 
@@ -100,8 +127,27 @@
             text-align: center;
             padding: 30px;
             background: var(--glass-bg);
-            border-radius: 10px;
+            border-radius: 15px;
             border: 1px solid var(--border-color);
+            color: var(--text-color);
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .achievements-table th, .achievements-table td {
+                font-size: 14px;
+                padding: 10px 8px;
+            }
+            .filter-box select {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -151,36 +197,19 @@
                 </thead>
                 <tbody>
                     {% for achievement in achievements %}
-                    <tr class="achievement-row"
-                        data-type="{{ achievement.achievement_type }}">
-
-                        <td>
-                            {{ achievement.student_name }} 
-                            ({{ achievement.student_id }})
-                        </td>
-
-                        <td>
-                            <span class="achievement-type-badge">
-                                {{ achievement.achievement_type }}
-                            </span>
-                        </td>
-
+                    <tr class="achievement-row" data-type="{{ achievement.achievement_type }}">
+                        <td>{{ achievement.student_name }} ({{ achievement.student_id }})</td>
+                        <td><span class="achievement-type-badge">{{ achievement.achievement_type }}</span></td>
                         <td>{{ achievement.event_name }}</td>
                         <td>{{ achievement.achievement_date }}</td>
                         <td>{{ achievement.position }}</td>
-
                         <td>
                             {% if achievement.certificate_path %}
-                                <a href="{{ url_for('static', filename=achievement.certificate_path) }}"
-                                   class="certificate-link"
-                                   target="_blank">
-                                    View
-                                </a>
+                                <a href="{{ url_for('static', filename=achievement.certificate_path) }}" class="certificate-link" target="_blank">View</a>
                             {% else %}
                                 -
                             {% endif %}
                         </td>
-
                         <td>
                             <a href="#" class="view-button">Details</a>
                         </td>
@@ -189,9 +218,7 @@
                 </tbody>
             </table>
             {% else %}
-                <div class="no-achievements">
-                    <h3>No achievements recorded yet.</h3>
-                </div>
+                <div class="no-achievements">No achievements recorded yet.</div>
             {% endif %}
 
         </div>

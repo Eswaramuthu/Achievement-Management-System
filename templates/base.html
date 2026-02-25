@@ -3,29 +3,201 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>
-      {% if title %}{{ title }}{% else %}Achievement Management System{% endif
-      %}
-    </title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='styles.css') }}"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-      rel="stylesheet"
-    />
+    <title>{% if title %}{{ title }}{% else %}Achievement Management System{% endif %}</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+
+    <!-- Lenis Smooth Scroll -->
     <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
 
+    <style>
+      body {
+        font-family: 'Poppins', sans-serif;
+        transition: background 0.3s ease, color 0.3s ease;
+        scroll-behavior: smooth;
+      }
 
+      /* Navbar */
+      .header {
+        position: sticky;
+        top: 0;
+        width: 100%;
+        z-index: 999;
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border-color);
+        transition: background 0.3s ease;
+      }
+
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: auto;
+        padding: 15px 20px;
+      }
+
+      .nav-brand h2 {
+        font-weight: 600;
+        color: var(--primary-color);
+      }
+
+      .nav-menu {
+        display: flex;
+        gap: 25px;
+        list-style: none;
+      }
+
+      .nav-menu li a {
+        text-decoration: none;
+        color: var(--text-color);
+        font-weight: 500;
+        position: relative;
+        transition: color 0.3s ease;
+      }
+
+      .nav-menu li a::after {
+        content: '';
+        position: absolute;
+        width: 0%;
+        height: 2px;
+        bottom: -3px;
+        left: 0;
+        background-color: var(--primary-color);
+        transition: 0.3s;
+      }
+
+      .nav-menu li a:hover::after {
+        width: 100%;
+      }
+
+      .nav-menu li a:hover {
+        color: var(--primary-color);
+      }
+
+      /* Hamburger */
+      .nav-toggle {
+        display: none;
+        flex-direction: column;
+        cursor: pointer;
+        gap: 5px;
+      }
+
+      .nav-toggle .bar {
+        height: 3px;
+        width: 25px;
+        background-color: var(--text-color);
+        border-radius: 2px;
+      }
+
+      .nav-menu.active {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(255, 28, 28, 0.2);
+      }
+
+      /* Theme toggle */
+      .toggle-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+      }
+
+      .theme-toggle {
+        background: var(--primary-color);
+        border: none;
+        padding: 10px 15px;
+        border-radius: 50px;
+        font-size: 20px;
+        cursor: pointer;
+        color: #fff;
+        transition: background 0.3s ease, transform 0.2s ease;
+      }
+
+      .theme-toggle:hover {
+        background: #cc0000;
+        transform: scale(1.1);
+      }
+
+      /* Footer */
+      .footer {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        padding: 40px 20px 20px 20px;
+        color: var(--text-color);
+        border-top: 1px solid var(--border-color);
+        transition: background 0.3s ease;
+      }
+
+      .footer-content {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 30px;
+        max-width: 1200px;
+        margin: auto;
+      }
+
+      .footer-section h3 {
+        color: var(--primary-color);
+        margin-bottom: 12px;
+      }
+
+      .footer-section p, .footer-section li a {
+        font-size: 14px;
+        color: var(--text-color);
+      }
+
+      .footer-section ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      .footer-section li a:hover {
+        color: #ff4d4d;
+      }
+
+      .footer-bottom {
+        text-align: center;
+        margin-top: 25px;
+        font-size: 13px;
+        color: var(--text-color);
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .nav-menu {
+          display: none;
+        }
+        .nav-toggle {
+          display: flex;
+        }
+        .footer-content {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
   </head>
+
   <body class="light-mode">
     <!-- Header/Navbar -->
     <header class="header">
       <nav class="navbar">
-        <div class="nav-brand">
-          <h2>Achievement Management System</h2>
-        </div>
+        <div class="nav-brand"><h2>Achievement Management System</h2></div>
         <ul class="nav-menu">
           <li><a href="{{ url_for('home') }}">Home</a></li>
           <li><a href="#about">About</a></li>
@@ -57,10 +229,7 @@
       <div class="footer-content">
         <div class="footer-section">
           <h3>About Us</h3>
-          <p>
-            Achievement Management System helps students and teachers track
-            academic achievements in one place.
-          </p>
+          <p>Achievement Management System helps students and teachers track academic achievements in one place.</p>
         </div>
         <div class="footer-section">
           <h3>Quick Links</h3>
@@ -78,10 +247,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <p>
-          &copy; 2026 Achievement Management System. All rights reserved.
-          Developed at SRM Institute of Science and Technology.
-        </p>
+        &copy; 2026 Achievement Management System. Developed at SRM Institute of Science and Technology.
       </div>
     </footer>
 
@@ -90,74 +256,56 @@
       <button id="mode-toggle" class="theme-toggle">🌙</button>
     </div>
 
+    <!-- Scripts -->
     <script>
-      // Theme toggle functionality
       document.addEventListener("DOMContentLoaded", function () {
         const themeToggle = document.getElementById("mode-toggle");
         const body = document.body;
 
-        // Check for saved theme preference
-        const savedTheme = localStorage.getItem("theme");
+        // Apply saved theme
+        const savedTheme = localStorage.getItem("theme") || "light";
         if (savedTheme === "dark") {
           body.classList.remove("light-mode");
         } else {
           body.classList.add("light-mode");
         }
 
+        // Toggle theme
         themeToggle.addEventListener("click", function () {
           body.classList.toggle("light-mode");
           const isLightMode = body.classList.contains("light-mode");
           localStorage.setItem("theme", isLightMode ? "light" : "dark");
-
-          // Update icon
           themeToggle.textContent = isLightMode ? "🌙" : "☀️";
         });
+        themeToggle.textContent = body.classList.contains("light-mode") ? "🌙" : "☀️";
 
-        // Set initial icon based on theme
-        const isLightMode = body.classList.contains("light-mode");
-        themeToggle.textContent = isLightMode ? "🌙" : "☀️";
-
-        const lenis = new Lenis({
-          duration: 1.2,
-          smoothWheel: true,
-        });
-
-        function raf(time) {
-          lenis.raf(time);
-          requestAnimationFrame(raf);
-        }
-
+        // Lenis smooth scroll
+        const lenis = new Lenis({ duration: 1.2, smoothWheel: true });
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
         requestAnimationFrame(raf);
 
-        document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-          anchor.addEventListener("click", function (e) {
+        // Smooth scroll for anchors
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+          anchor.addEventListener("click", function(e) {
             e.preventDefault();
-
             const target = document.querySelector(this.getAttribute("href"));
-
-            if (target) {
-              lenis.scrollTo(target, {
-                offset: -140, 
-                duration: 1.2,
-              });
-            }
+            if(target) lenis.scrollTo(target, { offset: -140, duration: 1.2 });
           });
         });
-      });
 
-      // Mobile menu toggle
-      document
-        .querySelector(".nav-toggle")
-        .addEventListener("click", function () {
+        // Mobile menu toggle
+        const navToggle = document.querySelector(".nav-toggle");
+        navToggle.addEventListener("click", () => {
           document.querySelector(".nav-menu").classList.toggle("active");
         });
 
-        // Close mobile menu when a link is clicked
+        // Close menu on link click
         document.querySelectorAll('.nav-menu a').forEach(link => {
-            link.addEventListener('click', () => {
-                document.querySelector('.nav-menu').classList.remove('active');
-            });
+          link.addEventListener('click', () => {
+            document.querySelector('.nav-menu').classList.remove('active');
+          });
         });
+      });
     </script>
   </body>
 </html>

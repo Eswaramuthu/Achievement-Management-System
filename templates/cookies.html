@@ -1,160 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Cookie Policy - Achievement Management System</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Cookie Policy - Achievement Management System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
+<style>
+:root {
+    --bg-color-dark: #0d0d0d;
+    --bg-color-light: #f5f5f5;
+    --container-dark: rgba(30,30,30,0.95);
+    --container-light: #ffffff;
+    --text-dark: #eee;
+    --text-light: #222;
+    --primary-color: #667eea;
+    --secondary-color: #764ba2;
+    --border-color: rgba(255,255,255,0.1);
+}
 
-        body {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            min-height: 100vh;
-            padding: 40px 15px;
-        }
+body {
+    font-family: 'Poppins', sans-serif;
+    margin:0; padding:0;
+    background: var(--bg-color-light);
+    color: var(--text-light);
+    transition: background 0.4s ease, color 0.4s ease;
+}
 
-        /* Main Container */
-        .container {
-            max-width: 900px;
-            margin: auto;
-            background: #ffffff;
-            padding: 40px 45px;
-            border-radius: 15px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-            animation: fadeIn 0.8s ease-in-out;
-        }
+body.dark-mode {
+    background: var(--bg-color-dark);
+    color: var(--text-dark);
+}
 
-        /* Fade Animation */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 40px 45px;
+    border-radius: 15px;
+    background: var(--container-light);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    animation: fadeIn 0.8s ease-in-out;
+    transition: background 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
+}
 
-        /* Heading */
-        h1 {
-            text-align: center;
-            font-size: 36px;
-            color: #2c3e50;
-            margin-bottom: 8px;
-        }
+body.dark-mode .container {
+    background: var(--container-dark);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+}
 
-        .last-update {
-            text-align: center;
-            font-size: 14px;
-            color: #888;
-            margin-bottom: 25px;
-        }
+@keyframes fadeIn {
+    from {opacity:0; transform: translateY(30px);}
+    to {opacity:1; transform: translateY(0);}
+}
 
-        .intro {
-            text-align: center;
-            color: #555;
-            font-size: 16px;
-            margin-bottom: 35px;
-            line-height: 1.7;
-        }
+h1 {
+    text-align: center;
+    font-size: 36px;
+    margin-bottom: 8px;
+    color: var(--primary-color);
+}
 
-        /* Section Titles */
-        h2 {
-            margin-top: 35px;
-            margin-bottom: 15px;
-            font-size: 22px;
-            color: #34495e;
-            position: relative;
-            padding-left: 15px;
-        }
+.last-update {
+    text-align: center;
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 25px;
+}
 
-        h2::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 3px;
-            width: 5px;
-            height: 80%;
-            background: linear-gradient(to bottom, #667eea, #764ba2);
-            border-radius: 5px;
-        }
+.intro {
+    text-align: center;
+    font-size: 16px;
+    line-height: 1.7;
+    margin-bottom: 35px;
+}
 
-        /* Text */
-        p {
-            color: #555;
-            font-size: 15px;
-            line-height: 1.8;
-            margin-bottom: 15px;
-        }
+h2 {
+    margin-top: 35px;
+    margin-bottom: 15px;
+    font-size: 22px;
+    position: relative;
+    padding-left: 20px;
+    color: var(--secondary-color);
+}
 
-        ul {
-            margin-left: 25px;
-            margin-bottom: 20px;
-        }
+h2::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 3px;
+    width: 6px;
+    height: 80%;
+    background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+    border-radius: 5px;
+}
 
-        ul li {
-            margin-bottom: 8px;
-            color: #444;
-            font-size: 15px;
-        }
+p, ul li {
+    font-size: 15px;
+    line-height: 1.8;
+}
 
-        /* Button */
-        .footer-link {
-            text-align: center;
-            margin-top: 40px;
-        }
+ul {
+    margin-left: 25px;
+    margin-bottom: 20px;
+}
 
-        .footer-link a {
-            display: inline-block;
-            padding: 12px 28px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            text-decoration: none;
-            border-radius: 25px;
-            font-size: 15px;
-            transition: 0.3s;
-        }
+.footer-link {
+    text-align: center;
+    margin-top: 40px;
+}
 
-        .footer-link a:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-        }
+.footer-link a {
+    display: inline-block;
+    padding: 12px 28px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+    font-size: 15px;
+    transition: 0.3s ease;
+}
 
-        /* Responsive */
-        @media (max-width: 600px) {
-            .container {
-                padding: 25px 20px;
-            }
+.footer-link a:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
 
-            h1 {
-                font-size: 28px;
-            }
+/* Theme toggle button */
+.toggle-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
 
-            h2 {
-                font-size: 20px;
-            }
-        }
-    </style>
+.theme-toggle {
+    background: var(--primary-color);
+    border: none;
+    padding: 12px 16px;
+    border-radius: 50px;
+    font-size: 20px;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+}
+
+@media (max-width: 600px) {
+    .container {padding: 25px 20px;}
+    h1 {font-size: 28px;}
+    h2 {font-size: 20px;}
+}
+</style>
 </head>
 
 <body>
-
 <div class="container">
-
     <h1>Cookie Policy</h1>
-
     <p class="last-update">Last Updated: 12 February 2026</p>
-
     <p class="intro">
         This Cookie Policy explains how the Achievement Management System uses cookies,
         local storage, and similar technologies to improve user experience and ensure
@@ -162,10 +169,8 @@
     </p>
 
     <h2>1. What Are Cookies?</h2>
-    <p>
-        Cookies are small text files stored on your device when you visit a website.
-        They help websites remember your preferences and enhance functionality.
-    </p>
+    <p>Cookies are small text files stored on your device when you visit a website.
+    They help websites remember your preferences and enhance functionality.</p>
 
     <h2>2. Types of Cookies We Use</h2>
     <ul>
@@ -176,46 +181,59 @@
     </ul>
 
     <h2>3. Use of Local Storage</h2>
-    <p>
-        We may use browser localStorage to store non-sensitive preferences such as
-        dark/light mode settings and interface customization.
-    </p>
+    <p>We may use browser localStorage to store non-sensitive preferences such as
+        dark/light mode settings and interface customization.</p>
 
     <h2>4. How Long Cookies Are Stored</h2>
-    <p>
-        Some cookies are deleted automatically when you close your browser, while
-        others may remain until manually removed or expired.
-    </p>
+    <p>Some cookies are deleted automatically when you close your browser, while
+        others may remain until manually removed or expired.</p>
 
     <h2>5. Managing Cookies</h2>
-    <p>
-        You can manage or disable cookies through your browser settings.
-        Please note that disabling essential cookies may affect platform functionality.
-    </p>
+    <p>You can manage or disable cookies through your browser settings.
+        Please note that disabling essential cookies may affect platform functionality.</p>
 
     <h2>6. Third-Party Cookies</h2>
-    <p>
-        The platform does not intentionally use third-party cookies for advertising.
-        Any third-party services used will comply with privacy regulations.
-    </p>
+    <p>The platform does not intentionally use third-party cookies for advertising.
+        Any third-party services used will comply with privacy regulations.</p>
 
     <h2>7. Changes to This Policy</h2>
-    <p>
-        This Cookie Policy may be updated periodically. All changes will be reflected
-        on this page with an updated revision date.
-    </p>
+    <p>This Cookie Policy may be updated periodically. All changes will be reflected
+        on this page with an updated revision date.</p>
 
     <h2>8. Contact Information</h2>
-    <p>
-        If you have questions regarding this Cookie Policy, please contact
-        the system administrator through official communication channels.
-    </p>
+    <p>If you have questions regarding this Cookie Policy, please contact
+        the system administrator through official communication channels.</p>
 
     <div class="footer-link">
         <a href="index.html">⬅ Back to Home</a>
     </div>
-
 </div>
+
+<!-- Theme Toggle -->
+<div class="toggle-container">
+    <button id="mode-toggle" class="theme-toggle">🌙</button>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const body = document.body;
+    const toggle = document.getElementById("mode-toggle");
+    // Load saved theme
+    const saved = localStorage.getItem("theme") || "light";
+    if(saved === "dark") body.classList.add("dark-mode");
+
+    // Update button icon
+    toggle.textContent = body.classList.contains("dark-mode") ? "☀️" : "🌙";
+
+    // Toggle theme
+    toggle.addEventListener("click", () => {
+        body.classList.toggle("dark-mode");
+        const isDark = body.classList.contains("dark-mode");
+        localStorage.setItem("theme", isDark ? "dark" : "light");
+        toggle.textContent = isDark ? "☀️" : "🌙";
+    });
+});
+</script>
 
 </body>
 </html>

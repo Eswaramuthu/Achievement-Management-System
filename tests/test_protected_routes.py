@@ -1,36 +1,61 @@
 # tests/test_protected_routes.py
+
+
+# =====================================================
+# 🔒 Protection Tests (Unauthenticated Access)
+# =====================================================
+
 def test_student_dashboard_protected(client):
-    """Test that student dashboard requires authentication."""
-    response = client.get('/student-dashboard', follow_redirects=False)
-    assert response.status_code == 302  # Should redirect to login
-    assert '/student' in response.location
+    """Student dashboard should redirect to login if not authenticated."""
+
+    response = client.get("/student-dashboard", follow_redirects=False)
+
+    assert response.status_code == 302
+    assert "/student" in response.location
+
 
 def test_teacher_dashboard_protected(client):
-    """Test that teacher dashboard requires authentication."""
-    response = client.get('/teacher-dashboard', follow_redirects=False)
-    assert response.status_code == 302  # Should redirect to login
-    assert '/teacher' in response.location
+    """Teacher dashboard should redirect to login if not authenticated."""
+
+    response = client.get("/teacher-dashboard", follow_redirects=False)
+
+    assert response.status_code == 302
+    assert "/teacher" in response.location
+
+
+# =====================================================
+# ✅ Authenticated Access Tests
+# =====================================================
 
 def test_authenticated_student_access(client):
-    """Test that authenticated student can access their dashboard."""
-    with client.session_transaction() as sess:
-        sess['logged_in'] = True
-        sess['student_id'] = 'S12345'
-        sess['student_name'] = 'Test Student'
-        sess['student_dept'] = 'CSE'
+    """Authenticated student should access dashboard successfully."""
 
-    response = client.get('/student-dashboard', follow_redirects=True)
+    with client.session_transaction() as sess:
+        sess.update({
+            "logged_in": True,
+            "student_id": "S12345",
+            "student_name": "Test Student",
+            "student_dept": "CSE",
+        })
+
+    response = client.get("/student-dashboard", follow_redirects=True)
+
     assert response.status_code == 200
-    assert b'Student Dashboard' in response.data
+    assert b"Student Dashboard" in response.data
+
 
 def test_authenticated_teacher_access(client):
-    """Test that authenticated teacher can access their dashboard."""
-    with client.session_transaction() as sess:
-        sess['logged_in'] = True
-        sess['teacher_id'] = 'T001'
-        sess['teacher_name'] = 'Test Teacher'
-        sess['teacher_dept'] = 'CSE'
+    """Authenticated teacher should access dashboard successfully."""
 
-    response = client.get('/teacher-dashboard', follow_redirects=True)
+    with client.session_transaction() as sess:
+        sess.update({
+            "logged_in": True,
+            "teacher_id": "T001",
+            "teacher_name": "Test Teacher",
+            "teacher_dept": "CSE",
+        })
+
+    response = client.get("/teacher-dashboard", follow_redirects=True)
+
     assert response.status_code == 200
-    assert b'Teacher Dashboard' in response.data
+    assert b"Teacher Dashboard" in response.data

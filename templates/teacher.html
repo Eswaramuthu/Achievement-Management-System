@@ -1,47 +1,112 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Teacher Login - Achievement Management System</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher Login</title>
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#667eea,#764ba2);
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin:0;
+}
+
+.container{
+  background:white;
+  padding:30px;
+  border-radius:10px;
+  width:350px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+
+.title{
+  text-align:center;
+  font-size:22px;
+  font-weight:bold;
+  margin-bottom:20px;
+}
+
+.input-box{
+  margin-bottom:15px;
+}
+
+.input-box span{
+  font-size:14px;
+  display:block;
+  margin-bottom:5px;
+}
+
+.input-box input{
+  width:100%;
+  padding:8px;
+  border:1px solid #ccc;
+  border-radius:5px;
+  outline:none;
+}
+
+.input-box input:focus{
+  border:1px solid #667eea;
+}
+
+.button input{
+  width:100%;
+  padding:10px;
+  background:#667eea;
+  color:white;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+  font-size:16px;
+}
+
+.button input:hover{
+  background:#5563d6;
+}
+
+.link{
+  text-align:center;
+  margin-top:15px;
+}
+
+.link a{
+  text-decoration:none;
+  color:#667eea;
+}
+</style>
 </head>
 
 <body>
-  <div class="toggle-container">
-    <button id="mode-toggle">Dark Mode 🌙</button>
-  </div>
 
-  <div class="container login-container">
-    <div class="title">Teacher Login</div>
-    <div class="content">
-      <form action="/teacher" method="post">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-        <div class="user-details">
-          <div class="input-box full-width">
-            <span class="details">Teacher ID</span>
-            <input type="text" name="tname" placeholder="Enter your Teacher ID" required />
-          </div>
-          <div class="input-box full-width">
-            <span class="details">Password</span>
-            <input type="password" name="password" placeholder="Enter your password" required />
-          </div>
-        </div>
+<div class="container">
+  <div class="title">Teacher Login</div>
 
-        <div class="button">
-          <input type="submit" value="Login" />
-        </div>
-      </form>
-      <div class="register-link">
-        <p>New teacher? <a href="{{ url_for('teacher-new') }}">Register here</a></p>
-      </div>
-      <div class="back-link">
-        <a href="{{ url_for('home') }}">Back to Home</a>
-      </div>
+  <form action="/teacher" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <div class="input-box">
+      <span>Teacher ID</span>
+      <input type="text" name="teacher_id" required>
     </div>
-  </div>
-</body>
 
+    <div class="input-box">
+      <span>Password</span>
+      <input type="password" name="password" required>
+    </div>
+
+    <div class="button">
+      <input type="submit" value="Login">
+    </div>
+  </form>
+
+  <div class="link">
+    New teacher? <a href="{{ url_for('teacher_new') }}">Register here</a>
+  </div>
+</div>
+
+</body>
 </html>

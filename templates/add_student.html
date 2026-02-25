@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Add Student</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
@@ -10,40 +11,55 @@
     <div class="title">Add New Student</div>
     <form method="POST">
       <div class="user-details">
+        
         <div class="input-box">
-          <span class="details">Name</span>
-          <input type="text" name="student_name" required>
+          <label class="details">Name</label>
+          <input type="text" name="student_name" placeholder="Enter full name" required>
         </div>
+
         <div class="input-box">
-          <span class="details">Student ID</span>
-          <input type="text" name="student_id" required>
+          <label class="details">Student ID</label>
+          <input type="text" name="student_id" placeholder="Enter student ID" required>
         </div>
+
         <div class="input-box">
-          <span class="details">Email</span>
-          <input type="email" name="email" required>
+          <label class="details">Email</label>
+          <input type="email" name="email" placeholder="Enter email" required>
         </div>
+
         <div class="input-box">
-          <span class="details">Phone Number</span>
-          <input type="text" name="phone_number">
+          <label class="details">Phone Number</label>
+          <input type="text" name="phone_number" placeholder="Enter phone number">
         </div>
+
         <div class="input-box">
-          <span class="details">Password</span>
-          <input type="password" name="password" required>
+          <label class="details">Password</label>
+          <input type="password" name="password" placeholder="Set password" required>
         </div>
+
         <div class="input-box">
-          <span class="details">Gender</span>
-          <input type="text" name="student_gender">
+          <label class="details">Gender</label>
+          <select name="student_gender" required>
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
         </div>
+
         <div class="input-box">
-          <span class="details">Department</span>
-          <input type="text" name="student_dept">
+          <label class="details">Department</label>
+          <input type="text" name="student_dept" placeholder="Enter department">
         </div>
+
       </div>
+
       <div class="button">
         <input type="submit" value="Add Student">
       </div>
+
       <div class="back-link">
-        <a href="{{ url_for('manage_students') }}">Back to Students</a>
+        <a href="{{ url_for('manage_students') }}">← Back to Students</a>
       </div>
     </form>
   </div>

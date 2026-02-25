@@ -1,27 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Submit Achievements</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Achievement Submission - Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+
+  <style>
+    :root {
+      --primary-color: #e63946;
+      --bg-color: #1a1a2e;
+      --text-color: #fff;
+      --text-secondary: #ccc;
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    /* Theme toggle button */
+    .theme-toggle {
+      position: fixed;
+      top: 16px;
+      right: 20px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: none;
+      background: #ffffff;
+      color: #000;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 9999;
+    }
+
+    body:not(.light-mode) .theme-toggle {
+      background: #1f1f1f;
+      color: #fff;
+    }
+
+    .container {
+      max-width: 500px;
+      width: 95%;
+      margin: 120px auto;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border-radius: 15px;
+      padding: 40px 30px;
+      border: 1px solid var(--border-color);
+      text-align: center;
+    }
+
+    .title {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 25px;
+    }
+
+    .welcome-text p {
+      font-size: 18px;
+      line-height: 1.5;
+      margin-bottom: 30px;
+      color: var(--text-color);
+    }
+
+    .button a {
+      display: inline-block;
+      width: 100%;
+      padding: 14px;
+      background-color: var(--primary-color);
+      color: white;
+      font-size: 18px;
+      font-weight: 500;
+      border-radius: 10px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .button a:hover {
+      background-color: #d62839;
+    }
+
+    @media(max-width:480px) {
+      .container {
+        padding: 30px 20px;
+        margin: 80px auto;
+      }
+
+      .title {
+        font-size: 24px;
+      }
+
+      .welcome-text p {
+        font-size: 16px;
+      }
+
+      .button a {
+        font-size: 16px;
+        padding: 12px;
+      }
+    }
+
+    /* Light mode override */
+    body.light-mode {
+      --bg-color: #f5f5f5;
+      --text-color: #1a1a2e;
+      --glass-bg: rgba(255, 255, 255, 0.9);
+      --border-color: rgba(0, 0, 0, 0.1);
+    }
+  </style>
 </head>
+
 <body>
-  <div class="toggle-container">
-    <button id="mode-toggle">Dark Mode 🌙</button>
-  </div>
+  <!-- Theme Toggle -->
+  <button id="mode-toggle" class="theme-toggle" title="Toggle theme">🌙</button>
 
   <div class="container">
     <div class="title">Achievement Submission</div>
     <div class="content">
       <div class="welcome-text">
-        <p>Congratulations! <br> {{ success }}</p>
+        <p>🎉 Congratulations! <br>{{ success }}</p>
       </div>
       <div class="button">
-        <a href="/teacher-dashboard" style="text-decoration: none; display: block; width: 100%; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: 500; cursor: pointer; text-align: center;">Back to Dashboard</a>
+        <a href="/teacher-dashboard">Back to Dashboard</a>
       </div>
     </div>
   </div>
+
+  <script>
+    // Theme toggle
+    const modeToggle = document.getElementById('mode-toggle');
+    modeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      modeToggle.textContent = document.body.classList.contains('light-mode') ? '🌙' : '☀️';
+    });
+  </script>
 </body>
+
 </html>

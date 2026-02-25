@@ -4,77 +4,185 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Student Registration</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-    <script src="{{ url_for('static', filename = 'script.js') }}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            console.log("Form method: " + document.querySelector('form').method);
-            console.log("Form action: " + document.querySelector('form').action);
-
-            document.querySelector('form').addEventListener('submit', function (event) {
-                console.log("Form is being submitted");
-            });
-        });
-
-        function validatePasswords(event) {
-            const password = document.getElementById("password").value;
-            const confirmPassword = document.getElementById("confirm-password").value;
-            const message = document.getElementById("password-message");
-
-            console.log("Validating passwords...");
-
-            if (password !== confirmPassword) {
-                event.preventDefault(); // This stops form submission
-                message.textContent = "❌ Passwords do not match!";
-                message.style.color = "red";
-                console.log("Password validation failed - preventing submission");
-                return false;
-            } else {
-                message.textContent = "✅ Passwords match!";
-                message.style.color = "limegreen";
-                console.log("Password validation passed - allowing submission");
-                return true; // Explicitly return true to allow form submission
-            }
-        }
-    </script>
+    <title>Student Registration - OSCG</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
     <style>
-        /* Additional styles to make select elements match input styling */
-        .input-box select {
-            width: 100%;
-            height: 45px;
-            padding-left: 15px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            background-color: rgba(255, 255, 255, 0.1);
+        :root {
+            --primary-color: #e63946;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --border-color: rgba(255, 255, 255, 0.2);
+            --text-color: #ffffff;
+            --text-secondary: #cccccc;
+            --bg-color: #1a1a2e;
+            --input-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
             color: var(--text-color);
-            transition: all 0.3s ease;
-            /* Remove default styling */
+        }
+
+        .toggle-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 95%;
+            margin: 100px auto 40px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 40px 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        form .user-details {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .input-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-box .details {
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .input-box input,
+        .input-box select {
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            font-size: 14px;
+            outline: none;
+            transition: 0.3s;
             appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            /* Add custom dropdown arrow for dark mode */
+        }
+
+        .input-box input:focus,
+        .input-box select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 8px var(--primary-color);
+        }
+
+        .input-box select {
             background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
             background-repeat: no-repeat;
             background-position: right 10px center;
         }
 
-        .input-box select:focus {
-            border-color: var(--primary-color);
-        }
-
-        /* Change dropdown arrow color in light mode */
         body.light-mode .input-box select {
             background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
         }
 
-        /* Style for dropdown options */
         .input-box select option {
             background-color: var(--bg-color);
             color: var(--text-color);
             padding: 10px;
         }
+
+        .input-box small {
+            margin-top: 5px;
+            font-size: 13px;
+        }
+
+        .button input[type="submit"] {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .button input[type="submit"]:hover {
+            background-color: #d62839;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media(max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+        }
+
+        /* Dark Mode */
+        body.dark-mode {
+            --bg-color: #121212;
+            --text-color: #f0f0f0;
+            --text-secondary: #bbbbbb;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.2);
+            --input-bg: rgba(255, 255, 255, 0.02);
+        }
     </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('form');
+            const toggleBtn = document.getElementById('mode-toggle');
+
+            toggleBtn.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                toggleBtn.textContent = document.body.classList.contains('dark-mode') ?
+                    'Light Mode ☀️' : 'Dark Mode 🌙';
+            });
+
+            form.addEventListener('submit', function (event) {
+                const password = document.getElementById("password").value;
+                const confirmPassword = document.getElementById("confirm-password").value;
+                const message = document.getElementById("password-message");
+
+                if (password !== confirmPassword) {
+                    event.preventDefault();
+                    message.textContent = "❌ Passwords do not match!";
+                    message.style.color = "red";
+                } else {
+                    message.textContent = "✅ Passwords match!";
+                    message.style.color = "limegreen";
+                }
+            });
+        });
+    </script>
 </head>
 
 <body>
@@ -107,8 +215,8 @@
 
                     <div class="input-box">
                         <span class="details">Phone Number</span>
-                        <input autocomplete="off" type="tel" name="phone_number" placeholder="Enter your phone number"
-                            required>
+                        <input autocomplete="off" type="tel" name="phone_number"
+                            placeholder="Enter your phone number" required>
                     </div>
 
                     <div class="input-box">
