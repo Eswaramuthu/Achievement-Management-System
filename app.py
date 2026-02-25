@@ -25,6 +25,7 @@ DEFAULT_FIREBASE_CONFIG = {
 }
 
 app = Flask(__name__)
+app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-this-in-prod')
 app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(16))
 
 # csrf = CSRFProtect(app)
