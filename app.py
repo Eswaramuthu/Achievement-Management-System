@@ -5,6 +5,9 @@ import datetime
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
+import pymysql
+pymysql.install_as_MySQLdb()
+
 
 from config import DevelopmentConfig, ProductionConfig
 from firebase_config import get_firebase_config, validate_firebase_config
@@ -19,8 +22,18 @@ load_dotenv()
 # ------------------------------------------------------------------
 
 app = Flask(__name__)
+def get_db_connection():
+    return pymysql.connect(
+        host="localhost",
+        user="root",
+        password="your_mysql_password",
+        database="achievement_db",
+        cursorclass=pymysql.cursors.DictCursor
+    )
 
 app.secret_key = os.getenv("SECRET_KEY")
+
+
 
 # Choose config based on environment
 env = os.environ.get("FLASK_ENV", "development")
@@ -788,6 +801,19 @@ def logout():
         "success": True,
         "message": "Logged out successfully"
     }), 200
+
+@app.route("/student-profile", endpoint="student_profile")
+def student_profile():
+    if not session.get('logged_in'):
+        return redirect(url_for('student'))
+
+    student_data = {
+        'id': session.get('student_id'),
+        'name': session.get('student_name'),
+        'dept': session.get('student_dept')
+    }
+
+    return render_template("student_profile.html", student=student_data)
 
 
     

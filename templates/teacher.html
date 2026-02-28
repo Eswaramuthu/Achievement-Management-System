@@ -4,40 +4,264 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Teacher Login - Achievement Management System</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+  
+  <style>
+    /* ================= THEME VARIABLES ================= */
+    :root {
+      --bg-color: #f1f5f9;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --input-bg: #ffffff;
+      --input-border: #e2e8f0;
+      --divider-line: #e2e8f0;
+    }
+
+    /* Dark Mode - Targets the <body> tag */
+    body.dark-mode {
+      --bg-color: #0f172a; /* Full screen background */
+      --card-bg: #1e293b;  
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --input-bg: rgba(15, 23, 42, 0.5);
+      --input-border: rgba(255, 255, 255, 0.1);
+      --divider-line: rgba(255, 255, 255, 0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background-color 0.4s ease, color 0.4s ease;
+    }
+
+    /* ================= THEME TOGGLE (TOP RIGHT) ================= */
+    .theme-toggle {
+      position: fixed;
+      top: 25px;
+      right: 25px;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      border: 1px solid var(--input-border);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      z-index: 1000;
+      background: var(--card-bg);
+      color: var(--text-main);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    /* ================= LOGIN CARD ================= */
+    .login-container {
+      background: var(--card-bg);
+      border: 1px solid var(--input-border);
+      width: 100%;
+      max-width: 420px;
+      padding: 40px;
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.4s ease;
+    }
+
+    .title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 30px;
+      text-align: center;
+      letter-spacing: -0.02em;
+    }
+
+    /* ================= FORM INPUTS ================= */
+    .input-box {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .details {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+
+    input[type="text"], 
+    input[type="password"] {
+      width: 100%; 
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--text-main);
+      font-size: 1rem;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    input:focus {
+      border-color: #ef4444;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background: #ef4444;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.2s;
+    }
+
+    .submit-btn:hover {
+      background: #dc2626;
+      transform: translateY(-2px);
+    }
+
+    /* ================= GOOGLE OPTION ================= */
+    .signin-divider {
+      text-align: center;
+      margin: 25px 0;
+      position: relative;
+    }
+
+    .signin-divider::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 100%;
+      height: 1px;
+      background: var(--divider-line);
+    }
+
+    .signin-divider span {
+      background: var(--card-bg); /* Matches card to hide the line behind text */
+      padding: 0 15px;
+      position: relative;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .google-signin-btn {
+      width: 100%;
+      padding: 12px;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-weight: 600;
+      color: #1e293b;
+      transition: 0.2s;
+    }
+
+    .google-signin-btn:hover {
+      background: #f8fafc;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    /* ================= LINKS ================= */
+    .auth-links {
+      margin-top: 25px;
+      text-align: center;
+    }
+
+    .register-cta {
+      display: block;
+      color: #ef4444;
+      text-decoration: none;
+      font-weight: 700;
+      margin-bottom: 15px;
+      font-size: 0.95rem;
+    }
+
+    .back-home {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+  </style>
 </head>
-<body>
-  <div class="toggle-container">
-    <button id="mode-toggle">Dark Mode 🌙</button>
-  </div>
 
-  <div class="container login-container">
+<body class="dark-mode">
+
+  <button id="mode-toggle" class="theme-toggle" title="Toggle theme">🌙</button>
+
+  <div class="login-container">
     <div class="title">Teacher Login</div>
-    <div class="content">
-      <form action="/teacher" method="post">
-        <div class="user-details">
-          <div class="input-box full-width">
-            <span class="details">Teacher ID</span>
-            <input type="text" name="tname" placeholder="Enter your Teacher ID" required />
-          </div>
-          <div class="input-box full-width">
-            <span class="details">Password</span>
-            <input type="password" name="password" placeholder="Enter your password" required />
-          </div>
-        </div>
+    
+    <form action="/teacher" method="post">
+      <div class="input-box">
+        <span class="details">Teacher ID</span>
+        <input autocomplete="off" autofocus type="text" name="tname" placeholder="Enter your Teacher ID" required />
+      </div>
 
-        <div class="button">
-          <input type="submit" value="Login" />
-        </div>
-      </form>
-      <div class="register-link">
-        <p>New teacher? <a href="{{ url_for('teacher-new') }}">Register here</a></p>
+      <div class="input-box">
+        <span class="details">Password</span>
+        <input type="password" name="password" placeholder="Enter your password" required />
       </div>
-      <div class="back-link">
-        <a href="{{ url_for('home') }}">Back to Home</a>
-      </div>
+
+      <input type="submit" class="submit-btn" value="Login" />
+    </form>
+
+    <div class="signin-divider">
+      <span>OR</span>
+    </div>
+
+    <button type="button" class="google-signin-btn">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="Google">
+      Sign in with Google
+    </button>
+
+    <div class="auth-links">
+      <a class="register-cta" href="{{ url_for('teacher-new') }}">
+        New teacher? Register here
+      </a>
+      <a class="back-home" href="{{ url_for('home') }}">
+        ← Back to Home
+      </a>
     </div>
   </div>
+
+  <script>
+    const modeToggle = document.getElementById('mode-toggle');
+    const body = document.body;
+
+    modeToggle.addEventListener('click', () => {
+      // Toggle the class on the body to change the WHOLE background
+      body.classList.toggle('dark-mode');
+      
+      const isDark = body.classList.contains('dark-mode');
+      modeToggle.textContent = isDark ? '🌙' : '☀';
+      
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+
+    // Keep theme consistent across refreshes
+    if (localStorage.getItem('theme') === 'light') {
+      body.classList.remove('dark-mode');
+      modeToggle.textContent = '☀';
+    }
+  </script>
 </body>
 </html>

@@ -1,111 +1,312 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Achievement Management System</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achievement Management System</title>
+    <style>
+        /* ================= RESET & BASE ================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: background 0.4s ease, color 0.4s ease;
+            padding: 60px 20px;
+        }
+
+        /* Dark Mode Theme */
+        body.dark {
+            background: #0f172a;
+            color: #f8fafc;
+        }
+
+        /* Light Mode Theme */
+        body.light {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        /* ================= HEADER SECTION ================= */
+        .header-section {
+            text-align: center;
+            margin-bottom: 60px; /* Space between title and card */
+        }
+
+        .main-title {
+            font-size: 2.5rem;
+            letter-spacing: -0.03em;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.7;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* ================= PAGE WRAPPER ================= */
+        .page-wrapper {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 100px; /* THE GAP between login and FAQ */
+        }
+
+        /* ================= SQUARE LOGIN CARD ================= */
+        .login-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
+            
+            /* Perfect Square Dimensions */
+            width: 360px;
+            height: 360px;
+            
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease;
+        }
+
+        body.light .login-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .user-icon-box {
+            background: rgba(239, 68, 68, 0.1);
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .card-desc {
+            font-size: 0.9rem;
+            opacity: 0.6;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        /* ================= BUTTONS ================= */
+        .login-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .btn {
+            padding: 14px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+        }
+
+        .btn-student {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-student:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-teacher {
+            background: transparent;
+            border: 2px solid #ef4444;
+            color: #ef4444;
+        }
+
+        .btn-teacher:hover {
+            background: rgba(239, 68, 68, 0.05);
+            transform: translateY(-2px);
+        }
+
+        /* ================= FAQ SECTION ================= */
+        .faq-container {
+            width: 100%;
+            max-width: 650px;
+        }
+
+        .faq-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 0;
+        }
+
+        body.light .faq-item {
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .faq-question:hover {
+            color: #ef4444;
+        }
+
+        .faq-answer {
+            margin-top: 12px;
+            display: none;
+            opacity: 0.7;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            padding-right: 30px;
+        }
+
+        /* ================= THEME TOGGLE ================= */
+        .theme-toggle {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            z-index: 1000;
+            transition: 0.3s;
+        }
+
+        body.dark .theme-toggle { background: #1e293b; color: #fbbf24; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        body.light .theme-toggle { background: #ffffff; color: #1e293b; border: 1px solid #e2e8f0; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+
+    </style>
 </head>
-<body>
+<body class="dark">
 
-  <div class="toggle-container">
-    <button id="mode-toggle" class="theme-toggle"></button>
-  </div>
+    <button id="toggleBtn" class="theme-toggle">🌙</button>
 
-  <!-- Main Home Container -->
-  <div class="container home-container">
-    <div class="title">Achievement Management System</div>
+    <header class="header-section">
+        <h1 class="main-title">Achievement System</h1>
+        <p class="subtitle">A centralized platform to track, verify, and celebrate academic achievements.</p>
+    </header>
 
-    <div class="content">
-      <div class="welcome-text">
-        <p>
-          Welcome to the Achievement Management System. 
-          Please select your role to continue.
-        </p>
-      </div>
+    <div class="page-wrapper">
+        
+        <div class="login-card">
+            <div class="user-icon-box">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+            </div>
+            
+            <h2 class="card-title">Portal Login</h2>
+            <p class="card-desc">Choose your role to continue</p>
+            
+            <div class="login-options">
+                <a href="{{ url_for('student') }}" class="btn btn-student">Student Access</a>
+                <a href="{{ url_for('teacher') }}" class="btn btn-teacher">Teacher Access</a>
+            </div>
+        </div>
 
-      <div class="login-options">
-        <a href="{{ url_for('student') }}" class="login-button student">Student Login</a>
-        <a href="{{ url_for('teacher') }}" class="login-button teacher">Teacher Login</a>
-      </div>
+        <div class="faq-container">
+            <h2 class="faq-header">Frequently Asked Questions</h2>
+
+            <div class="faq-item">
+                <div class="faq-question">What is Achievement Management System? <span>▼</span></div>
+                <div class="faq-answer">It is a digital vault where students can store academic certificates and teachers can verify them in real-time.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Who can use this platform? <span>▼</span></div>
+                <div class="faq-answer">Verified students can upload achievements, while authorized faculty can review and approve records.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Can certificates be uploaded? <span>▼</span></div>
+                <div class="faq-answer">Yes! You can upload PDF, PNG, and JPEG files directly to your personal achievement dashboard.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Is my data secure? <span>▼</span></div>
+                <div class="faq-answer">Absolutely. We use end-to-end encryption and secure database protocols to ensure your data remains private.</div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <style>
-    /* ================= Theme Toggle Button ================= */
-.theme-toggle {
-  position: fixed;
-  top: 16px;
-  right: 20px;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: none;
-  background-color: #ffffff;
-  color: #000000;
-  font-size: 20px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 9999;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
+    <script>
+        // Theme Toggle Logic
+        const toggleBtn = document.getElementById("toggleBtn");
+        const body = document.body;
 
-.theme-toggle:hover {
-  transform: scale(1.1);
-}
+        toggleBtn.addEventListener("click", () => {
+            body.classList.toggle("light");
+            body.classList.toggle("dark");
+            toggleBtn.textContent = body.classList.contains("light") ? "☀" : "🌙";
+        });
 
-/* ================= Light Mode ================= */
-body.light-mode {
-  background-color: #f4f6f8;
-  color: #000000;
-}
-
-/* ================= Dark Mode ================= */
-body:not(.light-mode) {
-  background-color: #121212;
-  color: #ffffff;
-}
-
-body:not(.light-mode) .theme-toggle {
-  background-color: #1f1f1f;
-  color: #ffffff;
-}
-
-  </style>
-  <!-- FAQ SECTION ADDED -->
-  <div class="container" style="margin-top:40px;">
-    <div class="title">Frequently Asked Questions</div>
-
-    <div class="content" style="text-align:left; line-height:1.6;">
-      <p><strong>What is Achievement Management System?</strong></p>
-      <p>
-        It is a centralized platform designed to help students and teachers
-        track academic achievements efficiently.
-      </p>
-
-      <p><strong>Who can use this platform?</strong></p>
-      <p>
-        Both students and teachers can use this system for recording
-        and monitoring academic accomplishments.
-      </p>
-
-      <p><strong>Can certificates be uploaded?</strong></p>
-      <p>
-        Yes, users can upload digital certificates which remain
-        accessible anytime.
-      </p>
-
-      <p><strong>Is my data secure?</strong></p>
-      <p>
-        The system uses authentication and structured data storage
-        practices to keep information secure.
-      </p>
-    </div>
-  </div>
-
-  <!-- Firebase Configuration (Server-side Injection) -->
-
+        // FAQ Accordion Logic
+        const questions = document.querySelectorAll(".faq-question");
+        questions.forEach(q => {
+            q.addEventListener("click", () => {
+                const answer = q.nextElementSibling;
+                const arrow = q.querySelector('span');
+                const isVisible = answer.style.display === "block";
+                
+                // Close all others
+                document.querySelectorAll('.faq-answer').forEach(a => a.style.display = 'none');
+                document.querySelectorAll('.faq-question span').forEach(s => s.style.transform = 'rotate(0deg)');
+                
+                // Toggle current
+                if (!isVisible) {
+                    answer.style.display = "block";
+                    arrow.style.transform = "rotate(180deg)";
+                    arrow.style.transition = "0.3s";
+                }
+            });
+        });
+    </script>
+</body>
+</html>

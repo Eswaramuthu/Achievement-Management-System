@@ -2,50 +2,250 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Add Student</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Teacher Registration - Achievement Management System</title>
+  
+  <style>
+    /* ================= THEME VARIABLES ================= */
+    :root {
+      --bg-color: #f1f5f9;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --input-bg: #ffffff;
+      --input-border: #e2e8f0;
+      --accent-color: #ef4444;
+    }
+
+    body.dark-mode {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --input-bg: rgba(15, 23, 42, 0.5);
+      --input-border: rgba(255, 255, 255, 0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 60px 20px;
+      transition: background-color 0.3s ease;
+    }
+
+    /* ================= THEME TOGGLE (TOP RIGHT) ================= */
+    .theme-toggle {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            z-index: 1000;
+            transition: 0.3s;
+        }
+
+        body.dark .theme-toggle { background: #1e293b; color: #fbbf24; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        body.light .theme-toggle { background: #ffffff; color: #1e293b; border: 1px solid #e2e8f0; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+
+    /* ================= REGISTRATION CARD ================= */
+    .container {
+      background: var(--card-bg);
+      border: 1px solid var(--input-border);
+      width: 100%;
+      max-width: 480px; /* Optimal width for centering content */
+      padding: 40px;
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center; /* Center children inside card */
+    }
+
+    .title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 30px;
+      text-align: center;
+      width: 100%;
+    }
+
+    /* ================= CENTERED FORM CONTENT ================= */
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center; /* Forces all children to stay centered */
+      width: 100%;
+    }
+
+    .input-box {
+      width: 100%; /* Ensures they span the full available width of the form */
+      margin-bottom: 20px;
+      text-align: left; /* Keeps labels aligned to the left of the centered box */
+    }
+
+    .details {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+      color: var(--text-main);
+    }
+
+    input[type="text"], 
+    input[type="email"], 
+    input[type="password"],
+    select {
+      width: 100%; /* Final fix for centered, uniform width */
+      display: block;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--text-main);
+      font-size: 0.95rem;
+      outline: none;
+      transition: 0.2s ease-in-out;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+    }
+
+    /* ================= REGISTER BUTTON ================= */
+    .register-btn {
+      width: 100%;
+      padding: 15px;
+      border-radius: 12px;
+      border: none;
+      background: var(--accent-color);
+      color: white;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: transform 0.2s;
+    }
+
+    .register-btn:hover {
+      background: #dc2626;
+      transform: translateY(-2px);
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 25px;
+      width: 100%;
+    }
+
+    .login-link a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+
+    .login-link span {
+      color: var(--accent-color);
+      font-weight: 700;
+    }
+  </style>
 </head>
-<body class="form-page">
+
+<body class="dark-mode">
+
+  <button id="mode-toggle" class="theme-toggle">🌙</button>
+
   <div class="container">
-    <div class="title">Add New Student</div>
-    <form method="POST">
-      <div class="user-details">
-        <div class="input-box">
-          <span class="details">Name</span>
-          <input type="text" name="student_name" required>
-        </div>
-        <div class="input-box">
-          <span class="details">Student ID</span>
-          <input type="text" name="student_id" required>
-        </div>
-        <div class="input-box">
-          <span class="details">Email</span>
-          <input type="email" name="email" required>
-        </div>
-        <div class="input-box">
-          <span class="details">Phone Number</span>
-          <input type="text" name="phone_number">
-        </div>
-        <div class="input-box">
-          <span class="details">Password</span>
-          <input type="password" name="password" required>
-        </div>
-        <div class="input-box">
-          <span class="details">Gender</span>
-          <input type="text" name="student_gender">
-        </div>
-        <div class="input-box">
-          <span class="details">Department</span>
-          <input type="text" name="student_dept">
-        </div>
+    <div class="title">Teacher Registration</div>
+    
+    <form action="/teacher_register" method="POST">
+      <div class="input-box">
+        <span class="details">Full Name</span>
+        <input type="text" name="full_name" placeholder="Enter your full name" required>
       </div>
-      <div class="button">
-        <input type="submit" value="Add Student">
+
+      <div class="input-box">
+        <span class="details">Teacher ID</span>
+        <input type="text" name="teacher_id" placeholder="Enter your Teacher ID" required>
       </div>
-      <div class="back-link">
-        <a href="{{ url_for('manage_students') }}">Back to Students</a>
+
+      <div class="input-box">
+        <span class="details">Email</span>
+        <input type="email" name="email" placeholder="Enter your email" required>
+      </div>
+
+      <div class="input-box">
+        <span class="details">Phone Number</span>
+        <input type="text" name="phone_number" placeholder="Enter phone number">
+      </div>
+
+      <div class="input-box">
+        <span class="details">Password</span>
+        <input type="password" name="password" placeholder="Create a password" required>
+      </div>
+
+      <div class="input-box">
+        <span class="details">Gender</span>
+        <select name="gender">
+          <option value="" disabled selected>Select Gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="input-box">
+        <span class="details">Department</span>
+        <select name="department">
+          <option value="" disabled selected>Select Department</option>
+          <option value="CS">Computer Science</option>
+          <option value="IT">Information Technology</option>
+          <option value="EE">Electrical Engineering</option>
+        </select>
+      </div>
+
+      <input type="submit" class="register-btn" value="Register">
+
+      <div class="login-link">
+        <a href="{{ url_for('teacher') }}">Already have an account? <span>Login here</span></a>
       </div>
     </form>
   </div>
+
+  <script>
+    const modeToggle = document.getElementById('mode-toggle');
+    const body = document.body;
+
+    // Persist theme choice
+    if (localStorage.getItem('theme') === 'light') {
+      body.classList.remove('dark-mode');
+      modeToggle.textContent = '☀';
+    }
+
+    modeToggle.addEventListener('click', () => {
+      body.classList.toggle('dark-mode');
+      const isDark = body.classList.contains('dark-mode');
+      modeToggle.textContent = isDark ? '🌙' : '☀';
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+  </script>
 </body>
 </html>
