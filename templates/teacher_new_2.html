@@ -1,166 +1,261 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Teacher Registration</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-    <script src="{{ url_for('static', filename = 'script.js') }}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            console.log("Form method: " + document.querySelector('form').method);
-            console.log("Form action: " + document.querySelector('form').action);
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher Registration</title>
 
-            document.querySelector('form').addEventListener('submit', function (event) {
-                console.log("Form is being submitted");
-            });
-        });
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
 
-        function validatePasswords(event) {
-            const password = document.getElementById("password").value;
-            const confirmPassword = document.getElementById("confirm-password").value;
-            const message = document.getElementById("password-message");
+body {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    transition: 0.3s ease;
+}
 
-            console.log("Validating passwords...");
+body.light-mode {
+    background: linear-gradient(135deg, #f1f5f9, #cbd5e1);
+}
 
-            if (password !== confirmPassword) {
-                event.preventDefault(); // This stops form submission
-                message.textContent = "❌ Passwords do not match!";
-                message.style.color = "red";
-                console.log("Password validation failed - preventing submission");
-                return false;
-            } else {
-                message.textContent = "✅ Passwords match!";
-                message.style.color = "limegreen";
-                console.log("Password validation passed - allowing submission");
-                return true; // Explicitly return true to allow form submission
-            }
-        }
-    </script>
-    <style>
-        /* Additional styles to make select elements match input styling */
-        .input-box select {
-            width: 100%;
-            height: 45px;
-            padding-left: 15px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            background-color: rgba(255, 255, 255, 0.1);
-            color: var(--text-color);
-            transition: all 0.3s ease;
-            /* Remove default styling */
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            /* Add custom dropdown arrow for dark mode */
-            background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-        }
+.container {
+    background: #1e293b;
+    width: 750px;              /* Increased width */
+    padding: 35px;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    transition: 0.3s ease;
+}
 
-        .input-box select:focus {
-            border-color: var(--primary-color);
-        }
+body.light-mode .container {
+    background: white;
+}
 
-        /* Change dropdown arrow color in light mode */
-        body.light-mode .input-box select {
-            background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
-        }
+h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 28px;           /* Bigger heading */
+    color: white;
+}
 
-        /* Style for dropdown options */
-        .input-box select option {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            padding: 10px;
-        }
-    </style>
+body.light-mode h2 {
+    color: #111;
+}
+
+/* Two column layout */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 25px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-size: 15px;          /* Bigger label */
+    margin-bottom: 6px;
+    color: #cbd5e1;
+}
+
+body.light-mode label {
+    color: #333;
+}
+
+input, select {
+    padding: 13px;
+    border-radius: 10px;
+    border: none;
+    background: #0f172a;
+    color: white;
+    font-size: 15px;          /* Bigger input text */
+    outline: none;
+}
+
+body.light-mode input,
+body.light-mode select {
+    background: #f1f5f9;
+    color: black;
+}
+
+input::placeholder {
+    color: #94a3b8;
+}
+
+.full-width {
+    grid-column: span 2;
+}
+
+.register-btn {
+    margin-top: 20px;
+    padding: 15px;
+    background: #ef4444;
+    border: none;
+    border-radius: 30px;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.register-btn:hover {
+    background: #dc2626;
+    transform: scale(1.02);
+}
+
+.back-link {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.back-link a {
+    color: #ef4444;
+    text-decoration: none;
+    font-size: 15px;
+}
+
+/* Toggle Button */
+.toggle-container {
+    position: fixed;
+    top: 20px;
+    right: 25px;
+}
+
+#mode-toggle {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: none;
+    background: #1e293b;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+body.light-mode #mode-toggle {
+    background: white;
+    color: black;
+}
+
+#mode-toggle:hover {
+    transform: rotate(20deg) scale(1.1);
+}
+
+/* Responsive */
+@media(max-width: 768px) {
+    .container {
+        width: 95%;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .full-width {
+        grid-column: span 1;
+    }
+}
+
+</style>
 </head>
-
 <body>
-    <div class="toggle-container">
-        <button id="mode-toggle">Dark Mode 🌙</button>
-    </div>
 
-    <div class="container">
-        <div class="title">Teacher Registration</div>
-        <div class="content">
-            {% if error %}
-            <div style="color: red; text-align: center; margin-bottom: 10px; font-weight: bold;">
-                {{ error }}
-            </div>
-            {% endif %}
-            <form action="/teacher-new" method="POST" onsubmit="return validatePasswords(event)">
-                <div class="user-details">
-                    <div class="input-box">
-                        <span class="details">Full Name</span>
-                        <input autocomplete="off" autofocus type="text" name="teacher_name"
-                            placeholder="Enter your full name" required>
-                    </div>
+<div class="toggle-container">
+    <button id="mode-toggle">🌙</button>
+</div>
 
-                    <div class="input-box">
-                        <span class="details">Teacher ID</span>
-                        <input autocomplete="off" type="text" name="teacher_id" placeholder="Enter your Teacher ID"
-                            required>
-                    </div>
+<div class="container">
+    <h2>Teacher Registration</h2>
 
-                    <div class="input-box">
-                        <span class="details">Email</span>
-                        <input autocomplete="off" type="email" name="email" placeholder="Enter your email" required>
-                    </div>
+    <div class="form-grid">
 
-                    <div class="input-box">
-                        <span class="details">Phone Number</span>
-                        <input autocomplete="off" type="tel" name="phone_number" placeholder="Enter your phone number"
-                            required>
-                    </div>
-
-                    <div class="input-box">
-                        <span class="details">Password</span>
-                        <input autocomplete="off" type="password" id="password" name="password"
-                            placeholder="Enter your Password" required>
-                    </div>
-
-                    <div class="input-box">
-                        <span class="details">Confirm Password</span>
-                        <input type="password" id="confirm-password" placeholder="Confirm your password" required>
-                        <small id="password-message" style="font-size: 14px;"></small>
-                    </div>
-
-                    <div class="input-box">
-                        <span class="details">Gender</span>
-                        <select name="teacher_gender" required>
-                            <option disabled selected value="">Gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-
-                    <div class="input-box">
-                        <span class="details">Department</span>
-                        <select name="teacher_dept" required>
-                            <option disabled selected value="">Department</option>
-                            <option value="CSE">CSE</option>
-                            <option value="CSE(E Tech)">CSE(E Tech)</option>
-                            <option value="ECE">ECE</option>
-                            <option value="MECH">MECH</option>
-                        </select>
-                    </div>
-
-                    
-                </div>
-
-                <div class="button">
-                    <input type="submit" value="Register">
-                </div>
-            </form>
-
-            <div class="back-link">
-                <a href="{{ url_for('teacher') }}">Back to Login</a>
-            </div>
+        <div class="input-group">
+            <label>Full Name</label>
+            <input type="text" placeholder="Enter full name">
         </div>
-    </div>
-</body>
 
+        <div class="input-group">
+            <label>Teacher ID</label>
+            <input type="text" placeholder="Enter teacher ID">
+        </div>
+
+        <div class="input-group">
+            <label>Email</label>
+            <input type="email" placeholder="Enter email">
+        </div>
+
+        <div class="input-group">
+            <label>Phone Number</label>
+            <input type="tel" placeholder="Enter phone number">
+        </div>
+
+        <div class="input-group">
+            <label>Password</label>
+            <input type="password" placeholder="Enter password">
+        </div>
+
+        <div class="input-group">
+            <label>Confirm Password</label>
+            <input type="password" placeholder="Confirm password">
+        </div>
+
+        <div class="input-group">
+            <label>Gender</label>
+            <select>
+                <option>Select Gender</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Department</label>
+            <select>
+                <option>Select Department</option>
+                <option>Computer Science</option>
+                <option>Mathematics</option>
+                <option>Physics</option>
+                <option>Commerce</option>
+            </select>
+        </div>
+
+        <button class="register-btn full-width">Register</button>
+
+    </div>
+
+    <div class="back-link">
+        <a href="{{ url_for('home') }}">Back to Home</a>
+    </div>
+
+</div>
+
+<script>
+const toggleBtn = document.getElementById("mode-toggle");
+const body = document.body;
+
+toggleBtn.addEventListener("click", function() {
+    body.classList.toggle("light-mode");
+
+    if (body.classList.contains("light-mode")) {
+        toggleBtn.textContent = "☀️";
+    } else {
+        toggleBtn.textContent = "🌙";
+    }
+});
+</script>
+
+</body>
 </html>

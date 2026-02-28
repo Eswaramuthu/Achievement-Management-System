@@ -1,312 +1,514 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Achievement Management System</title>
-    <style>
-        /* ================= RESET & BASE ================= */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Achievement Management System</title>
 
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: background 0.4s ease, color 0.4s ease;
-            padding: 60px 20px;
-        }
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-        /* Dark Mode Theme */
-        body.dark {
-            background: #0f172a;
-            color: #f8fafc;
-        }
+html{
+    scroll-behavior:smooth;
+}
 
-        /* Light Mode Theme */
-        body.light {
-            background: #f1f5f9;
-            color: #0f172a;
-        }
+/* ================= BODY ================= */
+body{
+    transition:0.3s;
+    /* Increased global font size */
+    font-size: 18px; 
+}
 
-        /* ================= HEADER SECTION ================= */
-        .header-section {
-            text-align: center;
-            margin-bottom: 60px; /* Space between title and card */
-        }
+body.dark{
+    background:#0f172a;
+    color:#f8fafc;
+}
 
-        .main-title {
-            font-size: 2.5rem;
-            letter-spacing: -0.03em;
-            font-weight: 800;
-            margin-bottom: 12px;
-        }
+body.light{
+    background:#f1f5f9;
+    color:#0f172a;
+}
 
-        .subtitle {
-            font-size: 1.1rem;
-            opacity: 0.7;
-            max-width: 500px;
-            margin: 0 auto;
-        }
+/* ================= NAVBAR ================= */
+.navbar{
+    position:fixed;
+    top:0;
+    width:100%;
+    /* Increased vertical padding from 20px to 35px */
+    padding:35px 8%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:rgba(15,23,42,0.95);
+    backdrop-filter:blur(10px);
+    z-index:1000;
+}
 
-        /* ================= PAGE WRAPPER ================= */
-        .page-wrapper {
-            width: 100%;
-            max-width: 800px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 100px; /* THE GAP between login and FAQ */
-        }
+body.light .navbar{
+    background:white;
+    border-bottom:1px solid #e2e8f0;
+}
 
-        /* ================= SQUARE LOGIN CARD ================= */
-        .login-card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 32px;
-            
-            /* Perfect Square Dimensions */
-            width: 360px;
-            height: 360px;
-            
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease;
-        }
+.logo{
+    /* Increased logo size */
+    font-size: 30px;
+    font-weight:800;
+}
 
-        body.light .login-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        }
+.nav-links{
+    display:flex;
+    gap:30px;
+}
 
-        .user-icon-box {
-            background: rgba(239, 68, 68, 0.1);
-            width: 70px;
-            height: 70px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
+.nav-links a{
+    text-decoration:none;
+    font-weight:900;
+    /* Increased link size */
+    font-size:18px;
+    color:inherit;
+    transition:0.3s;
+}
 
-        .card-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
+.nav-links a:hover{
+    color:#ef4444;
+}
 
-        .card-desc {
-            font-size: 0.9rem;
-            opacity: 0.6;
-            margin-bottom: 30px;
-            text-align: center;
-        }
+/* ================= TOGGLE (MOVED TO TOP RIGHT) ================= */
+.theme-toggle{
+    position:fixed;
+    /* Positioned at the top right, above the navbar content */
+    top:35px;
+    right:20px;
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    border:none;
+    cursor:pointer;
+    font-size:24px;
+    z-index:2001; /* Higher than navbar */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
 
-        /* ================= BUTTONS ================= */
-        .login-options {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            width: 100%;
-        }
+body.dark .theme-toggle{
+    background:#1e293b;
+    color:#fbbf24;
+}
 
-        .btn {
-            padding: 14px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
-            text-align: center;
-            transition: all 0.2s ease;
-            font-size: 0.95rem;
-        }
+body.light .theme-toggle{
+    background:white;
+    border:1px solid #ddd;
+}
 
-        .btn-student {
-            background: #ef4444;
-            color: white;
-        }
+/* ================= HERO ================= */
+.hero{
+    /* Increased padding to accommodate larger navbar */
+    padding-top:200px;
+    padding-bottom:100px;
+    text-align:center;
+    max-width:1100px;
+    margin:auto;
+}
 
-        .btn-student:hover {
-            background: #dc2626;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
-        }
+.hero h1{
+    /* Increased size */
+    font-size:56px;
+    margin-bottom:25px;
+}
 
-        .btn-teacher {
-            background: transparent;
-            border: 2px solid #ef4444;
-            color: #ef4444;
-        }
+.hero p{
+    /* Increased size */
+    font-size:24px;
+    line-height:1.7;
+    opacity:0.85;
+    margin-bottom:40px;
+}
 
-        .btn-teacher:hover {
-            background: rgba(239, 68, 68, 0.05);
-            transform: translateY(-2px);
-        }
+.hero-buttons{
+    display:flex;
+    justify-content:center;
+    gap:20px;
+}
 
-        /* ================= FAQ SECTION ================= */
-        .faq-container {
-            width: 100%;
-            max-width: 650px;
-        }
+.btn{
+    padding:16px 35px;
+    border-radius:10px;
+    font-weight:600;
+    font-size: 18px;
+    text-decoration:none;
+    transition:0.3s;
+}
 
-        .faq-header {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 25px;
-            text-align: center;
-        }
+.btn-primary{
+    background:#ef4444;
+    color:white;
+}
 
-        .faq-item {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 20px 0;
-        }
+.btn-outline{
+    border:2px solid #ef4444;
+    color:#ef4444;
+}
 
-        body.light .faq-item {
-            border-bottom: 1px solid #e2e8f0;
-        }
+/* ================= FEATURES (2x2 GRID) ================= */
+.features-grid{
+    display:grid;
+    /* Force 2 columns to ensure 2 cards per row */
+    grid-template-columns: repeat(2, 1fr);
+    gap:40px;
+    max-width:1100px;
+    margin:auto;
+}
 
-        .faq-question {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            font-weight: 600;
-            transition: color 0.2s;
-        }
+.feature-card{
+    padding:45px;
+    border-radius:18px;
+    background:rgba(30,41,59,0.8);
+    transition:0.3s;
+}
 
-        .faq-question:hover {
-            color: #ef4444;
-        }
+.feature-card h3 {
+    font-size: 26px;
+    margin-bottom: 15px;
+}
 
-        .faq-answer {
-            margin-top: 12px;
-            display: none;
-            opacity: 0.7;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            padding-right: 30px;
-        }
+/* ================= SECTIONS ================= */
+section{
+    padding:100px 8%;
+}
 
-        /* ================= THEME TOGGLE ================= */
-        .theme-toggle {
-            position: fixed;
-            top: 25px;
-            right: 25px;
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            z-index: 1000;
-            transition: 0.3s;
-        }
+section:target{
+    scroll-margin-top:120px;
+}
 
-        body.dark .theme-toggle { background: #1e293b; color: #fbbf24; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-        body.light .theme-toggle { background: #ffffff; color: #1e293b; border: 1px solid #e2e8f0; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+.section-title{
+    text-align:center;
+    font-size:42px;
+    margin-bottom:60px;
+}
 
-    </style>
+/* ================= FAQ ================= */
+.faq-item{
+    max-width:900px;
+    margin:25px auto;
+    padding:30px;
+    border-radius:15px;
+    background:rgba(30,41,59,0.8);
+    cursor:pointer;
+}
+
+.faq-question{
+    font-size:22px;
+    font-weight:700;
+    color:#ef4444;
+}
+
+.faq-answer{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height 0.4s ease;
+    margin-top:15px;
+    font-size:19px;
+    opacity:0.85;
+}
+
+.faq-item.active .faq-answer{
+    max-height:300px;
+}
+
+main-footer {
+    background: #0f172a; /* Deep Navy Background */
+    color: #f8fafc;
+    padding: 80px 8% 40px 8%;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+body.light .main-footer {
+    background: #1e293b; /* Slightly lighter navy for contrast in light mode */
+    color: #ffffff;
+}
+
+.footer-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 50px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-column h3 {
+    font-size: 24px;
+    margin-bottom: 25px;
+    color: #ef4444; /* Accent color for headers */
+}
+
+.footer-column p {
+    line-height: 1.8;
+    opacity: 0.9;
+    font-size: 17px;
+}
+
+.footer-column a {
+    display: block;
+    color: #cbd5e1;
+    text-decoration: none;
+    margin-bottom: 12px;
+    font-size: 17px;
+    transition: 0.3s;
+}
+
+.footer-column a:hover {
+    color: #ef4444;
+    padding-left: 5px;
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 60px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.footer-bottom p {
+    opacity: 0.7;
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.footer-bottom strong {
+    color: #f8fafc;
+    opacity: 1;
+}
+
+/* ================= RESPONSIVE ================= */
+@media(max-width:850px){
+    .features-grid {
+        grid-template-columns: 1fr; /* Stack on mobile */
+    }
+    .nav-links{
+        display:none;
+    }
+    .theme-toggle {
+        top: 20px;
+        right: 10px;
+        width: 45px;
+        height: 45px;
+    }
+}
+
+</style>
 </head>
+
 <body class="dark">
 
-    <button id="toggleBtn" class="theme-toggle">🌙</button>
+<button class="theme-toggle" id="toggleBtn">🌙</button>
 
-    <header class="header-section">
-        <h1 class="main-title">Achievement System</h1>
-        <p class="subtitle">A centralized platform to track, verify, and celebrate academic achievements.</p>
-    </header>
+<div class="navbar">
+    <div class="logo">Achievement MS</div>
+    <div class="nav-links">
+        <a href="#home">Home</a>
+        <a href="#features">Features</a>
+        <a href="#about">About</a>
+        <a href="#faq">FAQ</a>
+        <a href="#contact">Contact</a>
+    </div>
+</div>
 
-    <div class="page-wrapper">
-        
-        <div class="login-card">
-            <div class="user-icon-box">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                </svg>
-            </div>
-            
-            <h2 class="card-title">Portal Login</h2>
-            <p class="card-desc">Choose your role to continue</p>
-            
-            <div class="login-options">
-                <a href="{{ url_for('student') }}" class="btn btn-student">Student Access</a>
-                <a href="{{ url_for('teacher') }}" class="btn btn-teacher">Teacher Access</a>
-            </div>
+<div class="hero" id="home">
+    <h1>Welcome to Achievement Management System</h1>
+    <p>A centralized platform where students and teachers track academic achievements securely.</p>
+    <div class="hero-buttons">
+        <a href="{{ url_for('student') }}" class="btn btn-primary">Student Login</a>
+        <a href="{{ url_for('teacher') }}" class="btn btn-outline">Teacher Login</a>
+    </div>
+</div>
+
+<section id="features">
+<h2 class="section-title">Key Features</h2>
+<div class="features-grid">
+    <div class="feature-card">
+        <h3>Student Dashboard</h3>
+        <p>Track and manage achievements with analytics.</p>
+    </div>
+    <div class="feature-card">
+        <h3>Teacher Management</h3>
+        <p>Easily record and update student achievements.</p>
+    </div>
+    <div class="feature-card">
+        <h3>Certificate Upload</h3>
+        <p>Upload certificates in multiple formats securely.</p>
+    </div>
+    <div class="feature-card">
+        <h3>Analytics Overview</h3>
+        <p>Visual statistics and reporting tools.</p>
+    </div>
+</div>
+</section>
+
+<section id="about">
+<h2 class="section-title">About Our System</h2>
+<p style="max-width:900px;margin:auto;text-align:center; font-size: 22px;">
+Academic achievements are scattered everywhere — certificates in folders, emails buried in inboxes, paper records collecting dust. Students struggle to showcase their accomplishments during placements or applications. Teachers waste time managing spreadsheets and physical documents. Nobody has a clear, organized view of what students have actually achieved.
+
+Our Achievement Management System centralizes everything. Students see all their achievements in one dashboard with analytics. Teachers input achievements through simple forms with auto-complete. The system tracks hackathons, coding competitions, paper presentations, conferences, and symposiums — complete with certificates, dates, positions, and detailed descriptions. Clean, fast, and organized.
+</p>
+</section>
+
+<section id="faq">
+<h2 class="section-title">Frequently Asked Questions</h2>
+
+<div class="faq-item">
+<div class="faq-question">What is Achievement Management System?</div>
+<div class="faq-answer">It is a centralized platform designed to help students and teachers track academic achievements efficiently.</div>
+</div>
+
+<div class="faq-item">
+<div class="faq-question">Who can use this platform?</div>
+<div class="faq-answer">Both students and teachers can use this system for recording and monitoring academic accomplishments.</div>
+</div>
+
+<div class="faq-item">
+<div class="faq-question">Can certificates be uploaded?</div>
+<div class="faq-answer">Yes, users can upload digital certificates which remain accessible anytime.</div>
+</div>
+<div class="faq-item">
+<div class="faq-question">Is my data secure?</div>
+<div class="faq-answer">The system uses authentication and structured data storage practices to keep information secure.</div>
+</div>
+</section>
+
+<section id="contact">
+<h2 class="section-title">Contact Us</h2>
+<div class="contact-card" style="font-size: 22px; padding: 50px; background: rgba(30,41,59,0.8); border-radius: 18px; max-width: 600px; margin: auto; text-align: center;">
+<p>Email: info@achievement-system.com</p>
+<p>Phone: +1 (123) 456-7890</p>
+</div>
+</section>
+
+
+<footer class="main-footer">
+    <div class="footer-container">
+        <div class="footer-column">
+            <h3>About Us</h3>
+            <p>Achievement Management System helps students and teachers track academic achievements in one place.</p>
         </div>
 
-        <div class="faq-container">
-            <h2 class="faq-header">Frequently Asked Questions</h2>
+        <div class="footer-column">
+            <h3>Quick Links</h3>
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="#features">Features</a>
+            <a href="#contact">Contact</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms & Conditions</a>
+        </div>
 
-            <div class="faq-item">
-                <div class="faq-question">What is Achievement Management System? <span>▼</span></div>
-                <div class="faq-answer">It is a digital vault where students can store academic certificates and teachers can verify them in real-time.</div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question">Who can use this platform? <span>▼</span></div>
-                <div class="faq-answer">Verified students can upload achievements, while authorized faculty can review and approve records.</div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question">Can certificates be uploaded? <span>▼</span></div>
-                <div class="faq-answer">Yes! You can upload PDF, PNG, and JPEG files directly to your personal achievement dashboard.</div>
-            </div>
-
-            <div class="faq-item">
-                <div class="faq-question">Is my data secure? <span>▼</span></div>
-                <div class="faq-answer">Absolutely. We use end-to-end encryption and secure database protocols to ensure your data remains private.</div>
-            </div>
+        <div class="footer-column">
+            <h3>Contact Info</h3>
+            <p><strong>Email:</strong> info@achievement-system.com</p>
+            <p><strong>Phone:</strong> +1 (123) 456-7890</p>
         </div>
     </div>
 
-    <script>
-        // Theme Toggle Logic
-        const toggleBtn = document.getElementById("toggleBtn");
-        const body = document.body;
+    <div class="footer-bottom">
+        <p>© 2026 Achievement Management System. All rights reserved.</p>
+        <p>Developed at <strong>SRM Institute of Science and Technology</strong>.</p>
+    </div>
+</footer>
 
-        toggleBtn.addEventListener("click", () => {
-            body.classList.toggle("light");
-            body.classList.toggle("dark");
-            toggleBtn.textContent = body.classList.contains("light") ? "☀" : "🌙";
-        });
+<style>
+/* ================= UPDATED FOOTER STYLES ================= */
+.main-footer {
+    background: #0f172a; /* Deep Navy Background */
+    color: #f8fafc;
+    padding: 80px 8% 40px 8%;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
 
-        // FAQ Accordion Logic
-        const questions = document.querySelectorAll(".faq-question");
-        questions.forEach(q => {
-            q.addEventListener("click", () => {
-                const answer = q.nextElementSibling;
-                const arrow = q.querySelector('span');
-                const isVisible = answer.style.display === "block";
-                
-                // Close all others
-                document.querySelectorAll('.faq-answer').forEach(a => a.style.display = 'none');
-                document.querySelectorAll('.faq-question span').forEach(s => s.style.transform = 'rotate(0deg)');
-                
-                // Toggle current
-                if (!isVisible) {
-                    answer.style.display = "block";
-                    arrow.style.transform = "rotate(180deg)";
-                    arrow.style.transition = "0.3s";
-                }
-            });
-        });
-    </script>
+body.light .main-footer {
+    background: #1e293b; /* Slightly lighter navy for contrast in light mode */
+    color: #ffffff;
+}
+
+.footer-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 50px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-column h3 {
+    font-size: 24px;
+    margin-bottom: 25px;
+    color: #ef4444; /* Accent color for headers */
+}
+
+.footer-column p {
+    line-height: 1.8;
+    opacity: 0.9;
+    font-size: 17px;
+}
+
+.footer-column a {
+    display: block;
+    color: #cbd5e1;
+    text-decoration: none;
+    margin-bottom: 12px;
+    font-size: 17px;
+    transition: 0.3s;
+}
+
+.footer-column a:hover {
+    color: #ef4444;
+    padding-left: 5px;
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 60px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.footer-bottom p {
+    opacity: 0.7;
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.footer-bottom strong {
+    color: #f8fafc;
+    opacity: 1;
+}
+
+/* Responsive adjustment */
+@media(max-width: 768px) {
+    .footer-container {
+        text-align: center;
+    }
+}
+</style>
+
+<script>
+const toggleBtn=document.getElementById("toggleBtn");
+const body=document.body;
+
+toggleBtn.onclick=()=>{
+    body.classList.toggle("light");
+    body.classList.toggle("dark");
+    toggleBtn.textContent=body.classList.contains("light")?"☀":"🌙";
+};
+
+document.querySelectorAll(".faq-item").forEach(item=>{
+    item.addEventListener("click",()=>{
+        item.classList.toggle("active");
+    });
+});
+</script>
+
 </body>
 </html>
