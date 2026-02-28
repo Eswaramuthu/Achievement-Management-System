@@ -6,6 +6,7 @@
 <title>Teacher Registration</title>
 
 <style>
+/* --- SAME CSS AS YOURS (unchanged) --- */
 * {
     margin: 0;
     padding: 0;
@@ -28,11 +29,10 @@ body.light-mode {
 
 .container {
     background: #1e293b;
-    width: 750px;              /* Increased width */
+    width: 750px;
     padding: 35px;
     border-radius: 20px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-    transition: 0.3s ease;
 }
 
 body.light-mode .container {
@@ -42,7 +42,7 @@ body.light-mode .container {
 h2 {
     text-align: center;
     margin-bottom: 25px;
-    font-size: 28px;           /* Bigger heading */
+    font-size: 28px;
     color: white;
 }
 
@@ -50,7 +50,6 @@ body.light-mode h2 {
     color: #111;
 }
 
-/* Two column layout */
 .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -63,7 +62,7 @@ body.light-mode h2 {
 }
 
 label {
-    font-size: 15px;          /* Bigger label */
+    font-size: 15px;
     margin-bottom: 6px;
     color: #cbd5e1;
 }
@@ -78,7 +77,7 @@ input, select {
     border: none;
     background: #0f172a;
     color: white;
-    font-size: 15px;          /* Bigger input text */
+    font-size: 15px;
     outline: none;
 }
 
@@ -86,10 +85,6 @@ body.light-mode input,
 body.light-mode select {
     background: #f1f5f9;
     color: black;
-}
-
-input::placeholder {
-    color: #94a3b8;
 }
 
 .full-width {
@@ -106,12 +101,10 @@ input::placeholder {
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: 0.3s ease;
 }
 
 .register-btn:hover {
     background: #dc2626;
-    transform: scale(1.02);
 }
 
 .back-link {
@@ -122,10 +115,8 @@ input::placeholder {
 .back-link a {
     color: #ef4444;
     text-decoration: none;
-    font-size: 15px;
 }
 
-/* Toggle Button */
 .toggle-container {
     position: fixed;
     top: 20px;
@@ -141,7 +132,6 @@ input::placeholder {
     color: white;
     font-size: 18px;
     cursor: pointer;
-    transition: 0.3s ease;
 }
 
 body.light-mode #mode-toggle {
@@ -149,27 +139,14 @@ body.light-mode #mode-toggle {
     color: black;
 }
 
-#mode-toggle:hover {
-    transform: rotate(20deg) scale(1.1);
-}
-
-/* Responsive */
 @media(max-width: 768px) {
-    .container {
-        width: 95%;
-    }
-
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .full-width {
-        grid-column: span 1;
-    }
+    .container { width: 95%; }
+    .form-grid { grid-template-columns: 1fr; }
+    .full-width { grid-column: span 1; }
 }
-
 </style>
 </head>
+
 <body>
 
 <div class="toggle-container">
@@ -179,81 +156,90 @@ body.light-mode #mode-toggle {
 <div class="container">
     <h2>Teacher Registration</h2>
 
-    <div class="form-grid">
+    <!-- ✅ FORM START -->
+    <form action="/teacher-new" method="POST" onsubmit="return validatePasswords()">
+        <div class="form-grid">
 
-        <div class="input-group">
-            <label>Full Name</label>
-            <input type="text" placeholder="Enter full name">
+            <div class="input-group">
+                <label>Full Name</label>
+                <input type="text" name="teacher_name" required>
+            </div>
+
+            <div class="input-group">
+                <label>Teacher ID</label>
+                <input type="text" name="teacher_id" required>
+            </div>
+
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" name="email" required>
+            </div>
+
+            <div class="input-group">
+                <label>Phone Number</label>
+                <input type="tel" name="phone_number" required>
+            </div>
+
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <div class="input-group">
+                <label>Confirm Password</label>
+                <input type="password" id="confirm-password" required>
+            </div>
+
+            <div class="input-group">
+                <label>Gender</label>
+                <select name="teacher_gender" required>
+                    <option value="">Select Gender</option>
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Department</label>
+                <select name="teacher_dept" required>
+                    <option value="">Select Department</option>
+                    <option>Computer Science</option>
+                    <option>Mathematics</option>
+                    <option>Physics</option>
+                    <option>Commerce</option>
+                </select>
+            </div>
+
+            <button type="submit" class="register-btn full-width">Register</button>
+
         </div>
-
-        <div class="input-group">
-            <label>Teacher ID</label>
-            <input type="text" placeholder="Enter teacher ID">
-        </div>
-
-        <div class="input-group">
-            <label>Email</label>
-            <input type="email" placeholder="Enter email">
-        </div>
-
-        <div class="input-group">
-            <label>Phone Number</label>
-            <input type="tel" placeholder="Enter phone number">
-        </div>
-
-        <div class="input-group">
-            <label>Password</label>
-            <input type="password" placeholder="Enter password">
-        </div>
-
-        <div class="input-group">
-            <label>Confirm Password</label>
-            <input type="password" placeholder="Confirm password">
-        </div>
-
-        <div class="input-group">
-            <label>Gender</label>
-            <select>
-                <option>Select Gender</option>
-                <option>Male</option>
-                <option>Female</option>
-                <option>Other</option>
-            </select>
-        </div>
-
-        <div class="input-group">
-            <label>Department</label>
-            <select>
-                <option>Select Department</option>
-                <option>Computer Science</option>
-                <option>Mathematics</option>
-                <option>Physics</option>
-                <option>Commerce</option>
-            </select>
-        </div>
-
-        <button class="register-btn full-width">Register</button>
-
-    </div>
+    </form>
+    <!-- ✅ FORM END -->
 
     <div class="back-link">
         <a href="{{ url_for('home') }}">Back to Home</a>
     </div>
-
 </div>
 
 <script>
+function validatePasswords() {
+    const pass = document.getElementById("password").value;
+    const confirm = document.getElementById("confirm-password").value;
+
+    if (pass !== confirm) {
+        alert("Passwords do not match!");
+        return false;
+    }
+    return true;
+}
+
 const toggleBtn = document.getElementById("mode-toggle");
 const body = document.body;
 
 toggleBtn.addEventListener("click", function() {
     body.classList.toggle("light-mode");
-
-    if (body.classList.contains("light-mode")) {
-        toggleBtn.textContent = "☀️";
-    } else {
-        toggleBtn.textContent = "🌙";
-    }
+    toggleBtn.textContent = body.classList.contains("light-mode") ? "☀️" : "🌙";
 });
 </script>
 

@@ -5,8 +5,7 @@ import datetime
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
-import pymysql
-pymysql.install_as_MySQLdb()
+
 
 
 from config import DevelopmentConfig, ProductionConfig
@@ -22,15 +21,8 @@ load_dotenv()
 # ------------------------------------------------------------------
 
 app = Flask(__name__)
-def get_db_connection():
-    return pymysql.connect(
-        host="localhost",
-        user="root",
-        password="your_mysql_password",
-        database="achievement_db",
-        cursorclass=pymysql.cursors.DictCursor
-    )
 
+  
 app.secret_key = os.getenv("SECRET_KEY")
 
 
