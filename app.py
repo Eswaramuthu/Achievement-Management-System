@@ -1,3 +1,4 @@
+from services.pdf_export_service import generate_student_pdf
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
 import sqlite3
 import os
@@ -849,6 +850,17 @@ def all_achievements():
     return render_template("all_achievements.html", achievements=achievements)
 
 
+
+@app.route("/export-portfolio")
+def export_portfolio():
+    if not session.get("logged_in"):
+        return redirect(url_for("student"))
+
+    student_id = session.get("student_id")
+    file_path = generate_student_pdf(student_id)
+
+    return redirect("/" + file_path)
+=======
 # ==================== ADMIN ROUTES ====================
 
 @app.route("/admin", methods=["GET", "POST"])
