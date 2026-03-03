@@ -758,3 +758,31 @@ body {
     /* Offset for mobile navbar (80px + 20px) */
   }
 }
+
+/* Scroll up button  */
+#scrollTopBtn {
+  position: fixed;
+  bottom: 17px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background-color:#cc0000;
+  color: #fff;
+  font-size: 30px;
+  cursor: pointer;
+  display: none;
+  z-index: 1000;
+
+  /* smooth hover base */
+  transform: scale(1);
+  transition: transform 0.4s ease;
+}
+
+#scrollTopBtn:hover {
+  background-color:#ff1c1c;
+  transform: translateY(-6px) scale(1.05);
+  transform: scale(1.12);
+  font-weight: bolder;
+}

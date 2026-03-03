@@ -32,9 +32,9 @@
           <li><a href="#features">Features</a></li>
           <li><a href="#contact">Contact</a></li>
           {% if session.get('student_id') %}
-          <li><a href="{{ url_for('student_dashboard') }}">Dashboard</a></li>
+          <li><a href="{{ url_for('student-dashboard') }}">Dashboard</a></li>
           {% elif session.get('teacher_id') %}
-          <li><a href="{{ url_for('teacher_dashboard') }}">Dashboard</a></li>
+          <li><a href="{{ url_for('teacher-dashboard') }}">Dashboard</a></li>
           {% else %}
           <li><a href="{{ url_for('student') }}">Student Login</a></li>
           <li><a href="{{ url_for('teacher') }}">Teacher Login</a></li>
@@ -91,6 +91,9 @@
     <div class="toggle-container">
       <button id="mode-toggle" class="theme-toggle">🌙</button>
     </div>
+
+    <!--Scroll to Up button-->
+    <button id="scrollTopBtn" aria-label="Scroll to top" title="Scroll to top">↑</button>
 
     <script>
       // Theme toggle functionality
@@ -160,6 +163,25 @@
                 document.querySelector('.nav-menu').classList.remove('active');
             });
         });
+
+      // Scroll-to-top button logic
+      const scrollBtn = document.getElementById("scrollTopBtn");
+
+      window.addEventListener("scroll", () => {
+        if (window.scrollY > 300) {
+          scrollBtn.style.display = "block";
+        } else {
+          scrollBtn.style.display = "none";
+        }
+      });
+
+      scrollBtn.addEventListener("click", () => {
+        if (typeof lenis !== "undefined") {
+          lenis.scrollTo(0, { duration: 1.2 });
+        } else {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      });
     </script>
   </body>
 </html>
