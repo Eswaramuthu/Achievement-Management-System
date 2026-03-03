@@ -1,8 +1,6 @@
-Flask 
-Flask_SQLAlchemy
+Flask
+Flask-SQLAlchemy
 Flask-WTF
-Flask 
-Flask_SQLAlchemy
 python-dotenv
 pytest
 pytest-cov
