@@ -495,14 +495,6 @@ def teacher_new():
         teacher_gender = request.form.get("teacher_gender")
         teacher_dept = request.form.get("teacher_dept")
 
-
-
-
-
-
-
-
-
 @app.route("/teacher-achievements", endpoint="teacher-achievements")
 def teacher_achievements():
     return render_template("teacher_achievements_2.html")
