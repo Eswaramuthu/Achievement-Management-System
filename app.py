@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask import Flask, render_template, request, redirect, url_for, session
-=======
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
->>>>>>> upstream/main
+
 import sqlite3
 import os
 import secrets
@@ -390,7 +385,7 @@ def privacy_policy():
     return render_template("privacy-policy.html")
 
 
-<<<<<<< HEAD
+
 @app.route("/student", methods=["GET", "POST"])
 def student():
     if request.method == "POST":
@@ -499,14 +494,8 @@ def teacher_new():
         hashed_password = generate_password_hash(password)
         teacher_gender = request.form.get("teacher_gender")
         teacher_dept = request.form.get("teacher_dept")
-=======
 
 
-
-
-
-
->>>>>>> upstream/main
 
 
 
