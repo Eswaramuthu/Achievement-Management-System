@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
+
 import sqlite3
 import os
 import secrets
@@ -386,17 +386,114 @@ def privacy_policy():
 
 
 
+@app.route("/student", methods=["GET", "POST"])
+def student():
+    if request.method == "POST":
+        student_id = request.form.get("sname")
+        password = request.form.get("password")
+
+        connection = sqlite3.connect(DB_PATH)
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM student WHERE student_id = ?", (student_id,))
+        student_data = cursor.fetchone()
+
+        if student_data and check_password_hash(student_data[4], password):
+            connection.close()
+
+        if student_data:
+            session["logged_in"] = True
+            session["student_id"] = student_data[1]
+            session["student_name"] = student_data[0]
+            session["student_dept"] = student_data[6]
+            return redirect(url_for("student-dashboard"))
+        else:
+            ctx = {"error": "Invalid credentials. Please try again."}
+            ctx["firebase_config"] = get_firebase_config() if get_firebase_config else DEFAULT_FIREBASE_CONFIG
+            return render_template("student.html", **ctx)
+
+    ctx = {"firebase_config": get_firebase_config() if get_firebase_config else DEFAULT_FIREBASE_CONFIG}
+    return render_template("student.html", **ctx)
 
 
+@app.route("/teacher", methods=["GET", "POST"])
+def teacher():
+    if request.method == "POST":
+        teacher_id = request.form.get("tname")
+        password = request.form.get("password")
+
+        connection = sqlite3.connect(DB_PATH)
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM teacher WHERE teacher_id = ?", (teacher_id,))
+        teacher_data = cursor.fetchone()
+
+        if teacher_data and check_password_hash(teacher_data[4], password):
+            connection.close()
+
+        if teacher_data:
+            session["logged_in"] = True
+            session["teacher_id"] = teacher_data[1]
+            session["teacher_name"] = teacher_data[0]
+            session["teacher_dept"] = teacher_data[6]
+            return redirect(url_for("teacher-dashboard"))
+        else:
+            return render_template("teacher.html", error="Invalid credentials. Please try again.")
+
+    return render_template("teacher.html")
 
 
+@app.route("/student-new", methods=["GET", "POST"])
+def student_new():
+    if request.method == "POST":
+        student_name = request.form.get("student_name")
+        student_id = request.form.get("student_id")
+        email = request.form.get("email")
+        phone_number = request.form.get("phone_number")
+        password = request.form.get("password")
+        hashed_password = generate_password_hash(password)
+        student_gender = request.form.get("student_gender")
+        student_dept = request.form.get("student_dept")
+
+        connection = sqlite3.connect(DB_PATH)
+        cursor = connection.cursor()
+
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS student (
+            student_name TEXT NOT NULL,
+            student_id TEXT PRIMARY KEY,
+            email TEXT UNIQUE NOT NULL,
+            phone_number TEXT,
+            password TEXT NOT NULL,
+            student_gender TEXT,
+            student_dept TEXT
+        )
+        """)
+
+        try:
+            cursor.execute("""
+                INSERT INTO student (student_name, student_id, email, phone_number, hashed_password, student_gender, student_dept)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (student_name, student_id, email, phone_number, password, student_gender, student_dept))
+            connection.commit()
+            return redirect(url_for("student"))
+        except sqlite3.Error as e:
+            return render_template("student_new_2.html", error=f"Database error: {e}")
+        finally:
+            connection.close()
+
+    return render_template("student_new_2.html")
 
 
-
-
-
-
-
+@app.route("/teacher-new", endpoint="teacher-new", methods=["GET", "POST"])
+def teacher_new():
+    if request.method == "POST":
+        teacher_name = request.form.get("teacher_name")
+        teacher_id = request.form.get("teacher_id")
+        email = request.form.get("email")
+        phone_number = request.form.get("phone_number")
+        password = request.form.get("password")
+        hashed_password = generate_password_hash(password)
+        teacher_gender = request.form.get("teacher_gender")
+        teacher_dept = request.form.get("teacher_dept")
 
 @app.route("/teacher-achievements", endpoint="teacher-achievements")
 def teacher_achievements():
