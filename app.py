@@ -1,3 +1,4 @@
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
 import os
@@ -176,9 +177,11 @@ def student():
 
         connection = sqlite3.connect(DB_PATH)
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM student WHERE student_id = ? AND password = ?", (student_id, password))
+        cursor.execute("SELECT * FROM student WHERE student_id = ?", (student_id,))
         student_data = cursor.fetchone()
-        connection.close()
+
+        if student_data and check_password_hash(student_data[4], password):
+            connection.close()
 
         if student_data:
             session["logged_in"] = True
@@ -203,9 +206,11 @@ def teacher():
 
         connection = sqlite3.connect(DB_PATH)
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM teacher WHERE teacher_id = ? AND password = ?", (teacher_id, password))
+        cursor.execute("SELECT * FROM teacher WHERE teacher_id = ?", (teacher_id,))
         teacher_data = cursor.fetchone()
-        connection.close()
+
+        if teacher_data and check_password_hash(teacher_data[4], password):
+            connection.close()
 
         if teacher_data:
             session["logged_in"] = True
@@ -227,6 +232,7 @@ def student_new():
         email = request.form.get("email")
         phone_number = request.form.get("phone_number")
         password = request.form.get("password")
+        hashed_password = generate_password_hash(password)
         student_gender = request.form.get("student_gender")
         student_dept = request.form.get("student_dept")
 
@@ -247,7 +253,7 @@ def student_new():
 
         try:
             cursor.execute("""
-                INSERT INTO student (student_name, student_id, email, phone_number, password, student_gender, student_dept)
+                INSERT INTO student (student_name, student_id, email, phone_number, hashed_password, student_gender, student_dept)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
             """, (student_name, student_id, email, phone_number, password, student_gender, student_dept))
             connection.commit()
@@ -268,6 +274,7 @@ def teacher_new():
         email = request.form.get("email")
         phone_number = request.form.get("phone_number")
         password = request.form.get("password")
+        hashed_password = generate_password_hash(password)
         teacher_gender = request.form.get("teacher_gender")
         teacher_dept = request.form.get("teacher_dept")
 
