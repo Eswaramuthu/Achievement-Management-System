@@ -55,6 +55,38 @@ python app.py
 
 Now open → **http://localhost:5000**
 
+## Installation Guide
+
+Follow these steps to set up the project locally.
+
+### 1. Clone the Repository
+
+git clone https://github.com/Eswaramuthu/Achievement-Management-System.git
+
+### 2. Navigate to Project Folder
+
+cd Achievement-Management-System
+
+### 3. Create Virtual Environment
+
+python -m venv venv
+
+### 4. Activate Virtual Environment
+
+Windows:
+venv\Scripts\activate
+
+macOS / Linux:
+source venv/bin/activate
+
+### 5. Install Dependencies
+
+pip install -r requirements.txt
+
+### 6. Run the Application
+
+python app.py
+
 ## Tech Stack
 
 - **Flask** (Python web framework)
