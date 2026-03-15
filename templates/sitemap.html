@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sitemap - Achievement Management System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            min-height: 100vh;
+            padding: 40px 15px;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #ffffff;
+            padding: 40px 45px;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        /* Fade Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Heading */
+        h1 {
+            text-align: center;
+            font-size: 36px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .intro {
+            text-align: center;
+            color: #555;
+            font-size: 16px;
+            margin-bottom: 35px;
+        }
+
+        /* Sections */
+        .section {
+            margin-bottom: 35px;
+        }
+
+        .section h2 {
+            font-size: 22px;
+            color: #34495e;
+            margin-bottom: 15px;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .section h2::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 3px;
+            width: 5px;
+            height: 80%;
+            background: linear-gradient(to bottom, #667eea, #764ba2);
+            border-radius: 5px;
+        }
+
+        /* Links */
+        ul {
+            list-style: none;
+            margin-left: 15px;
+        }
+
+        ul li {
+            margin-bottom: 10px;
+        }
+
+        ul li a {
+            text-decoration: none;
+            color: #3498db;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+        ul li a:hover {
+            color: #1abc9c;
+            text-decoration: underline;
+        }
+
+        /* Button */
+        .footer-link {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .footer-link a {
+            display: inline-block;
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+        .footer-link a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px 20px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .section h2 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Website Sitemap</h1>
+
+    <p class="intro">
+        This sitemap provides a complete overview of all major sections and pages
+        available in the Achievement Management System.
+    </p>
+
+    <!-- General -->
+    <div class="section">
+        <h2>🏠 General Pages</h2>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="home.html">Dashboard</a></li>
+            <li><a href="login.html">Login</a></li>
+        </ul>
+    </div>
+
+    <!-- Student -->
+    <div class="section">
+        <h2>👨‍🎓 Student Section</h2>
+        <ul>
+            <li><a href="student_dashboard.html">Student Dashboard</a></li>
+            <li><a href="student.html">Student Profile</a></li>
+            <li><a href="student_achievements.html">My Achievements</a></li>
+            <li><a href="submit_achievements.html">Submit Achievement</a></li>
+        </ul>
+    </div>
+
+    <!-- Teacher -->
+    <div class="section">
+        <h2>👩‍🏫 Teacher Section</h2>
+        <ul>
+            <li><a href="teacher_dashboard.html">Teacher Dashboard</a></li>
+            <li><a href="teacher.html">Teacher Profile</a></li>
+            <li><a href="teacher_achievements.html">Student Achievements</a></li>
+        </ul>
+    </div>
+
+    <!-- Admin -->
+    <div class="section">
+        <h2>🛠️ Administration</h2>
+        <ul>
+            <li><a href="add_student.html">Add Student</a></li>
+            <li><a href="manage_students.html">Manage Students</a></li>
+            <li><a href="all_achievements.html">All Achievements</a></li>
+        </ul>
+    </div>
+
+    <!-- Legal -->
+    <div class="section">
+        <h2>📄 Legal & Support</h2>
+        <ul>
+            <li><a href="privacy-policy.html">Privacy Policy</a></li>
+            <li><a href="cookies.html">Cookies Policy</a></li>
+            <li><a href="terms.html">Terms & Conditions</a></li>
+        </ul>
+    </div>
+
+    <div class="footer-link">
+        <a href="index.html">⬅ Back to Home</a>
+    </div>
+
+</div>
+
+</body>
+</html>

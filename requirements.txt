@@ -1,3 +1,9 @@
-Flask 
-Flask_SQLAlchemy
+Flask
+Flask-SQLAlchemy
+Flask-WTF
 python-dotenv
+pytest
+pytest-cov
+pytest-mock
+pytesseract
+Pillow

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Masthead - Achievement Management System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#667eea,#764ba2);
+    min-height:100vh;
+    padding:40px 15px;
+}
+
+.container{
+    max-width:1100px;
+    margin:auto;
+    background:#fff;
+    padding:40px;
+    border-radius:15px;
+    box-shadow:0 15px 40px rgba(0,0,0,0.15);
+    animation:fadeIn 0.8s;
+}
+
+@keyframes fadeIn{
+    from{opacity:0;transform:translateY(30px);}
+    to{opacity:1;transform:translateY(0);}
+}
+
+/* Headings */
+
+h1{
+    text-align:center;
+    font-size:36px;
+    color:#2c3e50;
+    margin-bottom:10px;
+}
+
+.subtitle{
+    text-align:center;
+    color:#666;
+    margin-bottom:35px;
+}
+
+/* Sections */
+
+.section{
+    margin-bottom:45px;
+}
+
+.section h2{
+    font-size:24px;
+    color:#34495e;
+    margin-bottom:20px;
+    padding-left:12px;
+    position:relative;
+}
+
+.section h2::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:3px;
+    width:5px;
+    height:80%;
+    background:linear-gradient(#667eea,#764ba2);
+    border-radius:5px;
+}
+
+p{
+    color:#555;
+    line-height:1.7;
+    font-size:15px;
+}
+
+/* Cards */
+
+.card-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:#f9fafc;
+    padding:20px;
+    border-radius:12px;
+    text-align:center;
+    box-shadow:0 5px 15px rgba(0,0,0,0.08);
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+}
+
+.card img{
+    width:80px;
+    height:80px;
+    border-radius:50%;
+    margin-bottom:10px;
+}
+
+.card h4{
+    font-size:16px;
+    margin-bottom:5px;
+}
+
+.card p{
+    font-size:13px;
+    color:#777;
+}
+
+.card a{
+    display:inline-block;
+    margin-top:5px;
+    text-decoration:none;
+    color:#3498db;
+    font-size:13px;
+}
+
+/* Contributors */
+
+.contributors{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:18px;
+}
+
+/* Footer */
+
+.footer{
+    text-align:center;
+    margin-top:40px;
+}
+
+.footer a{
+    padding:12px 25px;
+    background:linear-gradient(135deg,#667eea,#764ba2);
+    color:#fff;
+    text-decoration:none;
+    border-radius:25px;
+    transition:0.3s;
+}
+
+.footer a:hover{
+    box-shadow:0 8px 20px rgba(0,0,0,0.2);
+}
+/* Toggle Button */
+
+#toggleBtn{
+    margin-top:20px;
+    padding:10px 25px;
+    border:none;
+    border-radius:25px;
+    background:linear-gradient(135deg,#667eea,#764ba2);
+    color:white;
+    font-size:14px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+#toggleBtn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 6px 15px rgba(0,0,0,0.2);
+}
+
+/* Responsive */
+
+@media(max-width:600px){
+
+    h1{font-size:28px;}
+    .container{padding:25px;}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Project Masthead</h1>
+
+<p class="subtitle">
+Leadership, Contributors, Vision, and Project Information
+</p>
+
+<!-- Leadership -->
+
+<div class="section">
+<h2>🚀 Project Leadership</h2>
+
+<div class="card-grid">
+
+<!-- Admin -->
+<div class="card">
+<img src="https://github.com/Gooichand.png" alt="">
+<h4>Gooichand</h4>
+<p>Project Admin & Lead</p>
+<a href="https://github.com/Gooichand" target="_blank">GitHub</a>
+</div>
+
+
+</div>
+</div>
+
+<!-- Vision -->
+
+<div class="section">
+<h2>🎯 Vision & Mission</h2>
+
+<p>
+Our mission is to provide a secure, transparent, and scalable system
+for managing student achievements while encouraging open-source
+collaboration and ethical development practices.
+</p>
+
+</div>
+
+<!-- Contributors -->
+
+<div class="section">
+<h2>🌟 Contributors</h2>
+
+<div id="contributors" class="contributors">
+    Loading contributors...
+</div>
+
+<div style="text-align:center; margin-top:20px;">
+    <button id="toggleBtn" onclick="toggleContributors()">
+        View All Contributors
+    </button>
+</div>
+
+
+</div>
+
+<!-- Communication -->
+
+<div class="section">
+<h2>📬 Communication & Support</h2>
+
+<p>
+📧 Email: support@amsystem.com <br>
+💬 GitHub Issues: https://github.com/Gooichand/blockchain-evidence/issues <br>
+🌐 Community: GitHub Discussions
+</p>
+
+</div>
+
+<!-- AI Usage -->
+
+<div class="section">
+<h2>🤖 AI & Automation Usage</h2>
+
+<p>
+This project may use AI tools (such as GPT) for documentation,
+code suggestions, testing support, and productivity enhancement.
+All AI-generated content is reviewed before merging.
+</p>
+
+</div>
+
+<div class="footer">
+<a href="index.html">⬅ Back to Home</a>
+</div>
+
+</div>
+<script>
+
+const owner = "Gooichand";
+const repo = "blockchain-evidence";
+
+let allContributors = [];
+let showAll = false;
+
+// Load Contributors
+async function loadContributors(){
+
+    const container = document.getElementById("contributors");
+
+    try{
+
+        const res = await fetch(
+            `https://api.github.com/repos/${owner}/${repo}/contributors?per_page=100`
+        );
+
+        allContributors = await res.json();
+
+        renderContributors();
+
+    }
+    catch(err){
+        container.innerHTML = "Failed to load contributors.";
+        console.error(err);
+    }
+}
+
+// Render Contributors
+function renderContributors(){
+
+    const container = document.getElementById("contributors");
+    const btn = document.getElementById("toggleBtn");
+
+    container.innerHTML = "";
+
+    const list = showAll ? allContributors : allContributors.slice(0,8);
+
+    list.forEach(user =>{
+
+        const card = document.createElement("div");
+        card.className = "card";
+
+        card.innerHTML = `
+            <img src="${user.avatar_url}" />
+            <h4>${user.login}</h4>
+            <p>Contributions: ${user.contributions}</p>
+            <a href="${user.html_url}" target="_blank">GitHub Profile</a>
+        `;
+
+        container.appendChild(card);
+    });
+
+    // Toggle button text
+    if(allContributors.length > 6){
+        btn.style.display = "inline-block";
+        btn.innerText = showAll ? "Show Less" : "View All Contributors";
+    }else{
+        btn.style.display = "none";
+    }
+}
+
+// Toggle Button
+function toggleContributors(){
+    showAll = !showAll;
+    renderContributors();
+}
+
+loadContributors();
+
+</script>
+
+</body>
+</html>
