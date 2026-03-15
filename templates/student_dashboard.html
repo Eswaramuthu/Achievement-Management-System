@@ -1,603 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Student Dashboard - Achievement Management System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analytics - Student Dashboard</title>
   <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
   <script src="{{ url_for('static', filename = 'script.js') }}"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    (function () {
+      const t = localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      if (t === "light") document.documentElement.classList.add("light-mode");
+    })();
+  </script>
   <style>
-    .dashboard-container {
-      max-width: 1400px !important;
-      width: 95%;
+    body {
+      padding-top: 100px;
     }
-    
-    .dashboard-stats {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-    
-    .stat-card {
-      flex: 1;
-      min-width: 200px;
-      background: rgba(255, 0, 0, 0.1);
-      border-radius: 10px;
-      padding: 20px;
-      text-align: center;
-      border: 1px solid var(--border-color);
-      transition: transform 0.3s ease;
-    }
-    
-    .stat-card:hover {
-      transform: translateY(-5px);
-    }
-    
-    .stat-number {
-      font-size: 32px;
-      font-weight: bold;
-      color: var(--primary-color);
-    }
-    
-    .stat-label {
-      font-size: 16px;
-      margin-top: 10px;
-    }
-    
-    .student-info {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-    
-    .student-avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background-color: var(--primary-color);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      font-size: 32px;
-      font-weight: bold;
-    }
-    
-    .student-details h2 {
-      margin: 0;
-      font-size: 24px;
-    }
-    
-    .dashboard-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      margin-top: 30px;
-    }
-    
-    .dashboard-action {
-      flex: 1;
-      min-width: 250px;
+
+    .glass-card {
       background: var(--glass-bg);
-      border-radius: 15px;
-      padding: 25px;
-      text-align: center;
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
       border: 1px solid var(--border-color);
-      transition: all 0.3s ease;
-      text-decoration: none;
-      color: var(--text-color);
+      border-radius: var(--glass-radius);
+      padding: 2.5rem;
+      margin-bottom: 2rem;
     }
-    
-    .dashboard-action:hover {
-      transform: translateY(-5px);
-      background: rgba(255, 0, 0, 0.1);
-    }
-    
-    .action-icon {
-      font-size: 36px;
-      margin-bottom: 15px;
+
+    .score-display {
+      font-size: 4rem;
+      font-weight: 800;
       color: var(--primary-color);
+      text-shadow: 0 0 20px rgba(212, 0, 0, 0.2);
     }
-    
-    .action-title {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 10px;
+
+    .chart-container {
+      height: 300px;
+      position: relative;
     }
-    
-    .action-description {
-      font-size: 14px;
-      opacity: 0.8;
-    }
-    
-    .recent-section {
-      margin-top: 40px;
-    }
-    
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    
-    .section-title {
-      font-size: 20px;
-      font-weight: 600;
-    }
-    
-    .view-all {
-      color: var(--primary-color);
-      text-decoration: none;
-      font-weight: 500;
-    }
-    
-    .view-all:hover {
-      text-decoration: underline;
-    }
-    
-    .recent-achievements {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
-    }
-    
-    .recent-achievement {
-      background: var(--glass-bg);
-      border-radius: 10px;
-      padding: 15px;
+
+    .stat-mini-card {
+      background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border-color);
-    }
-    
-    .achievement-tag {
-      background-color: var(--primary-color);
-      color: white;
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 5px;
-      font-size: 12px;
-      margin-bottom: 10px;
-    }
-    
-    .achievement-name {
-      font-weight: 600;
-      margin-bottom: 5px;
-      font-size: 16px;
-    }
-    
-    .achievement-date {
-      font-size: 13px;
-      opacity: 0.7;
-    }
-    
-    @media (max-width: 768px) {
-      .dashboard-stats {
-        flex-direction: column;
-      }
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: 0.3s;
     }
 
-  .toggle-container {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 100;
-  }
-  
-  .header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    padding: 20px;
-    text-align: center;
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border-color);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-    z-index: 50;
-  }
-  
-  .header-text {
-    color: var(--text-color);
-    font-size: 20px;
-    font-weight: 600;
-    margin: 0;
-  }
-  
-  .header-text strong {
-    color: var(--primary-color);
-  }
-  
-/* ===== Full Dashboard Footer ===== */
-/* ===== Full Width Footer Wrapper ===== */
-.footer {
-  position: relative;
-  margin-top: 60px;
-
-  /* FORCE full viewport width */
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
-
-  background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid var(--border-color);
-}
-
-/* ===== Footer Main Content ===== */
-.footer-content {
-  width: 100%;
-  padding: 40px 80px;
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: 40px;
-}
-
-/* ===== Branding ===== */
-.footer-brand h3 {
-  margin: 0 0 10px;
-  color: var(--primary-color);
-  font-size: 20px;
-}
-
-.footer-brand p {
-  font-size: 14px;
-  opacity: 0.8;
-}
-
-/* ===== Footer Links ===== */
-.footer-links h4 {
-  margin-bottom: 10px;
-  font-size: 15px;
-  color: var(--text-color);
-}
-
-.footer-links a {
-  display: block;
-  font-size: 14px;
-  color: var(--text-secondary);
-  text-decoration: none;
-  margin-bottom: 6px;
-}
-
-.footer-links a:hover {
-  color: var(--primary-color);
-}
-
-/* ===== Bottom Bar ===== */
-.footer-bottom {
-  width: 100%;
-  border-top: 1px solid var(--border-color);
-  text-align: center;
-  padding: 15px 80px;
-  font-size: 13px;
-  color: var(--text-secondary);
-}
-
-.footer-bottom strong {
-  color: var(--primary-color);
-}
-
-/* ===== Responsive ===== */
-@media (max-width: 768px) {
-  .footer-content {
-    grid-template-columns: 1fr;
-    text-align: center;
-    padding: 30px 20px;
-  }
-
-  .footer-bottom {
-    padding: 15px 20px;
-  }
-}
-
-  /* ===== Page Layout for Sticky Footer ===== */
-.dashboard-page {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Main content grows, footer pushed down */
-.dashboard-main {
-  flex: 1;
-  padding-top: 120px; /* header space */
-}
-
-/* ===== FINAL PERFORMANCE CHART LAYOUT ===== */
-
-.performance-charts{
-  display:flex;
-  justify-content:center;
-  gap:48px;
-  flex-wrap:wrap;
-  margin-top:25px;
-}
-
-.performance-card{
-  width:390px;
-  background:var(--glass-bg);
-  border:1px solid var(--border-color);
-  border-radius:12px;
-  padding:18px;
-  text-align:center;
-}
-
-.performance-card canvas{
-  width:100% !important;
-  height:240px !important;
-}
-
-/* performance score big card */
-.score-card{
-  width:100%;
-  background:linear-gradient(90deg,#2b0f1a,#1c1f3a);
-  text-align:center;
-  padding:25px;
-  border-radius:14px;
-  margin-bottom:20px;
-}
-
-.score-number{
-  font-size:48px;
-  font-weight:bold;
-  color:#ff3b3b;
-}
-
+    .stat-mini-card:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
   </style>
 </head>
+
 <body class="dashboard-page">
-  <!-- Header -->
-  <header class="header">
-    <h1 class="header-text">
-      <strong>Achievement-Management-System</strong>
-    </h1>
-  </header>
-  
   <div class="toggle-container">
-    <button id="mode-toggle">Dark Mode 🌙</button>
+    <button id="mode-toggle" class="theme-toggle">🌙</button>
   </div>
-  
-<main class="dashboard-main">
-  <div class="container dashboard-container">
-    <!-- existing dashboard content -->
-  </div>
-</main>
 
-    <div class="title">Student Dashboard</div>
-    <div class="content">
-      <!-- Student Info -->
-      <div class="student-info">
-        <div class="student-avatar">{{ student.name[0] }}</div>
-        <div class="student-details">
-          <h2>{{ student.name }}</h2>
-          <p>Student ID: {{ student.id }} • {{ student.dept }} Department</p>
-        </div>
+  <div class="container py-4">
+    <header class="d-flex justify-content-between align-items-center mb-5">
+      <div>
+        <h1 class="title mb-0">Performance Insights</h1>
+        <p class="text-secondary small">Deep dive into your academic journey</p>
       </div>
-      
-      <!-- Stats Cards -->
-      <div class="dashboard-stats">
-        <div class="stat-card">
-          <div class="stat-number">12</div>
-          <div class="stat-label">Total Achievements</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">5</div>
-          <div class="stat-label">First Positions</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">4</div>
-          <div class="stat-label">This Semester</div>
-        </div>
+      <div class="d-flex gap-2">
+        <a href="{{ url_for('student-dashboard') }}" class="btn btn-outline-secondary rounded-pill">Overview</a>
+        <a href="{{ url_for('home') }}" class="btn btn-primary rounded-pill">Logout</a>
       </div>
-      
-      <!-- Dashboard Actions -->
-      <div class="dashboard-actions">
-        <a href="{{ url_for('student-achievements') }}" class="dashboard-action">
-          <div class="action-icon">🏆</div>
-          <div class="action-title">My Achievements</div>
-          <div class="action-description">View and manage all your achievements</div>
-        </a>
-        <a href="#" class="dashboard-action">
-          <div class="action-icon">📊</div>
-          <div class="action-title">Analytics</div>
-          <div class="action-description">Track your achievement progress over time</div>
-        </a>
-        <a href="{{ url_for('student-profile') }}" class="dashboard-action">
-          <div class="action-icon">👤</div>
-          <div class="action-title">Profile</div>
-          <div class="action-description">Update your personal information</div>
-        </a>
-      </div>
-     <!-- ================= STUDENT PERFORMANCE SECTION ================= -->
-<div class="recent-section">
-  <div class="section-header">
-    <div class="section-title">📊 Student Performance</div>
-  </div>
+    </header>
 
-  <!-- category cards -->
-  <div class="dashboard-stats">
-    <div class="stat-card">
-      <div class="stat-number" id="hackathons">0</div>
-      <div class="stat-label">Hackathons</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-number" id="coding">0</div>
-      <div class="stat-label">Coding</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-number" id="papers">0</div>
-      <div class="stat-label">Papers</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-number" id="extra">0</div>
-      <div class="stat-label">Extracurricular</div>
-    </div>
-  </div>
-
-  <!-- score -->
-  <div class="score-card">
-    <div class="score-number" id="score">0</div>
-    <div>Performance Score</div>
-  </div>
-
-  <!-- charts -->
-  <div class="performance-charts">
-
-    <div class="performance-card">
-      <h4>Category Distribution</h4>
-      <canvas id="categoryChart"></canvas>
-    </div>
-
-    <div class="performance-card">
-      <h4>Position Breakdown</h4>
-      <canvas id="positionChart"></canvas>
-    </div>
-
-    <div class="performance-card">
-      <h4>Monthly Progress</h4>
-      <canvas id="monthlyChart"></canvas>
-    </div>
-
-  </div>
-</div>
-<!-- ================= END ================= -->
-      
-      <!-- Recent Achievements -->
-      <div class="recent-section">
-        <div class="section-header">
-          <div class="section-title">Recent Achievements</div>
-          <a href="{{ url_for('student-achievements') }}" class="view-all">View All</a>
-        </div>
-        
-        <div class="recent-achievements">
-          <div class="recent-achievement">
-            <div class="achievement-tag">Hackathon</div>
-            <div class="achievement-name">National Code Challenge</div>
-            <div class="achievement-date">March 15, 2025</div>
-          </div>
-          
-          <div class="recent-achievement">
-            <div class="achievement-tag">Paper</div>
-            <div class="achievement-name">Medical Informatics Conference</div>
-            <div class="achievement-date">February 22, 2025</div>
-          </div>
-          
-          <div class="recent-achievement">
-            <div class="achievement-tag">Coding</div>
-            <div class="achievement-name">CodeFest 2025</div>
-            <div class="achievement-date">January 10, 2025</div>
+    <div class="row g-4">
+      <!-- Main Score -->
+      <div class="col-lg-4">
+        <div class="glass-card text-center h-100 d-flex flex-column justify-content-center">
+          <div class="score-display" id="total-score">0</div>
+          <p class="text-secondary fw-bold text-uppercase letter-spacing-1">Activity Quotient</p>
+          <div class="mt-4 px-3">
+            <div class="progress" style="height: 8px; background: rgba(255,255,255,0.1);">
+              <div class="progress-bar bg-primary" style="width: 75%"></div>
+            </div>
+            <small class="text-secondary d-block mt-2">Top 5% of your department</small>
           </div>
         </div>
       </div>
-      
-      <div class="logout-section" style="text-align: center; margin-top: 40px;">
-        <a href="{{ url_for('home') }}" style="color: var(--primary-color); text-decoration: none;">Logout</a>
+
+      <!-- Quick Stats -->
+      <div class="col-lg-8">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="stat-mini-card">
+              <h5 class="text-secondary small uppercase mb-1">Total Impact</h5>
+              <h3 class="mb-0">{{ stats.total_achievements }} Achievements</h3>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="stat-mini-card">
+              <h5 class="text-secondary small uppercase mb-1">Consistency</h5>
+              <h3 class="mb-0">Gold Status</h3>
+            </div>
+          </div>
+          <div class="col-lg-12">
+            <div class="glass-card mb-0">
+              <h5 class="mb-4">Monthly Momentum</h5>
+              <div class="chart-container">
+                <canvas id="mainTrends"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="col-md-6">
+        <div class="glass-card">
+          <h5 class="mb-4">Domain Concentration</h5>
+          <div class="chart-container">
+            <canvas id="domainChart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="glass-card">
+          <h5 class="mb-4">Global Standing</h5>
+          <div class="chart-container">
+            <canvas id="standingChart"></canvas>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-  
-  <!-- Footer -->
-<footer class="footer">
-  <div class="footer-content">
 
-    <div class="footer-brand">
-      <h3>Achievement Management System</h3>
-      <p>Track, manage, and showcase student achievements efficiently.</p>
-    </div>
+  <div id="raw-data"
+    data-domain='{"Hackathons": {{ analytics.hackathon }}, "Coding": {{ analytics.coding }}, "Papers": {{ analytics.papers }}, "Culture": {{ analytics.extracurricular }}}'
+    data-rank='{"1st": {{ analytics.first }}, "2nd": {{ analytics.second }}, "3rd": {{ analytics.third }}, "Part.": {{ analytics.participation }}}'
+    data-trends="{{ analytics.monthly }}" style="display: none;"></div>
 
-    <div class="footer-links">
-      <h4>Quick Links</h4>
-      <a href="{{ url_for('student-achievements') }}">My Achievements</a>
-      <a href="#">Analytics</a>
-      <a href="{{ url_for('student-profile') }}">Profile</a>
-    </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const dataNode = document.getElementById('raw-data');
+      const domains = JSON.parse(dataNode.dataset.domain);
+      const ranks = JSON.parse(dataNode.dataset.rank);
+      const trends = JSON.parse(dataNode.dataset.trends.replace(/'/g, '"'));
 
-    <div class="footer-links">
-      <h4>Support</h4>
-      <a href="#">Help</a>
-      <a href="#">Privacy Policy</a>
-      <a href="#">Terms of Use</a>
-    </div>
+      const score = (ranks['1st'] * 15) + (ranks['2nd'] * 10) + (ranks['3rd'] * 5) + (ranks['Part.'] * 2);
+      document.getElementById('total-score').innerText = score;
 
-  </div>
+      const chartDefaults = {
+        color: '#888',
+        font: { family: 'Poppins' }
+      };
+      Object.assign(Chart.defaults, chartDefaults);
 
-  <div class="footer-bottom">
-    © 2026 <strong>OSCG</strong> · Open Source Project
-  </div>
-</footer>
-<script>
-const data = {
-  hackathon: 5,
-  coding: 4,
-  papers: 3,
-  extracurricular: 2,
-  first: 3,
-  second: 2,
-  third: 2,
-  participation: 7,
-  monthly:[2,5,3,6,4,7,5,3,4,6,2,5]
-};
+      // Domain Chart
+      new Chart(document.getElementById('domainChart'), {
+        type: 'polarArea',
+        data: {
+          labels: Object.keys(domains),
+          datasets: [{
+            data: Object.values(domains),
+            backgroundColor: ['rgba(212,0,0,0.6)', 'rgba(54,162,235,0.6)', 'rgba(255,206,86,0.6)', 'rgba(75,192,192,0.6)'],
+            borderColor: 'transparent'
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { r: { display: false } } }
+      });
 
-let score = (data.first*10)+(data.second*8)+(data.third*6)+(data.participation*3);
+      // Standing Chart
+      new Chart(document.getElementById('standingChart'), {
+        type: 'bar',
+        data: {
+          labels: Object.keys(ranks),
+          datasets: [{
+            label: 'Milestones',
+            data: Object.values(ranks),
+            backgroundColor: '#d40000',
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { y: { display: false }, x: { grid: { display: false } } }
+        }
+      });
 
-document.getElementById("hackathons").innerText=data.hackathon;
-document.getElementById("coding").innerText=data.coding;
-document.getElementById("papers").innerText=data.papers;
-document.getElementById("extra").innerText=data.extracurricular;
-document.getElementById("score").innerText=score;
-
-Chart.defaults.color = "#cccccc";
-Chart.defaults.font.family = "Poppins";
-
-// Category Doughnut
-new Chart(document.getElementById('categoryChart'), {
-  type: 'doughnut',
-  data: {
-    labels: ['Hackathons','Coding','Papers','Extracurricular'],
-    datasets: [{
-      data: [data.hackathon,data.coding,data.papers,data.extracurricular],
-      backgroundColor:['#ff4d4d','#36a2eb','#ffce56','#4caf50'],
-      borderWidth:0
-    }]
-  },
-  options:{plugins:{legend:{position:'bottom'}},cutout:'55%'}
-});
-
-// Position Bar
-new Chart(document.getElementById('positionChart'), {
-  type:'bar',
-  data:{
-    labels:['1st','2nd','3rd','Participation'],
-    datasets:[{
-      data:[data.first,data.second,data.third,data.participation],
-      backgroundColor:'rgba(255,0,0,0.6)',
-      borderRadius:6
-    }]
-  },
-  options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
-});
-
-// Monthly Line
-new Chart(document.getElementById('monthlyChart'), {
-  type:'line',
-  data:{
-    labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
-    datasets:[{
-      data:data.monthly,
-      borderColor:'#ff4d4d',
-      backgroundColor:'rgba(255,0,0,0.1)',
-      fill:true,
-      tension:0.4
-    }]
-  },
-  options:{plugins:{legend:{display:false}}}
-});
-</script>
+      // Trends Chart
+      new Chart(document.getElementById('mainTrends'), {
+        type: 'line',
+        data: {
+          labels: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+          datasets: [{
+            data: trends,
+            borderColor: '#d40000',
+            borderWidth: 3,
+            tension: 0.4,
+            pointRadius: 0,
+            fill: true,
+            backgroundColor: 'rgba(212,0,0,0.05)'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { y: { display: false }, x: { grid: { display: false } } }
+        }
+      });
+    });
+  </script>
 </body>
+
 </html>

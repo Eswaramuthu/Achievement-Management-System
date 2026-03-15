@@ -1,494 +1,410 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Profile - Achievement Management System</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
     <style>
         .profile-container {
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 30px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            max-width: 900px !important;
+            margin-top: 80px;
         }
-        
+
+        .profile-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
         .profile-header {
             display: flex;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #f0f0f0;
+            gap: 30px;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
         }
-        
+
+        .profile-avatar-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+        }
+
         .profile-picture {
             width: 150px;
             height: 150px;
             border-radius: 50%;
             object-fit: cover;
-            border: 5px solid #4a6fa5;
-            margin-right: 30px;
+            border: 4px solid var(--primary-color);
+            box-shadow: 0 0 20px rgba(255, 59, 59, 0.3);
         }
-        
+
         .profile-info h1 {
-            margin: 0 0 10px 0;
-            color: #333;
+            margin: 0;
+            font-size: 32px;
+            color: var(--text-color);
         }
-        
-        .profile-info .student-id {
-            color: #666;
-            font-size: 1.1em;
-            margin-bottom: 5px;
-        }
-        
-        .profile-info .department {
-            color: #4a6fa5;
-            font-weight: 600;
-            font-size: 1.1em;
-        }
-        
-        .profile-actions {
-            margin-top: 20px;
-        }
-        
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
+
+        .student-id-badge {
             display: inline-block;
-        }
-        
-        .btn-primary {
-            background-color: #4a6fa5;
+            background: var(--primary-color);
             color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-top: 10px;
         }
-        
-        .btn-primary:hover {
-            background-color: #3a5a85;
-        }
-        
-        .btn-secondary {
-            background-color: #6c757d;
-            color: white;
-            margin-left: 10px;
-        }
-        
-        .btn-secondary:hover {
-            background-color: #5a6268;
-        }
-        
-        .btn-danger {
-            background-color: #dc3545;
-            color: white;
-            margin-left: 10px;
-        }
-        
-        .btn-danger:hover {
-            background-color: #c82333;
-        }
-        
-        .profile-details {
+
+        .profile-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
+            gap: 25px;
+            margin-bottom: 40px;
         }
-        
+
         .detail-item {
-            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
-        
+
         .detail-label {
-            font-weight: 600;
-            color: #555;
-            margin-bottom: 5px;
-            display: block;
+            font-size: 14px;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        
+
         .detail-value {
-            color: #333;
-            padding: 8px 12px;
-            background: #f8f9fa;
-            border-radius: 5px;
-            border: 1px solid #e9ecef;
+            font-size: 18px;
+            font-weight: 500;
+            padding: 12px 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
         }
-        
-        .edit-form {
+
+        .edit-form-section {
             display: none;
+            animation: fadeIn 0.4s ease;
         }
-        
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .form-group {
             margin-bottom: 20px;
         }
-        
+
         .form-group label {
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #555;
+            opacity: 0.9;
         }
-        
+
         .form-control {
             width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #ced4da;
-            border-radius: 5px;
-            font-size: 1em;
-            box-sizing: border-box;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-color);
+            font-family: inherit;
+            transition: all 0.3s ease;
         }
-        
+
         .form-control:focus {
             outline: none;
-            border-color: #4a6fa5;
-            box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.25);
+            border-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.1);
         }
-        
-        .alert {
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .alert-danger {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .profile-picture-upload {
-            text-align: center;
-            margin: 20px 0;
-        }
-        
-        .profile-picture-preview {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 5px solid #4a6fa5;
-            margin: 0 auto 20px;
-            display: block;
-        }
-        
-        .file-upload-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-        
-        .file-upload-input {
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
-        
-        .file-upload-label {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #4a6fa5;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .file-upload-label:hover {
-            background-color: #3a5a85;
-        }
-        
-        .current-picture-info {
-            text-align: center;
-            margin-top: 10px;
-            color: #666;
-            font-size: 0.9em;
-        }
-        
-        .password-change-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 5px;
+
+        .password-section {
+            background: rgba(255, 59, 59, 0.05);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 59, 59, 0.2);
             margin-top: 30px;
-            border-left: 4px solid #4a6fa5;
         }
-        
-        .password-change-section h3 {
+
+        .password-section h3 {
             margin-top: 0;
-            color: #4a6fa5;
+            color: var(--primary-color);
+            font-size: 20px;
+            margin-bottom: 15px;
         }
-        
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
-            color: #4a6fa5;
-            text-decoration: none;
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 12px;
             font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
         }
-        
-        .back-link:hover {
-            text-decoration: underline;
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
         }
-        
+
+        .btn-primary:hover {
+            background: #cc0000;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 59, 59, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
         @media (max-width: 768px) {
-            .profile-details {
-                grid-template-columns: 1fr;
-            }
-            
             .profile-header {
                 flex-direction: column;
                 text-align: center;
             }
-            
-            .profile-picture {
-                margin-right: 0;
-                margin-bottom: 20px;
+
+            .profile-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="profile-container">
-            <div class="profile-header">
-                <img src="{{ profile_picture_url or url_for('static', filename='images/default-profile.svg') }}" 
-                     alt="Profile Picture" class="profile-picture" id="profilePicture">
-                <div class="profile-info">
-                    <h1>{{ student.student_name }}</h1>
-                    <div class="student-id">Student ID: {{ student.student_id }}</div>
-                    <div class="department">{{ student.student_dept }}</div>
-                    <div class="profile-actions">
-                        <button class="btn btn-primary" onclick="toggleEditMode()" id="editBtn">
-                            Edit Profile
-                        </button>
-                        <a href="{{ url_for('student-dashboard') }}" class="btn btn-secondary">
-                            Back to Dashboard
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-            
-            <div id="viewMode">
-                <div class="profile-details">
-                    <div class="detail-item">
-                        <span class="detail-label">Email Address</span>
-                        <div class="detail-value">{{ student.email }}</div>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Phone Number</span>
-                        <div class="detail-value">{{ student.phone_number or 'Not provided' }}</div>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Gender</span>
-                        <div class="detail-value">{{ student.student_gender or 'Not specified' }}</div>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Department</span>
-                        <div class="detail-value">{{ student.student_dept }}</div>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Student ID</span>
-                        <div class="detail-value">{{ student.student_id }}</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="editMode" class="edit-form">
-                <form method="POST" action="{{ url_for('student_profile_edit') }}" enctype="multipart/form-data">
-                    <div class="profile-picture-upload">
-                        <img src="{{ profile_picture_url or url_for('static', filename='images/default-profile.svg') }}" 
-                             alt="Profile Picture Preview" class="profile-picture-preview" id="profilePicturePreview">
-                        <div class="file-upload-wrapper">
-                            <input type="file" name="profile_picture" id="profilePictureInput" 
-                                   class="file-upload-input" accept="image/*" onchange="previewImage(event)">
-                            <label for="profilePictureInput" class="file-upload-label">
-                                Change Profile Picture
-                            </label>
-                        </div>
-                        {% if student.profile_picture %}
-                        <div class="current-picture-info">
-                            Current picture: {{ student.profile_picture }}
-                        </div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="profile-details">
-                        <div class="form-group">
-                            <label for="student_name">Full Name</label>
-                            <input type="text" id="student_name" name="student_name" 
-                                   class="form-control" value="{{ student.student_name }}" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="email">Email Address</label>
-                            <input type="email" id="email" name="email" 
-                                   class="form-control" value="{{ student.email }}" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="phone_number">Phone Number</label>
-                            <input type="tel" id="phone_number" name="phone_number" 
-                                   class="form-control" value="{{ student.phone_number or '' }}">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="student_gender">Gender</label>
-                            <select id="student_gender" name="student_gender" class="form-control">
-                                <option value="">Select Gender</option>
-                                <option value="Male" {% if student.student_gender == 'Male' %}selected{% endif %}>Male</option>
-                                <option value="Female" {% if student.student_gender == 'Female' %}selected{% endif %}>Female</option>
-                                <option value="Other" {% if student.student_gender == 'Other' %}selected{% endif %}>Other</option>
-                                <option value="Prefer not to say" {% if student.student_gender == 'Prefer not to say' %}selected{% endif %}>Prefer not to say</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="student_dept">Department</label>
-                            <input type="text" id="student_dept" name="student_dept" 
-                                   class="form-control" value="{{ student.student_dept }}" required>
-                        </div>
-                    </div>
-                    
-                    <div class="password-change-section">
-                        <h3>Change Password</h3>
-                        <p>Leave these fields blank if you don't want to change your password.</p>
-                        
-                        <div class="form-group">
-                            <label for="current_password">Current Password</label>
-                            <input type="password" id="current_password" name="current_password" 
-                                   class="form-control">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="new_password">New Password</label>
-                            <input type="password" id="new_password" name="new_password" 
-                                   class="form-control">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="confirm_password">Confirm New Password</label>
-                            <input type="password" id="confirm_password" name="confirm_password" 
-                                   class="form-control">
-                        </div>
-                    </div>
-                    
-                    <div class="profile-actions">
-                        <button type="submit" class="btn btn-primary">
-                            Save Changes
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="toggleEditMode()">
-                            Cancel
-                        </button>
-                    </div>
-                </form>
-            </div>
-            
-            <a href="{{ url_for('student-dashboard') }}" class="back-link">
-                Back to Dashboard
-            </a>
-        </div>
+
+<body class="dashboard-page">
+    <div class="toggle-container">
+        <button id="mode-toggle">Dark Mode 🌙</button>
     </div>
-    
+
+    <main class="dashboard-main">
+        <div class="container profile-container">
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar-container">
+                        <img src="{{ profile_picture_url or url_for('static', filename='images/default-profile.svg') }}"
+                            alt="Profile Picture" class="profile-picture" id="profilePicture">
+                    </div>
+                    <div class="profile-info">
+                        <h1>{{ student.student_name }}</h1>
+                        <span class="student-id-badge">ID: {{ student.student_id }}</span>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" onclick="toggleEditMode()" id="editBtn">Edit
+                                Profile</button>
+                            <a href="{{ url_for('student-dashboard') }}" class="btn btn-secondary">Dashboard</a>
+                        </div>
+                    </div>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category if category != 'danger' else 'error' }}"
+                    style="margin-bottom: 20px;">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                <div id="viewMode">
+                    <div class="profile-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Email Address</span>
+                            <div class="detail-value">{{ student.email }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Phone Number</span>
+                            <div class="detail-value">{{ student.phone_number or 'Not provided' }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Gender</span>
+                            <div class="detail-value">{{ student.student_gender or 'Not specified' }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Department</span>
+                            <div class="detail-value">{{ student.student_dept }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="editMode" class="edit-form-section">
+                    <form method="POST" action="{{ url_for('student_profile_edit') }}" enctype="multipart/form-data">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <img src="{{ profile_picture_url or url_for('static', filename='images/default-profile.svg') }}"
+                                alt="Preview" class="profile-picture" id="profilePicturePreview"
+                                style="margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: center;">
+                                <label for="profilePictureInput" class="btn btn-secondary">
+                                    Change Picture
+                                    <input type="file" name="profile_picture" id="profilePictureInput"
+                                        style="display: none;" accept="image/*" onchange="previewImage(event)">
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="profile-grid">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" name="student_name" class="form-control"
+                                    value="{{ student.student_name }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email Address</label>
+                                <input type="email" name="email" class="form-control" value="{{ student.email }}"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel" name="phone_number" class="form-control"
+                                    value="{{ student.phone_number or '' }}">
+                            </div>
+                            <div class="form-group">
+                                <label>Gender</label>
+                                <select name="student_gender" class="form-control"
+                                    style="background: rgba(255, 255, 255, 0.05);">
+                                    <option value="">Select Gender</option>
+                                    <option value="Male" {% if student.student_gender=='Male' %}selected{% endif %}>Male
+                                    </option>
+                                    <option value="Female" {% if student.student_gender=='Female' %}selected{% endif %}>
+                                        Female</option>
+                                    <option value="Other" {% if student.student_gender=='Other' %}selected{% endif %}>
+                                        Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Department</label>
+                                <input type="text" name="student_dept" class="form-control"
+                                    value="{{ student.student_dept }}" required>
+                            </div>
+                        </div>
+
+                        <div class="password-section">
+                            <h3>Change Password</h3>
+                            <p style="font-size: 14px; opacity: 0.7; margin-bottom: 20px;">Leave blank to keep your
+                                current password.</p>
+                            <div class="form-group">
+                                <label>Current Password</label>
+                                <input type="password" name="current_password" class="form-control">
+                            </div>
+                            <div class="profile-grid" style="margin-bottom: 0;">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>New Password</label>
+                                    <input type="password" id="new_password" name="new_password" class="form-control">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>Confirm Password</label>
+                                    <input type="password" id="confirm_password" name="confirm_password"
+                                        class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <button type="button" class="btn btn-secondary" onclick="toggleEditMode()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
     <script>
         function toggleEditMode() {
             const viewMode = document.getElementById('viewMode');
             const editMode = document.getElementById('editMode');
             const editBtn = document.getElementById('editBtn');
-            const profilePicture = document.getElementById('profilePicture');
-            const profilePicturePreview = document.getElementById('profilePicturePreview');
-            
-            if (viewMode.style.display === 'none') {
-                // Switch to view mode
+            const isEditing = viewMode.style.display === 'none';
+
+            if (isEditing) {
                 viewMode.style.display = 'block';
                 editMode.style.display = 'none';
-                editBtn.innerHTML = 'Edit Profile';
-                editBtn.classList.remove('btn-secondary');
-                editBtn.classList.add('btn-primary');
+                editBtn.innerText = 'Edit Profile';
             } else {
-                // Switch to edit mode
                 viewMode.style.display = 'none';
                 editMode.style.display = 'block';
-                editBtn.innerHTML = 'View Profile';
-                editBtn.classList.remove('btn-primary');
-                editBtn.classList.add('btn-secondary');
-                
-                // Copy current profile picture to preview
-                profilePicturePreview.src = profilePicture.src;
+                editBtn.innerText = 'Cancel Edit';
             }
         }
-        
+
         function previewImage(event) {
             const input = event.target;
             const preview = document.getElementById('profilePicturePreview');
-            
+            const mainPicture = document.getElementById('profilePicture');
+
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
-                
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     preview.src = e.target.result;
-                    // Also update the view mode picture
-                    document.getElementById('profilePicture').src = e.target.result;
+                    mainPicture.src = e.target.result;
                 }
-                
                 reader.readAsDataURL(input.files[0]);
             }
         }
-        
+
+        // Theme initialization
+        const modeToggle = document.getElementById('mode-toggle');
+        const body = document.body;
+
+        if (localStorage.getItem('theme') === 'light') {
+            body.classList.add('light-mode');
+            modeToggle.innerText = 'Dark Mode 🌙';
+        } else {
+            modeToggle.innerText = 'Light Mode ☀️';
+        }
+
+        modeToggle.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            const isLight = body.classList.contains('light-mode');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            modeToggle.innerText = isLight ? 'Dark Mode 🌙' : 'Light Mode ☀️';
+        });
+
         // Form validation
-        document.querySelector('form').addEventListener('submit', function(e) {
+        document.querySelector('form').addEventListener('submit', function (e) {
             const newPassword = document.getElementById('new_password').value;
             const confirmPassword = document.getElementById('confirm_password').value;
-            
-            if (newPassword || confirmPassword) {
-                // If either password field is filled, both must be filled and match
-                if (!newPassword || !confirmPassword) {
-                    e.preventDefault();
-                    alert('Please fill both new password fields if you want to change your password.');
-                    return;
-                }
-                
-                if (newPassword !== confirmPassword) {
-                    e.preventDefault();
-                    alert('New passwords do not match.');
-                    return;
-                }
-                
-                if (newPassword.length < 6) {
-                    e.preventDefault();
-                    alert('New password must be at least 6 characters long.');
-                    return;
-                }
+
+            if (newPassword && newPassword !== confirmPassword) {
+                e.preventDefault();
+                alert('New passwords do not match!');
             }
-        });
-        
-        // Initialize in view mode
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('editMode').style.display = 'none';
         });
     </script>
 </body>
+
 </html>

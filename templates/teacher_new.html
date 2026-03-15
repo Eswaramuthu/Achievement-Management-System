@@ -1,120 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Teacher Registration</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
-  <script>
-    function validatePasswords(event) {
-      const password = document.getElementById("password").value;
-      const confirmPassword = document.getElementById("confirm-password").value;
-      const message = document.getElementById("password-message");
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Teacher Registration - Achievement Management System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      padding: 20px;
+    }
 
-      if (password !== confirmPassword) {
-        event.preventDefault();
-        message.textContent = "❌ Passwords do not match!";
-        message.style.color = "red";
-      } else {
-        message.textContent = "✅ Passwords match!";
-        message.style.color = "limegreen";
+    .login-container {
+      width: 100%;
+      max-width: 600px;
+      padding: 40px;
+    }
+
+    .user-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 25px;
+    }
+
+    .input-box.full-width {
+      grid-column: span 2;
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-toggle-btn {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    @media (max-width: 600px) {
+      .user-details {
+        grid-template-columns: 1fr;
+      }
+
+      .input-box.full-width {
+        grid-column: span 1;
+      }
+
+      .login-container {
+        padding: 30px 20px;
       }
     }
-  </script>
+  </style>
 </head>
-<body>
+
+<body class="auth-page">
   <div class="toggle-container">
-    <button id="mode-toggle">Dark Mode 🌙</button>
+    <button id="mode-toggle" class="theme-toggle">🌙</button>
   </div>
 
-  <div class="container">
-    <div class="title">Teacher Registration</div>
-    <div class="content">
-      <form onsubmit="validatePasswords(event)">
-        <div class="user-details">
-          <div class="input-box">
-            <span class="details">Full Name</span>
-            <input type="text" placeholder="Enter your name" required />
-          </div>
-          <div class="input-box">
-            <span class="details">Teacher ID</span>
-            <input type="text" placeholder="Enter your Teacher ID" required />
-          </div>
-          <div class="input-box">
-            <span class="details">Email</span>
-            <input type="email" placeholder="Enter your email" required />
-          </div>
-          <div class="input-box">
-            <span class="details">Phone Number</span>
-            <input type="tel" placeholder="Enter your number" required />
-          </div>
-          <div class="input-box">
-            <span class="details">Password</span>
-            <input type="password" id="password" placeholder="Enter your password" required />
-          </div>
-          <div class="input-box">
-            <span class="details">Confirm Password</span>
-            <input type="password" id="confirm-password" placeholder="Confirm your password" required />
-            <small id="password-message" style="font-size: 14px;"></small>
+  <div class="container login-container">
+    <h1 class="title">Join as teacher</h1>
+
+    <form action="{{ url_for('teacher_new') }}" method="POST" id="regForm">
+      <div class="user-details">
+        <div class="input-box">
+          <label>Full Name</label>
+          <input type="text" name="teacher_name" placeholder="John Doe" required>
+        </div>
+
+        <div class="input-box">
+          <label>Teacher ID</label>
+          <input type="text" name="teacher_id" placeholder="T-12345" required>
+        </div>
+
+        <div class="input-box">
+          <label>Email Address</label>
+          <input type="email" name="email" placeholder="email@ext.com" required>
+        </div>
+
+        <div class="input-box">
+          <label>Phone Number</label>
+          <input type="tel" name="phone_number" placeholder="+1..." required>
+        </div>
+
+        <div class="input-box">
+          <label>Department</label>
+          <input type="text" name="teacher_dept" placeholder="Computer Science" required>
+        </div>
+
+        <div class="input-box">
+          <label>Gender</label>
+          <input type="text" name="teacher_gender" placeholder="Male/Female" required>
+        </div>
+
+        <div class="input-box">
+          <label>Password</label>
+          <div class="password-wrapper">
+            <input type="password" name="password" id="password" placeholder="••••••••" required>
+            <button type="button" class="password-toggle-btn" data-target="password">👁</button>
           </div>
         </div>
 
-        <div class="gender-details">
-          <input type="radio" name="gender" id="dot-1" />
-          <input type="radio" name="gender" id="dot-2" />
-          <input type="radio" name="gender" id="dot-3" />
-          <span class="gender-title">Gender</span>
-          <div class="category">
-            <label for="dot-1">
-              <span class="dot one"></span>
-              <span class="gender">Male</span>
-            </label>
-            <label for="dot-2">
-              <span class="dot two"></span>
-              <span class="gender">Female</span>
-            </label>
-            <label for="dot-3">
-              <span class="dot three"></span>
-              <span class="gender">Other</span>
-            </label>
+        <div class="input-box">
+          <label>Confirm Password</label>
+          <div class="password-wrapper">
+            <input type="password" id="confirm-password" placeholder="••••••••" required>
+            <button type="button" class="password-toggle-btn" data-target="confirm-password">👁</button>
           </div>
+          <small id="password-message" style="display:block; margin-top:5px; transition:0.3s;"></small>
         </div>
-
-        <div class="dept-details">
-          <input type="radio" name="dept" id="dot-4" />
-          <input type="radio" name="dept" id="dot-5" />
-          <input type="radio" name="dept" id="dot-6" />
-          <input type="radio" name="dept" id="dot-7" />
-          <span class="dept-title">Department</span>
-          <div class="category">
-            <label for="dot-4">
-              <span class="dot four"></span>
-              <span class="dept">CSE</span>
-            </label>
-            <label for="dot-5">
-              <span class="dot five"></span>
-              <span class="dept">CSE (ETech)</span>
-            </label>
-            <label for="dot-6">
-              <span class="dot six"></span>
-              <span class="dept">ECE</span>
-            </label>
-            <label for="dot-7">
-              <span class="dot seven"></span>
-              <span class="dept">MECH</span>
-            </label>
-          </div>
-        </div>
-
-        <div class="button">
-          <input type="submit" value="Register" />
-        </div>
-      </form>
-      <div class="back-link">
-        <a href="{{ url_for('teacher') }}">Back to Login</a>
       </div>
+
+      <div class="button mt-3">
+        <input type="submit" value="Complete Registration">
+      </div>
+    </form>
+
+    <div class="auth-links">
+      <a href="{{ url_for('teacher') }}" class="back-home">Already have an account? Login here</a>
+      <a href="{{ url_for('home') }}" class="back-home">Back to Home</a>
     </div>
   </div>
+
+  <script>
+    const form = document.getElementById('regForm');
+    const pass = document.getElementById('password');
+    const conf = document.getElementById('confirm-password');
+    const msg = document.getElementById('password-message');
+
+    function checkMatch() {
+      if (conf.value === '') {
+        msg.textContent = '';
+      } else if (pass.value === conf.value) {
+        msg.textContent = '✅ Passwords match';
+        msg.style.color = '#10b981';
+      } else {
+        msg.textContent = '❌ Passwords do not match';
+        msg.style.color = '#ef4444';
+      }
+    }
+
+    pass.addEventListener('input', checkMatch);
+    conf.addEventListener('input', checkMatch);
+
+    form.addEventListener('submit', (e) => {
+      if (pass.value !== conf.value) {
+        e.preventDefault();
+        alert('Passwords must match!');
+      }
+    });
+
+    document.querySelectorAll('.password-toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const input = document.getElementById(btn.dataset.target);
+        const icon = btn.textContent;
+        if (input.type === "password") {
+          input.type = "text";
+          btn.textContent = "🙈";
+        } else {
+          input.type = "password";
+          btn.textContent = "👁";
+        }
+      });
+    });
+
+    // Theme logic
+    const modeToggle = document.getElementById('mode-toggle');
+    const body = document.body;
+
+    if (localStorage.getItem('theme') === 'light') {
+      body.classList.add('light-mode');
+      modeToggle.innerText = '🌙';
+    } else {
+      modeToggle.innerText = '☀️';
+    }
+
+    modeToggle.addEventListener('click', () => {
+      body.classList.toggle('light-mode');
+      const isLight = body.classList.contains('light-mode');
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      modeToggle.innerText = isLight ? '🌙' : '☀️';
+    });
+  </script>
 </body>
+
 </html>

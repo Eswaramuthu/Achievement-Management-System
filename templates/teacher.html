@@ -5,84 +5,121 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Teacher Login - Achievement Management System</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
   <style>
-    .theme-toggle {
-      position: fixed;
-      top: 16px;
-      right: 20px;
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      border: none;
-      background: #ffffff;
-      color: #000;
-      font-size: 20px;
-      cursor: pointer;
+    body {
       display: flex;
-      align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      z-index: 9999;
+      align-items: center;
+      margin: 0;
+      padding: 20px;
     }
-    body:not(.light-mode) .theme-toggle {
-      background: #1f1f1f;
-      color: #fff;
+
+    .login-container {
+      width: 100%;
+      max-width: 450px;
+      padding: 40px;
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-toggle-btn {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    @media (max-width: 480px) {
+      .login-container {
+        padding: 30px 20px;
+      }
     }
   </style>
 </head>
 
-<body>
-  <button id="mode-toggle" class="theme-toggle" title="Toggle theme">🌙</button>
+<body class="auth-page">
+  <div class="toggle-container">
+    <button id="mode-toggle" class="theme-toggle">🌙</button>
+  </div>
 
   <div class="container login-container">
-    <div class="title">Teacher Login</div>
-    <div class="content">
-      <form action="/teacher" method="post">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-        <div class="user-details">
-          <div class="input-box full-width">
-            <span class="details">Teacher ID</span>
-            <input type="text" name="tname" placeholder="Enter your Teacher ID" required />
+    <h1 class="title">Teacher Access</h1>
+
+    <form action="{{ url_for('teacher') }}" method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+      <div class="user-details">
+        <div class="input-box full-width">
+          <label>Teacher ID</label>
+          <input type="text" name="tname" placeholder="Enter your ID" required autofocus>
+        </div>
+
+        <div class="input-box full-width">
+          <label>Password</label>
+          <div class="password-wrapper">
+            <input type="password" name="password" id="teacherPass" placeholder="••••••••" required>
+            <button type="button" class="password-toggle-btn" data-target="teacherPass">👁</button>
           </div>
-          <div class="input-box full-width">
-            <span class="details">Password</span>
-            <input type="password" name="password" placeholder="Enter your password" required />
-          </div>
         </div>
-
-        {% if error %}
-        <div class="error-message" style="color: red; text-align: center; margin-bottom: 15px;">
-          {{ error }}
-        </div>
-        {% endif %}
-
-        <div class="button">
-          <input type="submit" value="Login" />
-        </div>
-      </form>
-
-      <div class="auth-links">
-        <a class="register-cta" href="{{ url_for('teacher-new') }}">New teacher? Register here</a>
-        <a class="back-home" href="{{ url_for('home') }}">← Back to Home</a>
       </div>
+
+      {% if error %}
+      <div class="alert alert-danger"
+        style="margin-top: 15px; padding: 10px; border-radius: 8px; font-size: 14px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); text-align: center;">
+        {{ error }}
+      </div>
+      {% endif %}
+
+      <div class="button mt-3">
+        <input type="submit" value="Sign In">
+      </div>
+    </form>
+
+    <div class="auth-links">
+      <a href="{{ url_for('teacher-new') }}" class="register-cta">New teacher? Join our faculty</a>
+      <a href="{{ url_for('home') }}" class="back-home">Back to Home</a>
     </div>
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      var themeToggle = document.getElementById('mode-toggle');
-      var body = document.body;
-      var savedTheme = localStorage.getItem('theme');
-      if (savedTheme === 'dark') body.classList.remove('light-mode');
-      else body.classList.add('light-mode');
-      themeToggle.addEventListener('click', function () {
-        body.classList.toggle('light-mode');
-        localStorage.setItem('theme', body.classList.contains('light-mode') ? 'light' : 'dark');
-        themeToggle.textContent = body.classList.contains('light-mode') ? '🌙' : '☀️';
+    document.querySelectorAll('.password-toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const input = document.getElementById(btn.dataset.target);
+        if (input.type === "password") {
+          input.type = "text";
+          btn.textContent = "🙈";
+        } else {
+          input.type = "password";
+          btn.textContent = "👁";
+        }
       });
-      themeToggle.textContent = body.classList.contains('light-mode') ? '🌙' : '☀️';
+    });
+
+    // Theme logic
+    const modeToggle = document.getElementById('mode-toggle');
+    const body = document.body;
+
+    if (localStorage.getItem('theme') === 'light') {
+      body.classList.add('light-mode');
+      modeToggle.innerText = '🌙';
+    } else {
+      modeToggle.innerText = '☀️';
+    }
+
+    modeToggle.addEventListener('click', () => {
+      body.classList.toggle('light-mode');
+      const isLight = body.classList.contains('light-mode');
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      modeToggle.innerText = isLight ? '🌙' : '☀️';
     });
   </script>
 </body>

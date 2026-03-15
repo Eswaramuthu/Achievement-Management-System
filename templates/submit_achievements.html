@@ -1,53 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Submit Achievements</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Submit Achievements - Achievement Management System</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+  <style>
+    /* ===== Center the card ===== */
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #f5f5f5;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    /* ===== Form Card ===== */
+    .login-container {
+      width: 100%;
+      max-width: 500px;
+      background: white;
+      padding: 28px 24px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Title */
+    .title {
+      text-align: center;
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 18px;
+    }
+
+    /* Input section */
+    .input-box {
+      margin-bottom: 14px;
+    }
+
+    .input-box span {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .input-box input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    /* Button */
+    .button input,
+    .btn-primary {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #d10000;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+      display: block;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .button input:hover,
+    .btn-primary:hover {
+      background: #b80000;
+    }
+
+    /* Auth links */
+    .auth-links {
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .back-home {
+      font-size: 13px;
+      color: #666;
+      text-decoration: none;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      position: fixed;
+      top: 16px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background: #fff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+    }
+
+    .alert-box {
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .error-box {
+      background-color: #ffebee;
+      color: #c62828;
+      border: 1px solid #ef9a9a;
+    }
+
+    .success-box {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #c8e6c9;
+    }
+  </style>
 </head>
+
 <body>
-  <div class="toggle-container">
-    <button id="mode-toggle">Dark Mode 🌙</button>
-  </div>
+  <button id="mode-toggle" class="theme-toggle">🌙</button>
 
-  {% if error %}
-      <div class="error-box" style="background-color: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; border: 1px solid #ef9a9a; margin-bottom: 20px; text-align: center; font-weight: bold;">
-        ⚠️ {{ error }}
-      </div>
-      {% endif %}
+  <div class="login-container">
 
-      {% if success %}
-      <div class="welcome-text">
-        <p style="color: #2e7d32; font-weight: bold;">Congratulations! <br> {{ success }}</p>
-      </div>
-      <div class="button">
-        <a href="/teacher-dashboard" class="btn-primary">Back to Dashboard</a>
-      </div>
-      {% else %}
+    <div class="title">Submit Achievement</div>
 
-      <form action="/submit_achievements" method="POST" enctype="multipart/form-data">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        
-        <div class="user-details">
-          <div class="input-box">
-            <span class="details">Student ID</span>
-            <input type="text" name="student_id" placeholder="Enter Student ID" required>
-          </div>
-          <div class="input-box">
-            <span class="details">Certificate File</span>
-            <input type="file" name="certificate" required>
-          </div>
-        </div>
-
-        <div class="button">
-          <input type="submit" value="Register Achievement">
-        </div>
-      </form>
-      {% endif %}
-
+    {% if error %}
+    <div class="alert-box error-box">
+      ⚠️ {{ error }}
     </div>
+    {% endif %}
+
+    {% if success %}
+    <div class="alert-box success-box">
+      {{ success }}
+    </div>
+    <div class="button">
+      <a href="/teacher-dashboard" class="btn-primary">Back to Dashboard</a>
+    </div>
+    {% else %}
+
+    <form action="/submit_achievements" method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div class="user-details">
+        <div class="input-box">
+          <span>Student ID</span>
+          <input type="text" name="student_id" placeholder="Enter Student ID" required>
+        </div>
+        <div class="input-box">
+          <span>Certificate File</span>
+          <input type="file" name="certificate" required>
+        </div>
+      </div>
+
+      <div class="button">
+        <input type="submit" value="Register Achievement">
+      </div>
+    </form>
+    {% endif %}
+
+    <div class="auth-links">
+      <a class="back-home" href="{{ url_for('teacher_dashboard') }}">← Back to Dashboard</a>
+    </div>
+
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var themeToggle = document.getElementById('mode-toggle');
+      var body = document.body;
+      var savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') body.classList.remove('light-mode');
+      else body.classList.add('light-mode');
+      themeToggle.addEventListener('click', function () {
+        body.classList.toggle('light-mode');
+        localStorage.setItem('theme', body.classList.contains('light-mode') ? 'light' : 'dark');
+        themeToggle.textContent = body.classList.contains('light-mode') ? '🌙' : '☀️';
+      });
+      themeToggle.textContent = body.classList.contains('light-mode') ? '🌙' : '☀️';
+    });
+  </script>
 </body>
+
 </html>

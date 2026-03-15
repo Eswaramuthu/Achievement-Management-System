@@ -4,223 +4,160 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Teacher Registration</title>
+    <title>Faculty Registration - AMS</title>
     <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
     <script src="{{ url_for('static', filename = 'script.js') }}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            console.log("Form method: " + document.querySelector('form').method);
-            console.log("Form action: " + document.querySelector('form').action);
-
-            document.querySelector('form').addEventListener('submit', function (event) {
-                console.log("Form is being submitted");
-            });
-        });
-
-        function validatePasswords(event) {
-            const password = document.getElementById("password").value;
-            const confirmPassword = document.getElementById("confirm-password").value;
-            const message = document.getElementById("password-message");
-
-            console.log("Validating passwords...");
-
-            if (password !== confirmPassword) {
-                event.preventDefault(); // This stops form submission
-                message.textContent = "❌ Passwords do not match!";
-                message.style.color = "red";
-                console.log("Password validation failed - preventing submission");
-                return false;
-            } else {
-                message.textContent = "✅ Passwords match!";
-                message.style.color = "limegreen";
-                console.log("Password validation passed - allowing submission");
-                return true; // Explicitly return true to allow form submission
-            }
-        }
-    </script>
     <style>
-        /* Additional styles to make select elements match input styling */
-        .input-box select {
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border: 1px solid var(--border-color);
+            border-radius: var(--glass-radius);
+            padding: 3.5rem;
             width: 100%;
-            height: 45px;
-            padding-left: 15px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            background-color: rgba(255, 255, 255, 0.1);
-            color: var(--text-color);
-            transition: all 0.3s ease;
-            /* Remove default styling */
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            /* Add custom dropdown arrow for dark mode */
-            background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
-            background-repeat: no-repeat;
-            background-position: right 10px center;
+            max-width: 800px;
         }
 
-        .input-box select:focus {
-            border-color: var(--primary-color);
+        .form-label {
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 0.85rem;
+            text-transform: uppercase;
         }
 
-        /* Change dropdown arrow color in light mode */
-        body.light-mode .input-box select {
-            background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+        .form-control,
+        .form-select {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid var(--border-color) !important;
+            color: var(--text-color) !important;
+            border-radius: 12px !important;
+            padding: 12px 18px !important;
+            width: 100%;
+            outline: none;
         }
 
-        /* Style for dropdown options */
-        .input-box select option {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            padding: 10px;
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary-color) !important;
         }
-    </style>
-</head>
 
-<body>
-    <div class="toggle-container">
-        <button id="mode-toggle">Dark Mode 🌙</button>
-    </div>
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
 
-    <div class="container">
-        <div class="title">Teacher Registration</div>
-        <div class="content">
-            <form action="/teacher-new" method="POST" onsubmit="return validatePasswords(event)">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                <div class="user-details">
-                    <div class="input-box">
-                        <span class="details">Full Name</span>
-                        <input autocomplete="off" autofocus type="text" name="teacher_name"
-                            placeholder="Enter your full name" required>
-                    </div>
-
-                    <div class="input-box">
-                        <span class="details">Teacher ID</span>
-                        <input autocomplete="off" type="text" name="teacher_id" placeholder="Enter your Teacher ID"
-                            required>
-                    </div>
-
-                    <div class="input-box">
-                        <span class="details">Email</span>
-                        <input autocomplete="off" type="email" name="email" placeholder="Enter your email" required>
-                    </div>
-
-                    <div class="input-box">
-                        <span class="details">Phone Number</span>
-                        <input autocomplete="off" type="tel" name="phone_number" placeholder="Enter your phone number"
-                            required>
-                    </div>
-
-                    <div class="input-box">
-                        <span class="details">Password</span>
-                        <input autocomplete="off" type="password" id="password" name="password"
-                            placeholder="Enter your Password" required>
-                    </div>
-
-                    <div class="input-box">
-
-        /* Style for dropdown options */
-        .input-box select option {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            padding: 10px;
+        .register-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: 700;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 1rem;
         }
     </style>
 </head>
 
-<body>
+<body class="login-page">
     <div class="toggle-container">
-        <button id="mode-toggle">Dark Mode 🌙</button>
+        <button id="mode-toggle" class="theme-toggle">🌙</button>
     </div>
 
-    <div class="container">
-        <div class="title">Teacher Registration</div>
-        <div class="content">
-            {% if error %}
-            <div style="color: red; text-align: center; margin-bottom: 10px; font-weight: bold;">
-                {{ error }}
+    <div class="glass-card">
+        <div class="text-center mb-5">
+            <h2 class="title">Faculty Enrollment</h2>
+            <p class="text-secondary">Official registration for academic verification</p>
+        </div>
+
+        <form action="/teacher-new" method="POST" onsubmit="return validatePasswords(event)">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+            <div class="row">
+                <div class="col-md-6 input-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" name="teacher_name" class="form-control" placeholder="Dr. Smith" required>
+                </div>
+                <div class="col-md-6 input-group">
+                    <label class="form-label">Faculty Code</label>
+                    <input type="text" name="teacher_id" class="form-control" placeholder="FAC-999" required>
+                </div>
+                <div class="col-md-6 input-group">
+                    <label class="form-label">Work Email</label>
+                    <input type="email" name="email" class="form-control" placeholder="smith@faculty.edu" required>
+                </div>
+                <div class="col-md-6 input-group">
+                    <label class="form-label">Phone</label>
+                    <input type="tel" name="phone_number" class="form-control" placeholder="+91..." required>
+                </div>
+                <div class="col-md-6 input-group">
+                    <label class="form-label">Secure Password</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="••••••••"
+                        required>
+                </div>
+                <div class="col-md-6 input-group">
+                    <label class="form-label">Verify Password</label>
+                    <input type="password" id="confirm-password" class="form-control" placeholder="••••••••" required>
+                    <span id="password-message" style="font-size: 0.8rem;"></span>
+                </div>
+                <div class="col-md-6 input-group">
+                    <label class="form-label">Dept</label>
+                    <select name="teacher_dept" class="form-select" required>
+                        <option value="CSE">CSE</option>
+                        <option value="ECE">ECE</option>
+                        <option value="IT">IT</option>
+                    </select>
+                </div>
+                <div class="col-md-6 input-group">
+                    <label class="form-label">Authorization Code</label>
+                    <input type="password" name="teacher_code" class="form-control" placeholder="Secret Key" required>
+                </div>
             </div>
-            {% endif %}
-            <form action="/teacher-new" method="POST" onsubmit="return validatePasswords(event)">
-                <div class="user-details">
-                    <div class="input-box">
-                        <span class="details">Full Name</span>
-                        <input autocomplete="off" autofocus type="text" name="teacher_name"
-                            placeholder="Enter your full name" required>
-                    </div>
 
-                    <div class="input-box">
-                        <span class="details">Teacher ID</span>
-                        <input autocomplete="off" type="text" name="teacher_id" placeholder="Enter your Teacher ID"
-                            required>
-                    </div>
+            <button type="submit" class="register-btn">Apply for Access</button>
+        </form>
 
-                    <div class="input-box">
-                        <span class="details">Email</span>
-                        <input autocomplete="off" type="email" name="email" placeholder="Enter your email" required>
-                    </div>
-
-                    <div class="input-box">
-                        <span class="details">Phone Number</span>
-                        <input autocomplete="off" type="tel" name="phone_number" placeholder="Enter your phone number"
-                            required>
-                    </div>
-
-                    <div class="input-box">
-                        <span class="details">Password</span>
-                        <input autocomplete="off" type="password" id="password" name="password"
-                            placeholder="Enter your Password" required>
-                    </div>
-
-                    <div class="input-box">
-                        <span class="details">Confirm Password</span>
-                        <input type="password" id="confirm-password" placeholder="Confirm your password" required>
-                        <small id="password-message" style="font-size: 14px;"></small>
-                    </div>
-
-                    <div class="input-box">
-                        <span class="details">Gender</span>
-                        <select name="teacher_gender" required>
-                            <option disabled selected value="">Gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-
-                    <div class="input-box">
-                        <span class="details">Department</span>
-                        <select name="teacher_dept" required>
-                            <option disabled selected value="">Department</option>
-                            <option value="CSE">CSE</option>
-                            <option value="CSE(E Tech)">CSE(E Tech)</option>
-                            <option value="ECE">ECE</option>
-                            <option value="MECH">MECH</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="button">
-                    <input type="submit" value="Register">
-                </div>
-
-                    <div class="input-box" style="margin-top: 20px; width: 100%;">
-                        <span class="details">Teacher Code <small>(Required for verification)</small></span>
-                        <input autocomplete="off" type="password" name="teacher_code" placeholder="Enter Teacher Code"
-                            required style="width: 100%;">
-                    </div>
-                </div>
-
-                <div class="button">
-                    <input type="submit" value="Register">
-                </div>
-            </form>
-
-            <div class="back-link">
-                <a href="{{ url_for('teacher') }}">Back to Login</a>
-            </div>
+        <div class="text-center mt-4">
+            <a href="{{ url_for('teacher') }}" class="text-secondary text-decoration-none small">Return to Login</a>
         </div>
     </div>
+
+    <script>
+        function validatePasswords(event) {
+            const p = document.getElementById('password').value;
+            const c = document.getElementById('confirm-password').value;
+            if (p !== c) {
+                event.preventDefault();
+                document.getElementById('password-message').innerHTML = "<span style='color:#ff4d4d'>Mismatch!</span>";
+                return false;
+            }
+            return true;
+        }
+
+        // Theme toggle
+        const modeToggle = document.getElementById('mode-toggle');
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+            modeToggle.innerText = '🌙';
+        }
+
+        modeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            modeToggle.innerText = isLight ? '🌙' : '☀️';
+        });
+    </script>
 </body>
 
 </html>

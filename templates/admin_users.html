@@ -1,197 +1,226 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Users - Admin Panel</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <style>
-        :root {
-            --primary-color: #667eea;
-            --secondary-color: #764ba2;
-        }
-        
         body {
-            background-color: #f8f9fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: block;
+            /* Overriding auth-page flex if applied */
         }
-        
+
         .sidebar {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: white;
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border-right: 1px solid var(--border-color);
+            color: var(--text-color);
             min-height: 100vh;
             position: fixed;
             width: 250px;
             transition: all 0.3s;
-            box-shadow: 3px 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
         }
-        
+
         .sidebar-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
         }
-        
-        .sidebar-header h3 {
-            margin: 0;
-            font-weight: 600;
-        }
-        
+
         .nav-link {
-            color: rgba(255,255,255,0.8);
-            padding: 0.75rem 1.5rem;
-            border-left: 3px solid transparent;
-            transition: all 0.3s;
+            color: var(--text-secondary);
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: 0.3s;
+            border: none;
         }
-        
-        .nav-link:hover, .nav-link.active {
-            color: white;
-            background: rgba(255,255,255,0.1);
-            border-left-color: white;
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.05);
         }
-        
+
         .nav-link i {
-            width: 20px;
-            margin-right: 10px;
+            font-size: 1.2rem;
         }
-        
+
         .main-content {
             margin-left: 250px;
-            padding: 1.5rem;
+            padding: 2rem;
             transition: all 0.3s;
         }
-        
-        .navbar {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 1rem 1.5rem;
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border: 1px solid var(--border-color);
+            border-radius: var(--glass-radius);
+            margin-bottom: 2rem;
+            padding: 1.5rem;
         }
-        
-        .card {
-            border: none;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            border-radius: 10px;
-        }
-        
-        .card-header {
-            background: white;
-            border-bottom: 1px solid #e9ecef;
-            padding: 1.25rem 1.5rem;
-            font-weight: 600;
-        }
-        
+
         .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: var(--primary-color);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 600;
+            font-size: 1.2rem;
         }
-        
-        .badge-pending {
-            background: #fef3c7;
-            color: #92400e;
+
+        .table {
+            color: var(--text-color);
         }
-        
-        .badge-approved {
-            background: #d1fae5;
-            color: #065f46;
-        }
-        
-        .table th {
-            border-top: none;
+
+        .table thead th {
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
             font-weight: 600;
-            color: #495057;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
         }
-        
+
         .table td {
+            border-bottom: 1px solid var(--border-color);
             vertical-align: middle;
+            padding: 1rem 0.5rem;
         }
-        
+
+        .badge {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .badge-pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .badge-approved {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
         .btn-approve {
             background: #10b981;
             color: white;
             border: none;
         }
-        
+
+        .btn-approve:hover {
+            background: #059669;
+            color: white;
+        }
+
         .btn-reject {
             background: #ef4444;
             color: white;
             border: none;
         }
-        
-        .btn-approve:hover, .btn-reject:hover {
-            opacity: 0.9;
+
+        .btn-reject:hover {
+            background: #dc2626;
+            color: white;
         }
-        
-        .filter-tabs .nav-link {
-            color: #6c757d;
-            border: none;
-            border-bottom: 2px solid transparent;
-            padding: 0.5rem 1rem;
-            border-radius: 0;
+
+        .type-tabs .nav-pills .nav-link {
+            border-radius: 10px;
+            padding: 0.6rem 1.2rem;
+            margin-right: 10px;
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
         }
-        
-        .filter-tabs .nav-link.active {
-            color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
-            background: transparent;
-        }
-        
-        .type-tabs .nav-link {
-            color: #6c757d;
-            border: 1px solid #dee2e6;
-            margin-right: 0.5rem;
-            border-radius: 5px;
-        }
-        
-        .type-tabs .nav-link.active {
+
+        .type-tabs .nav-pills .nav-link.active {
             background: var(--primary-color);
             color: white;
             border-color: var(--primary-color);
         }
-        
-        @media (max-width: 768px) {
+
+        .filter-tabs .nav-tabs {
+            border-bottom: 1px solid var(--border-color);
+            gap: 20px;
+        }
+
+        .filter-tabs .nav-tabs .nav-link {
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.8rem 0;
+            border-bottom: 2px solid transparent;
+            border-radius: 0;
+        }
+
+        .filter-tabs .nav-tabs .nav-link.active {
+            background: transparent;
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        @media (max-width: 992px) {
             .sidebar {
                 margin-left: -250px;
             }
+
             .main-content {
                 margin-left: 0;
             }
+
             .sidebar.active {
                 margin-left: 0;
             }
         }
+
+        .theme-toggle-nav {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+        }
     </style>
 </head>
-<body>
-    <!-- Sidebar -->
+
+<body class="admin-page">
     <div class="sidebar">
-        <div class="sidebar-header d-flex align-items-center">
-            <div>
-                <h3>Admin Panel</h3>
-                <span class="badge">User Management</span>
-            </div>
+        <div class="sidebar-header">
+            <h3 class="mb-0">OSCG Admin</h3>
+            <small class="text-primary">Management</small>
         </div>
-        
+
         <ul class="nav flex-column mt-4">
             <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
-                    <i class="bi bi-speedometer2"></i> Dashboard
+                    <i class="bi bi-grid"></i> Dashboard
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link active" href="{{ url_for('admin_users') }}?type=students">
-                    <i class="bi bi-people"></i> Manage Users
+                    <i class="bi bi-people"></i> Users
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('admin_departments') }}">
-                    <i class="bi bi-building"></i> Departments
+                    <i class="bi bi-building"></i> Depts
                 </a>
             </li>
             <li class="nav-item">
@@ -201,291 +230,223 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('admin_export') }}?type=students">
-                    <i class="bi bi-download"></i> Export Data
+                    <i class="bi bi-download"></i> Export
                 </a>
             </li>
-            <li class="nav-item mt-4">
-                <a class="nav-link" href="{{ url_for('admin_logout') }}">
+            <li class="nav-item mt-auto">
+                <a class="nav-link text-danger" href="{{ url_for('admin_logout') }}">
                     <i class="bi bi-box-arrow-right"></i> Logout
                 </a>
             </li>
         </ul>
+
+        <div class="theme-toggle-nav">
+            <button id="mode-toggle" class="btn btn-outline-secondary w-100">
+                🌙 Light Mode
+            </button>
+        </div>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
-        <!-- Navbar -->
-        <nav class="navbar navbar-expand-lg">
-            <div class="container-fluid">
-                <button class="btn btn-outline-primary d-lg-none" type="button" id="sidebarToggle">
-                    <i class="bi bi-list"></i>
-                </button>
-                
-                <div class="d-flex align-items-center ms-auto">
-                    <div class="user-avatar me-2">
-                        {{ admin_name[0] if admin_name else 'A' }}
-                    </div>
-                    <div>
-                        <div class="fw-bold">{{ admin_name }}</div>
-                        <small class="text-muted">Administrator</small>
-                    </div>
-                </div>
+        <header class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h1 class="h2 mb-1">User Management</h1>
+                <p class="text-secondary">Verify and manage member accounts</p>
             </div>
-        </nav>
 
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h1 class="h3 mb-2">Manage Users</h1>
-                <p class="text-muted mb-0">Approve, reject, and manage user accounts</p>
+            <button class="btn btn-outline-primary d-lg-none" id="sidebarToggle">
+                <i class="bi bi-list"></i>
+            </button>
+        </header>
+
+        <div class="glass-card">
+            <div class="type-tabs mb-4">
+                <ul class="nav nav-pills">
+                    <li class="nav-item">
+                        <a class="nav-link {% if user_type == 'students' %}active{% endif %}"
+                            href="{{ url_for('admin_users') }}?type=students&status={{ status }}">
+                            <i class="bi bi-person me-1"></i> Students
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if user_type == 'teachers' %}active{% endif %}"
+                            href="{{ url_for('admin_users') }}?type=teachers&status={{ status }}">
+                            <i class="bi bi-person-badge me-1"></i> Teachers
+                        </a>
+                    </li>
+                </ul>
             </div>
-            <div>
-                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-primary">
-                    <i class="bi bi-arrow-left"></i> Back to Dashboard
-                </a>
+
+            <div class="filter-tabs">
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link {% if status == 'all' %}active{% endif %}"
+                            href="{{ url_for('admin_users') }}?type={{ user_type }}&status=all">
+                            All Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if status == 'pending' %}active{% endif %}"
+                            href="{{ url_for('admin_users') }}?type={{ user_type }}&status=pending">
+                            Pending Approval
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if status == 'approved' %}active{% endif %}"
+                            href="{{ url_for('admin_users') }}?type={{ user_type }}&status=approved">
+                            Approved
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
 
-        <!-- User Type Tabs -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <div class="type-tabs mb-3">
-                    <ul class="nav nav-pills">
-                        <li class="nav-item">
-                            <a class="nav-link {% if user_type == 'students' %}active{% endif %}" 
-                               href="{{ url_for('admin_users') }}?type=students&status={{ status }}">
-                                <i class="bi bi-person me-1"></i> Students
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {% if user_type == 'teachers' %}active{% endif %}" 
-                               href="{{ url_for('admin_users') }}?type=teachers&status={{ status }}">
-                                <i class="bi bi-person-badge me-1"></i> Teachers
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                
-                <!-- Status Filter Tabs -->
-                <div class="filter-tabs">
-                    <ul class="nav nav-tabs">
-                        <li class="nav-item">
-                            <a class="nav-link {% if status == 'all' %}active{% endif %}" 
-                               href="{{ url_for('admin_users') }}?type={{ user_type }}&status=all">
-                                All Users
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {% if status == 'pending' %}active{% endif %}" 
-                               href="{{ url_for('admin_users') }}?type={{ user_type }}&status=pending">
-                                Pending Approval
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {% if status == 'approved' %}active{% endif %}" 
-                               href="{{ url_for('admin_users') }}?type={{ user_type }}&status=approved">
-                                Approved
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+        <div class="glass-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="mb-0">{{ user_type_name }}</h4>
+                <span class="badge bg-primary">{{ users|length }} Found</span>
             </div>
-        </div>
 
-        <!-- Users Table -->
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span>{{ user_type_name }} ({{ users|length }})</span>
-                <div class="text-muted">
-                    Showing {{ users|length }} {{ user_type_name.lower() }}
-                </div>
-            </div>
-            <div class="card-body">
-                {% if users %}
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>User</th>
-                                <th>ID</th>
-                                <th>Email</th>
-                                <th>Department</th>
-                                <th>Status</th>
-                                <th>Created</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for user in users %}
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="user-avatar me-3">
+            {% if users %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Member</th>
+                            <th>ID</th>
+                            <th>Department</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="user-avatar me-3">
+                                        {% if user_type == 'students' %}
+                                        {{ user['student_name'][0]|upper if user['student_name'] else 'S' }}
+                                        {% else %}
+                                        {{ user['teacher_name'][0]|upper if user['teacher_name'] else 'T' }}
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">
                                             {% if user_type == 'students' %}
-                                                {{ user['student_name'][0] if user['student_name'] else 'S' }}
+                                            {{ user['student_name'] }}
                                             {% else %}
-                                                {{ user['teacher_name'][0] if user['teacher_name'] else 'T' }}
+                                            {{ user['teacher_name'] }}
                                             {% endif %}
                                         </div>
-                                        <div>
-                                            <div class="fw-bold">
-                                                {% if user_type == 'students' %}
-                                                    {{ user['student_name'] }}
-                                                {% else %}
-                                                    {{ user['teacher_name'] }}
-                                                {% endif %}
-                                            </div>
-                                            <small class="text-muted">
-                                                {% if user_type == 'students' %}
-                                                    {{ user['student_gender'] if user['student_gender'] else 'No gender' }}
-                                                {% else %}
-                                                    {{ user['teacher_gender'] if user['teacher_gender'] else 'No gender' }}
-                                                {% endif %}
-                                            </small>
-                                        </div>
+                                        <small class="text-secondary">{{ user['email'] }}</small>
                                     </div>
-                                </td>
-                                <td>
-                                    <code>
-                                        {% if user_type == 'students' %}
-                                            {{ user['student_id'] }}
-                                        {% else %}
-                                            {{ user['teacher_id'] }}
-                                        {% endif %}
-                                    </code>
-                                </td>
-                                <td>{{ user['email'] }}</td>
-                                <td>
+                                </div>
+                            </td>
+                            <td>
+                                <code class="text-primary">
                                     {% if user_type == 'students' %}
-                                        {{ user['student_dept'] if user['student_dept'] else 'Not specified' }}
+                                        {{ user['student_id'] }}
                                     {% else %}
-                                        {{ user['teacher_dept'] if user['teacher_dept'] else 'Not specified' }}
+                                        {{ user['teacher_id'] }}
                                     {% endif %}
-                                </td>
-                                <td>
-                                    {% if user['is_approved'] %}
-                                        <span class="badge badge-approved">Approved</span>
-                                    {% else %}
-                                        <span class="badge badge-pending">Pending</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if user['created_at'] %}
-                                        {{ user['created_at']|string|truncate(10, true, '') }}
-                                    {% else %}
-                                        N/A
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if not user['is_approved'] %}
-                                    <div class="btn-group btn-group-sm">
-                                        <button class="btn btn-approve" 
-                                                onclick="approveUser('{% if user_type == 'students' %}{{ user['student_id'] }}{% else %}{{ user['teacher_id'] }}{% endif %}', '{{ user_type[:-1] }}')">
-                                            <i class="bi bi-check-lg"></i> Approve
-                                        </button>
-                                        <button class="btn btn-reject" 
-                                                onclick="rejectUser('{% if user_type == 'students' %}{{ user['student_id'] }}{% else %}{{ user['teacher_id'] }}{% endif %}', '{{ user_type[:-1] }}')">
-                                            <i class="bi bi-x-lg"></i> Reject
-                                        </button>
-                                    </div>
-                                    {% else %}
-                                    <span class="text-muted">No actions</span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% else %}
-                <div class="text-center py-5">
-                    <div class="mb-3">
-                        <i class="bi bi-people display-1 text-muted"></i>
-                    </div>
-                    <h4 class="text-muted">No {{ user_type_name.lower() }} found</h4>
-                    <p class="text-muted">
-                        {% if status == 'pending' %}
-                            No {{ user_type_name.lower() }} are waiting for approval.
-                        {% elif status == 'approved' %}
-                            No {{ user_type_name.lower() }} have been approved yet.
-                        {% else %}
-                            No {{ user_type_name.lower() }} found in the system.
-                        {% endif %}
-                    </p>
-                </div>
-                {% endif %}
+                                </code>
+                            </td>
+                            <td>
+                                {% if user_type == 'students' %}
+                                {{ user['student_dept'] or 'N/A' }}
+                                {% else %}
+                                {{ user['teacher_dept'] or 'N/A' }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user['is_approved'] %}
+                                <span class="badge badge-approved">Approved</span>
+                                {% else %}
+                                <span class="badge badge-pending">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if not user['is_approved'] %}
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-approve"
+                                        onclick="approveUser('{% if user_type == 'students' %}{{ user['student_id'] }}{% else %}{{ user['teacher_id'] }}{% endif %}', '{{ user_type[:-1] }}')">
+                                        Approve
+                                    </button>
+                                    <button class="btn btn-sm btn-reject"
+                                        onclick="rejectUser('{% if user_type == 'students' %}{{ user['student_id'] }}{% else %}{{ user['teacher_id'] }}{% endif %}', '{{ user_type[:-1] }}')">
+                                        Reject
+                                    </button>
+                                </div>
+                                {% else %}
+                                <span class="text-secondary">Verified</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-people display-1 text-secondary opacity-25"></i>
+                <h5 class="mt-4 text-secondary">No records found</h5>
+            </div>
+            {% endif %}
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Toggle sidebar on mobile
-        document.getElementById('sidebarToggle').addEventListener('click', function() {
-            document.querySelector('.sidebar').classList.toggle('active');
-        });
-        
-        // User approval functions
+        // Sidebar Toggle
+        const sideToggle = document.getElementById('sidebarToggle');
+        if (sideToggle) {
+            sideToggle.onclick = () => document.querySelector('.sidebar').classList.toggle('active');
+        }
+
+        // Theme Toggle
+        const modeToggle = document.getElementById('mode-toggle');
+        const body = document.body;
+
+        if (localStorage.getItem('theme') === 'light') {
+            body.classList.add('light-mode');
+            modeToggle.innerText = '🌙 Dark Mode';
+        } else {
+            modeToggle.innerText = '☀️ Light Mode';
+        }
+
+        modeToggle.onclick = () => {
+            body.classList.toggle('light-mode');
+            const isLight = body.classList.contains('light-mode');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            modeToggle.innerText = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
+        };
+
         function approveUser(userId, userType) {
-            if (confirm(`Are you sure you want to approve this ${userType}?`)) {
-                const formData = new FormData();
-                formData.append('user_id', userId);
-                formData.append('user_type', userType);
-                formData.append('action', 'approve');
-                
-                fetch('{{ url_for("admin_approve_user") }}', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert(data.message);
-                        location.reload();
-                    } else {
-                        alert('Error: ' + data.error);
-                    }
-                })
-                .catch(error => {
-                    alert('Error: ' + error);
-                });
+            if (confirm(`Approve this ${userType}?`)) {
+                sendAction(userId, userType, 'approve');
             }
         }
-        
+
         function rejectUser(userId, userType) {
-            if (confirm(`Are you sure you want to reject this ${userType}? This action cannot be undone.`)) {
-                const formData = new FormData();
-                formData.append('user_id', userId);
-                formData.append('user_type', userType);
-                formData.append('action', 'reject');
-                
-                fetch('{{ url_for("admin_approve_user") }}', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert(data.message);
-                        location.reload();
-                    } else {
-                        alert('Error: ' + data.error);
-                    }
-                })
-                .catch(error => {
-                    alert('Error: ' + error);
-                });
+            if (confirm(`Reject this ${userType}? This is permanent.`)) {
+                sendAction(userId, userType, 'reject');
             }
         }
-        
-        // Auto-dismiss alerts after 5 seconds
-        setTimeout(function() {
-            var alerts = document.querySelectorAll('.alert');
-            alerts.forEach(function(alert) {
-                var bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
-            });
-        }, 5000);
+
+        function sendAction(userId, userType, action) {
+            const fd = new FormData();
+            fd.append('user_id', userId);
+            fd.append('user_type', userType);
+            fd.append('action', action);
+
+            fetch('{{ url_for("admin_approve_user") }}', { method: 'POST', body: fd })
+                .then(r => r.json())
+                .then(d => {
+                    if (d.success) location.reload();
+                    else alert(d.error);
+                });
+        }
     </script>
 </body>
+
 </html>

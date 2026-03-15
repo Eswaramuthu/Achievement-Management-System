@@ -1,168 +1,262 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Student Registration</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Registration - Achievement Management System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
   <style>
-    .google-signin-container {
-      margin-top: 20px;
-      padding-top: 20px;
-      border-top: 1px solid #ddd;
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      padding: 20px;
     }
+
+    .login-container {
+      width: 100%;
+      max-width: 600px;
+      padding: 40px;
+    }
+
+    .user-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 25px;
+    }
+
+    .input-box.full-width {
+      grid-column: span 2;
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-toggle-btn {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    .google-signin-container {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+    }
+
     .signin-divider {
       text-align: center;
-      margin: 15px 0;
+      margin-bottom: 20px;
       position: relative;
-      font-size: 12px;
-      color: #999;
     }
+
     .signin-divider::before {
       content: "";
       position: absolute;
-      left: 0;
       top: 50%;
-      width: 100%;
+      left: 0;
+      right: 0;
       height: 1px;
-      background: #ddd;
+      background: var(--border-color);
+      z-index: 0;
     }
+
     .signin-divider span {
-      background: white;
-      padding: 0 8px;
+      background: var(--bg-color);
+      padding: 0 15px;
       position: relative;
-      display: inline-block;
+      z-index: 1;
+      font-size: 14px;
+      color: var(--text-secondary);
     }
+
     .google-signin-btn {
       width: 100%;
       padding: 12px;
-      margin: 10px 0;
-      background-color: white;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      cursor: pointer;
+      background: var(--glass-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      color: var(--text-color);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      font-size: 14px;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
       font-weight: 500;
-      transition: background-color 0.2s, box-shadow 0.2s;
     }
+
     .google-signin-btn:hover {
-      background-color: #f8f8f8;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateY(-2px);
     }
-    .google-signin-btn:active {
-      background-color: #f0f0f0;
-    }
-    .google-signin-btn img {
-      width: 18px;
-      height: 18px;
-    }
-    .loading {
-      opacity: 0.6;
-      pointer-events: none;
+
+    @media (max-width: 600px) {
+      .user-details {
+        grid-template-columns: 1fr;
+      }
+
+      .input-box.full-width {
+        grid-column: span 1;
+      }
+
+      .login-container {
+        padding: 30px 20px;
+      }
     }
   </style>
-  <script>
-    function validatePasswords(event) {
-    const password = document.getElementById("password").value;
-    const confirmPassword = document.getElementById("confirm-password").value;
-    const message = document.getElementById("password-message");
-
-    console.log("Validating passwords...");
-
-    if (password !== confirmPassword) {
-      event.preventDefault(); // This stops form submission
-      message.textContent = "❌ Passwords do not match!";
-      message.style.color = "red";
-      console.log("Password validation failed - preventing submission");
-      return false;
-    } else {
-      message.textContent = "✅ Passwords match!";
-      message.style.color = "limegreen";
-      console.log("Password validation passed - allowing submission");
-      // Don't return anything here to allow form submission
-    }
-  }
-  </script>
 </head>
-<body>
+
+<body class="auth-page">
   <div class="toggle-container">
-    <button id="mode-toggle">Dark Mode 🌙</button>
+    <button id="mode-toggle" class="theme-toggle">🌙</button>
   </div>
 
-  <div class="container">
-    <div class="title">Student Registration</div>
-    <div class="content">
-      <form action="/student_new" method="POST">
-        <div class="user-details">
-          <div class="input-box">
-            <span class="details">Full Name</span>
-            <input type="text" name="student_name" placeholder="Enter your name" required />
-          </div>
-          <div class="input-box">
-            <span class="details">Student ID</span>
-            <input type="text" name="student_id" placeholder="Enter your Student ID" required />
-          </div>
-          <div class="input-box">
-            <span class="details">Email</span>
-            <input type="email" name="email" placeholder="Enter your email" required />
-          </div>
-          <div class="input-box">
-            <span class="details">Phone Number</span>
-            <input type="tel" name="phone_number" placeholder="Enter your number" required />
-          </div>
-          <div class="input-box">
-            <span class="details">Password</span>
-            <input type="password" name="password" id="password" placeholder="Enter your password" required />
-          </div>
-          <div class="input-box">
-            <span class="details">Confirm Password</span>
-            <input type="password" id="confirm-password" placeholder="Confirm your password" required />
-            <small id="password-message" style="font-size: 14px;"></small>
-          </div>
-          <!-- Put these fields inside the user-details div -->
-          <div class="input-box">
-            <span class="details">Gender</span>
-            <input type="text" name="student_gender" placeholder="Enter your gender" required />
-          </div>
-          <div class="input-box">
-            <span class="details">Department</span>
-            <input type="text" name="student_dept" placeholder="Enter your department" required />
+  <div class="container login-container">
+    <h1 class="title">Join as student</h1>
+
+    <form action="{{ url_for('student_new') }}" method="POST" id="regForm">
+      <div class="user-details">
+        <div class="input-box">
+          <label>Full Name</label>
+          <input type="text" name="student_name" placeholder="John Doe" required>
+        </div>
+
+        <div class="input-box">
+          <label>Student ID</label>
+          <input type="text" name="student_id" placeholder="S-12345" required>
+        </div>
+
+        <div class="input-box">
+          <label>Email Address</label>
+          <input type="email" name="email" placeholder="email@ext.com" required>
+        </div>
+
+        <div class="input-box">
+          <label>Phone Number</label>
+          <input type="tel" name="phone_number" placeholder="+1..." required>
+        </div>
+
+        <div class="input-box">
+          <label>Department</label>
+          <input type="text" name="student_dept" placeholder="Computer Science" required>
+        </div>
+
+        <div class="input-box">
+          <label>Gender</label>
+          <input type="text" name="student_gender" placeholder="Male/Female" required>
+        </div>
+
+        <div class="input-box">
+          <label>Password</label>
+          <div class="password-wrapper">
+            <input type="password" name="password" id="password" placeholder="••••••••" required>
+            <button type="button" class="password-toggle-btn" data-target="password">👁</button>
           </div>
         </div>
 
-        <div class="button">
-          <input type="submit" value="Register" />
+        <div class="input-box">
+          <label>Confirm Password</label>
+          <div class="password-wrapper">
+            <input type="password" id="confirm-password" placeholder="••••••••" required>
+            <button type="button" class="password-toggle-btn" data-target="confirm-password">👁</button>
+          </div>
+          <small id="password-message" style="display:block; margin-top:5px; transition:0.3s;"></small>
         </div>
-      </form>
-
-      <!-- Firebase Google Sign-In Option -->
-      <div class="google-signin-container">
-        <div class="signin-divider">
-          <span>OR</span>
-        </div>
-        <button type="button" id="firebaseSignInBtn" class="google-signin-btn">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
-          Sign in with Google
-        </button>
       </div>
 
-      <div class="back-link">
-        <a href="{{ url_for('student') }}">Back to Login</a>
+      <div class="button mt-3">
+        <input type="submit" value="Complete Registration">
       </div>
+    </form>
+
+    <div class="google-signin-container">
+      <div class="signin-divider">
+        <span>OR CONTINUE WITH</span>
+      </div>
+      <button type="button" id="firebaseSignInBtn" class="google-signin-btn">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18">
+        Sign in with Google
+      </button>
+    </div>
+
+    <div class="auth-links">
+      <a href="{{ url_for('student') }}" class="back-home">Already have an account? Login here</a>
+      <a href="{{ url_for('home') }}" class="back-home">Back to Home</a>
     </div>
   </div>
 
   <script>
-    /**
-     * Firebase Configuration Injection - Student Registration Page
-     * IMPORTANT: This passes the Firebase config from the server (app.py)
-     * loaded from environment variables (.env file)
-     */
+    const form = document.getElementById('regForm');
+    const pass = document.getElementById('password');
+    const conf = document.getElementById('confirm-password');
+    const msg = document.getElementById('password-message');
+
+    function checkMatch() {
+      if (conf.value === '') {
+        msg.textContent = '';
+      } else if (pass.value === conf.value) {
+        msg.textContent = '✅ Passwords match';
+        msg.style.color = '#10b981';
+      } else {
+        msg.textContent = '❌ Passwords do not match';
+        msg.style.color = '#ef4444';
+      }
+    }
+
+    pass.addEventListener('input', checkMatch);
+    conf.addEventListener('input', checkMatch);
+
+    form.addEventListener('submit', (e) => {
+      if (pass.value !== conf.value) {
+        e.preventDefault();
+        alert('Passwords must match!');
+      }
+    });
+
+    document.querySelectorAll('.password-toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const input = document.getElementById(btn.dataset.target);
+        if (input.type === "password") {
+          input.type = "text";
+          btn.textContent = "🙈";
+        } else {
+          input.type = "password";
+          btn.textContent = "👁";
+        }
+      });
+    });
+
+    // Theme logic
+    const modeToggle = document.getElementById('mode-toggle');
+    const body = document.body;
+
+    if (localStorage.getItem('theme') === 'light') {
+      body.classList.add('light-mode');
+      modeToggle.innerText = '🌙';
+    } else {
+      modeToggle.innerText = '☀️';
+    }
+
+    modeToggle.addEventListener('click', () => {
+      body.classList.toggle('light-mode');
+      const isLight = body.classList.contains('light-mode');
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      modeToggle.innerText = isLight ? '🌙' : '☀️';
+    });
+
+    // Firebase Config
     window.FIREBASE_CONFIG = {
       apiKey: "{{ firebase_config['apiKey'] }}",
       authDomain: "{{ firebase_config['authDomain'] }}",
@@ -173,21 +267,14 @@
       appId: "{{ firebase_config['appId'] }}",
       measurementId: "{{ firebase_config.get('measurementId', '') }}"
     };
-    console.log("✅ Firebase config injected from server");
   </script>
 
-  <!-- Firebase SDK Initialization (ES Module) -->
   <script type="module">
-    // Import Firebase initialization module
     import { signInWithGoogle } from "{{ url_for('static', filename='js/firebase-init.js') }}";
 
-    /**
-     * Handle Firebase Google Sign-In Button Click
-     */
     document.getElementById('firebaseSignInBtn').addEventListener('click', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('firebaseSignInBtn');
-      btn.classList.add('loading');
       btn.disabled = true;
 
       try {
@@ -195,12 +282,10 @@
       } catch (error) {
         console.error('❌ Sign-in error:', error);
         alert('Sign-in failed: ' + (error.message || 'Please try again'));
-        btn.classList.remove('loading');
         btn.disabled = false;
       }
     });
-
-    console.log("✅ Firebase Google Sign-In initialized on Student Registration page");
   </script>
 </body>
+
 </html>

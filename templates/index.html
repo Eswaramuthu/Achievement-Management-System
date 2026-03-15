@@ -1,105 +1,178 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+    .hero {
+        background: transparent;
+        padding-top: 100px;
+    }
 
-<!-- Hero Section -->
-<section class="hero">
-    <div class="hero-content">
-        <h1>Welcome to Achievement Management System</h1>
-        <p>A centralized platform where students and teachers track academic achievements in one place. Students view
-            their accomplishments, teachers record them, and everyone gets a clear picture of academic progress — all
-            automated and organized.</p>
-        <div class="hero-buttons">
-            <a href="{{ url_for('student') }}" class="btn btn-primary">Student Login</a>
-            <a href="{{ url_for('teacher') }}" class="btn btn-secondary">Teacher Login</a>
-        </div>
-    </div>
-</section>
+    .glass-feature {
+        background: var(--glass-bg);
+        backdrop-filter: blur(var(--glass-blur));
+        -webkit-backdrop-filter: blur(var(--glass-blur));
+        border: 1px solid var(--border-color);
+        border-radius: var(--glass-radius);
+        padding: 2.5rem;
+        transition: 0.4s;
+        height: 100%;
+    }
 
-<!-- Features Section -->
-<section id="features" class="features">
-    <div class="container">
-        <h2 class="title">Key Features</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <h3>🎓 Student Dashboard</h3>
-                <p>View all achievements at a glance with analytics and filtering options.</p>
-            </div>
-            <div class="feature-card">
-                <h3>👨‍🏫 Teacher Management</h3>
-                <p>Quick entry forms for recording achievements with auto-complete functionality.</p>
-            </div>
-            <div class="feature-card">
-                <h3>📄 Certificate Management</h3>
-                <p>Upload and download certificates in various formats (PDF, JPG, PNG).</p>
-            </div>
-            <div class="feature-card">
-                <h3>📊 Analytics Dashboard</h3>
-                <p>Visual representation of achievement metrics by type, year, and position.</p>
-            </div>
-        </div>
-    </div>
-</section>
+    .glass-feature:hover {
+        transform: translateY(-10px);
+        background: rgba(255, 255, 255, 0.08);
+        border-color: var(--primary-color);
+    }
 
-<!-- About Section -->
-<section id="about" class="about">
-    <div class="container">
-        <h2 class="title">About Our System</h2>
-        <div class="about-content">
-            <div class="about-text">
-                <p>Academic achievements are scattered everywhere — certificates in folders, emails buried in inboxes,
-                    paper records collecting dust. Students struggle to showcase their accomplishments during placements
-                    or applications. Teachers waste time managing spreadsheets and physical documents. Nobody has a
-                    clear, organized view of what students have actually achieved.</p>
-                <p>Our Achievement Management System centralizes everything. Students see all their achievements in one
-                    dashboard with analytics. Teachers input achievements through simple forms with auto-complete. The
-                    system tracks hackathons, coding competitions, paper presentations, conferences, and symposiums —
-                    complete with certificates, dates, positions, and detailed descriptions. Clean, fast, and organized.
-                </p>
-            </div>
-        </div>
-    </div>
-</section>
+    .icon-box {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+    }
 
-<!-- Stats Section -->
-<section class="stats">
-    <div class="container">
-        <div class="stats-grid">
-            <div class="stat-item">
-                <h3>1000+</h3>
-                <p>Students Registered</p>
-            </div>
-            <div class="stat-item">
-                <h3>500+</h3>
-                <p>Achievements Recorded</p>
-            </div>
-            <div class="stat-item">
-                <h3>50+</h3>
-                <p>Teachers Active</p>
-            </div>
-            <div class="stat-item">
-                <h3>98%</h3>
-                <p>User Satisfaction</p>
-            </div>
-        </div>
-    </div>
-</section>
+    .stat-card {
+        background: var(--glass-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 2rem;
+        transition: 0.3s;
+    }
 
-<!-- Contact Section -->
-<section id="contact" class="contact">
-    <div class="container">
-        <h2 class="title">Contact Us</h2>
-        <div class="contact-content">
-            <div class="contact-info">
-                <p>Have questions? Reach out to us directly or fill out the form below (coming soon).</p>
-                <ul>
-                    <li><strong>Email:</strong> info@achievement-system.com</li>
-                    <li><strong>Phone:</strong> +1 (123) 456-7890</li>
-                    <li><strong>Location:</strong> SRM Institute of Science and Technology</li>
-                </ul>
+    .stat-card h3 {
+        font-size: 3rem;
+        background: linear-gradient(to right, var(--primary-color), #ff8a8a);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 800;
+    }
+
+    .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 4rem;
+    }
+
+    .hero-visual {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-blob {
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        background: var(--primary-color);
+        filter: blur(120px);
+        opacity: 0.15;
+        z-index: -1;
+        border-radius: 50%;
+    }
+</style>
+
+<div class="hero-visual">
+    <div class="hero-blob" style="top: 10%; right: 10%;"></div>
+    <div class="hero-blob" style="bottom: 10%; left: 10%; background: #4a90e2;"></div>
+
+    <!-- Hero Section -->
+    <section class="hero mb-5">
+        <div class="hero-content text-center">
+            <h1 class="display-3 fw-bold mb-4">Elevate Your <span class="text-primary">Achievements</span></h1>
+            <p class="lead mb-5 text-secondary">A sophisticated ecosystem for students and faculty to curate, manage,
+                and celebrate academic excellence.</p>
+            <div class="hero-buttons d-flex justify-content-center gap-4">
+                <a href="{{ url_for('student') }}" class="btn btn-primary px-5 py-3 rounded-pill shadow-lg">Student
+                    Portal</a>
+                <a href="{{ url_for('teacher') }}" class="btn btn-outline-secondary px-5 py-3 rounded-pill">Faculty
+                    Login</a>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
+    <!-- Features Section -->
+    <section id="features" class="py-5">
+        <div class="container">
+            <h2 class="section-title">Seamless Experience</h2>
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="glass-feature">
+                        <div class="icon-box">📊</div>
+                        <h4>Insightful Analytics</h4>
+                        <p class="text-secondary small">Real-time visualization of your progress and milestones.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="glass-feature">
+                        <div class="icon-box">🛡️</div>
+                        <h4>Verified Assets</h4>
+                        <p class="text-secondary small">Secure certificate management with instant verification.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="glass-feature">
+                        <div class="icon-box">⚡</div>
+                        <h4>Rapid Entry</h4>
+                        <p class="text-secondary small">Intuitive forms designed for effortless data contribution.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="glass-feature">
+                        <div class="icon-box">🌍</div>
+                        <h4>Global Registry</h4>
+                        <p class="text-secondary small">A unified database for all academic and extracurricular merits.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-5 my-5">
+        <div class="container">
+            <div class="row g-4 text-center">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <h3>1.2K+</h3>
+                        <p class="text-secondary mb-0">Active Scholars</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <h3>8.5K</h3>
+                        <p class="text-secondary mb-0">Milestones Logged</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <h3>150+</h3>
+                        <p class="text-secondary mb-0">Expert Faculty</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <h3>100%</h3>
+                        <p class="text-secondary mb-0">Transparency</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-5">
+        <div class="container glass-card p-5">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h2 class="mb-4">Our Vision</h2>
+                    <p class="text-secondary lead">We believe academic excellence should be accessible, organized, and
+                        celebrated. Our platform bridges the gap between effort and recognition, providing a
+                        professional space for future leaders to showcase their growth.</p>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <div style="font-size: 8rem; opacity: 0.1;">🏫</div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
 {% endblock %}

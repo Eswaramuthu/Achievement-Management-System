@@ -1,47 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <title>Edit Student</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Student - Achievement Management System</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+  <style>
+    /* ===== Center the card ===== */
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #f5f5f5;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    /* ===== Form Card ===== */
+    .login-container {
+      width: 100%;
+      max-width: 500px;
+      background: white;
+      padding: 28px 24px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Title */
+    .title {
+      text-align: center;
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 18px;
+    }
+
+    /* Two column grid for user details */
+    .user-details {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    /* Input section */
+    .input-box {
+      margin-bottom: 14px;
+      width: calc(50% - 10px);
+    }
+
+    .input-box span {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .input-box input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    .input-box input[readonly] {
+      background-color: #f0f0f0;
+      cursor: not-allowed;
+    }
+
+    /* Button */
+    .button input {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #d10000;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .button input:hover {
+      background: #b80000;
+    }
+
+    /* Auth links */
+    .auth-links {
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .back-home {
+      font-size: 13px;
+      color: #666;
+      text-decoration: none;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      position: fixed;
+      top: 16px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background: #fff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+    }
+
+    @media (max-width: 500px) {
+      .input-box {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
-<body class="form-page">
-  <div class="container">
+
+<body>
+  <button id="mode-toggle" class="theme-toggle">🌙</button>
+
+  <div class="login-container">
+
     <div class="title">Edit Student</div>
+
     <form method="POST">
+
       <div class="user-details">
         <div class="input-box">
-          <span class="details">Name</span>
-          <input type="text" name="student_name" value="{{ student[0] }}" required>
+          <span>Full Name</span>
+          <input type="text" name="student_name" value="{{ student[0] }}" placeholder="Name" required>
         </div>
+
         <div class="input-box">
-          <span class="details">Student ID</span>
-          <input type="text" name="student_id" value="{{ student[1] }}" readonly>
+          <span>Student ID</span>
+          <input type="text" name="student_id" value="{{ student[1] }}" placeholder="ID" readonly>
         </div>
+
         <div class="input-box">
-          <span class="details">Email</span>
-          <input type="email" name="email" value="{{ student[2] }}">
+          <span>Email</span>
+          <input type="email" name="email" value="{{ student[2] }}" placeholder="Email">
         </div>
+
         <div class="input-box">
-          <span class="details">Phone Number</span>
-          <input type="text" name="phone_number" value="{{ student[3] }}">
+          <span>Phone Number</span>
+          <input type="text" name="phone_number" value="{{ student[3] }}" placeholder="Number">
         </div>
+
         <div class="input-box">
-          <span class="details">Gender</span>
-          <input type="text" name="student_gender" value="{{ student[5] }}">
+          <span>Gender</span>
+          <input type="text" name="student_gender" value="{{ student[5] }}" placeholder="Gender">
         </div>
+
         <div class="input-box">
-          <span class="details">Department</span>
-          <input type="text" name="student_dept" value="{{ student[6] }}">
+          <span>Department</span>
+          <input type="text" name="student_dept" value="{{ student[6] }}" placeholder="Department">
         </div>
       </div>
+
       <div class="button">
         <input type="submit" value="Update Student">
       </div>
-      <div class="back-link">
-        <a href="{{ url_for('manage_students') }}">Back to Students</a>
-      </div>
+
     </form>
+
+    <div class="auth-links">
+      <a class="back-home" href="{{ url_for('manage_students') }}">← Back to Students</a>
+    </div>
+
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var themeToggle = document.getElementById('mode-toggle');
+      var body = document.body;
+      var savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') body.classList.remove('light-mode');
+      else body.classList.add('light-mode');
+      themeToggle.addEventListener('click', function () {
+        body.classList.toggle('light-mode');
+        localStorage.setItem('theme', body.classList.contains('light-mode') ? 'light' : 'dark');
+        themeToggle.textContent = body.classList.contains('light-mode') ? '🌙' : '☀️';
+      });
+      themeToggle.textContent = body.classList.contains('light-mode') ? '🌙' : '☀️';
+    });
+  </script>
 </body>
+
 </html>

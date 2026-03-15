@@ -4,264 +4,198 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Achievement Entry - Achievement Management System</title>
-
+  <title>Entry Portal - Achievement Management System</title>
   <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
   <script src="{{ url_for('static', filename = 'script.js') }}"></script>
-
-  <script>
-    function toggleAchievementFields() {
-      const achievementType = document.getElementById("achievement-type").value;
-      const allFields = document.querySelectorAll('.achievement-specific-field');
-
-      // Hide all specific fields first
-      allFields.forEach(field => {
-        field.style.display = 'none';
-      });
-
-      // Show fields relevant to the selected achievement type
-      if (achievementType) {
-        const fieldsToShow = document.querySelectorAll(`.${achievementType}-field`);
-        fieldsToShow.forEach(field => {
-          field.style.display = 'block';
-        });
-      }
-    }
-  </script>
-
   <style>
-    /* Only include specific styles that aren't in the main CSS file */
-    body.form-page {
-      height: auto;
+    body {
+      padding-top: 100px;
       min-height: 100vh;
-      padding-top: 80px;
-      padding-bottom: 40px;
     }
 
-    .achievement-container {
-      max-width: 800px;
+    .form-container {
+      max-width: 900px;
+      margin: 0 auto;
     }
 
-    /* Consistent form element styling */
-    select {
+    .glass-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      border: 1px solid var(--border-color);
+      border-radius: var(--glass-radius);
+      padding: 3rem;
+    }
+
+    .form-label {
+      color: var(--text-secondary);
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: block;
+      font-size: 0.9rem;
+    }
+
+    .form-control,
+    .form-select {
+      background: rgba(255, 255, 255, 0.05) !important;
+      border: 1px solid var(--border-color) !important;
+      color: var(--text-color) !important;
+      border-radius: 12px !important;
+      padding: 12px 15px !important;
       width: 100%;
-      height: 45px;
-      padding-left: 15px;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      background-color: rgba(255, 255, 255, 0.1);
-      color: var(--text-color);
-      transition: all 0.3s ease;
-      /* Fix for dropdown appearance */
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-      background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
-      background-repeat: no-repeat;
-      background-position: right 10px top 50%;
-    }
-
-    /* Fix dropdown option colors for dark mode visibility */
-    select option {
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      padding: 10px;
-    }
-
-    /* Light mode specific style correction */
-    body.light-mode select {
-      background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
-    }
-
-    select:focus {
-      border-color: var(--primary-color);
       outline: none;
+      transition: 0.3s;
     }
 
-    textarea {
-      width: 100%;
-      min-height: 100px;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      background-color: rgba(255, 255, 255, 0.1);
-      color: var(--text-color);
-      transition: all 0.3s ease;
-      font-family: 'Poppins', sans-serif;
+    .form-control:focus,
+    .form-select:focus {
+      border-color: var(--primary-color) !important;
+      background: rgba(255, 255, 255, 0.08) !important;
     }
 
-    textarea:focus {
-      border-color: var(--primary-color);
-      outline: none;
+    .section-divider {
+      height: 1px;
+      background: var(--border-color);
+      margin: 2rem 0;
     }
 
-    /* File input consistent styling */
-    input[type="file"] {
-      width: 100%;
-      padding: 10px;
-      background-color: rgba(255, 255, 255, 0.1);
-      color: var(--text-color);
-      border-radius: 10px;
-      border: 1px solid #ccc;
+    .dynamic-field {
+      display: none;
+      animation: fadeIn 0.4s ease;
     }
 
-    /* More specific rules to enforce contrast */
-    body.form-page select,
-    body.form-page textarea,
-    body.form-page input[type="text"],
-    body.form-page input[type="date"],
-    body.form-page input[type="number"],
-    body.form-page input[type="file"] {
-      color: var(--text-color);
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   </style>
 </head>
 
-<body class="form-page">
+<body class="dashboard-page">
   <div class="toggle-container">
-    <button id="mode-toggle">Dark Mode 🌙</button>
+    <button id="mode-toggle" class="theme-toggle">🌙</button>
   </div>
 
-  <div class="container achievement-container">
-    <div class="title">Enter Student Achievement</div>
-    <div class="content">
+  <div class="container form-container py-4">
+    <header class="d-flex justify-content-between align-items-center mb-5">
+      <div>
+        <h1 class="title mb-0">Record Milestone</h1>
+        <p class="text-secondary small">Submit a new academic achievement</p>
+      </div>
+      <a href="{{ url_for('teacher-dashboard') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back
+      </a>
+    </header>
+
+    <div class="glass-card">
       <form method="POST" action="{{ url_for('submit_achievements') }}" enctype="multipart/form-data">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-        <div class="user-details">
-          <div class="input-box">
-            <span class="details">Student ID</span>
-            <input type="text" id="student-id" name="student_id" placeholder="Enter student ID (e.g., STU001)"
-              required />
+        <div class="row g-4">
+          <div class="col-md-6">
+            <label class="form-label">Student ID</label>
+            <input type="text" name="student_id" class="form-control" placeholder="STU-0000" required>
           </div>
 
-          <div class="input-box full-width">
-            <span class="details">Achievement Type</span>
-            <select id="achievement-type" name="achievement_type" onchange="toggleAchievementFields()" required>
-              <option value="">Select Achievement Type</option>
-              <option value="symposium">Symposium</option>
+          <div class="col-md-6">
+            <label class="form-label">Achievement Category</label>
+            <select id="achievement-type" name="achievement_type" class="form-select" onchange="toggleFields()"
+              required>
+              <option value="">Select Type</option>
+              <option value="hackathon">Hackathon</option>
               <option value="coding">Coding Competition</option>
               <option value="paper">Paper Presentation</option>
               <option value="conference">Conference</option>
-              <option value="hackathon">Hackathon</option>
-              <option value="sql">SQL Query Event</option>
-              <option value="other">Other</option>
+              <option value="symposium">Symposium</option>
             </select>
           </div>
 
-          <div class="input-box">
-            <span class="details">Event Name</span>
-            <input type="text" name="event_name" placeholder="Enter event name" required />
-          </div>
-          <div class="input-box">
-            <span class="details">Date of Achievement</span>
-            <input type="date" name="achievement_date" required />
-          </div>
-          <div class="input-box">
-            <span class="details">Organizer/Institution</span>
-            <input type="text" name="organizer" placeholder="Enter organizing institution" required />
-          </div>
-          <div class="input-box">
-            <span class="details">Position/Award</span>
-            <input type="text" name="position" placeholder="e.g., First Place, Participant" required />
+          <div class="col-md-12">
+            <div class="section-divider"></div>
           </div>
 
-          <!-- Symposium specific fields -->
-          <div class="input-box full-width achievement-specific-field symposium-field" style="display: none;">
-            <span class="details">Symposium Theme</span>
-            <input type="text" name="symposium_theme" placeholder="Enter symposium theme" />
+          <div class="col-md-12">
+            <label class="form-label">Event / Activity Name</label>
+            <input type="text" name="event_name" class="form-control" placeholder="E.g. Smart India Hackathon" required>
           </div>
 
-          <!-- Coding competition specific fields -->
-          <div class="input-box achievement-specific-field coding-field" style="display: none;">
-            <span class="details">Programming Language</span>
-            <input type="text" name="programming_language" placeholder="Enter programming language" />
-          </div>
-          <div class="input-box achievement-specific-field coding-field" style="display: none;">
-            <span class="details">Platform</span>
-            <input type="text" name="coding_platform" placeholder="Enter platform (e.g., HackerRank)" />
+          <div class="col-md-6">
+            <label class="form-label">Date of Accomplishment</label>
+            <input type="date" name="achievement_date" class="form-control" required>
           </div>
 
-          <!-- Paper presentation specific fields -->
-          <div class="input-box full-width achievement-specific-field paper-field" style="display: none;">
-            <span class="details">Paper Title</span>
-            <input type="text" name="paper_title" placeholder="Enter paper title" />
-          </div>
-          <div class="input-box full-width achievement-specific-field paper-field" style="display: none;">
-            <span class="details">Journal/Conference Name</span>
-            <input type="text" name="journal_name" placeholder="Enter journal or conference name" />
+          <div class="col-md-6">
+            <label class="form-label">Organizing Body</label>
+            <input type="text" name="organizer" class="form-control" placeholder="Institution or Company" required>
           </div>
 
-          <!-- Conference specific fields -->
-          <div class="input-box achievement-specific-field conference-field" style="display: none;">
-            <span class="details">Conference Level</span>
-            <select name="conference_level">
-              <option value="">Select Level</option>
-              <option value="international">International</option>
-              <option value="national">National</option>
-              <option value="state">State</option>
-              <option value="university">University</option>
-              <option value="college">College</option>
-            </select>
-          </div>
-          <div class="input-box achievement-specific-field conference-field" style="display: none;">
-            <span class="details">Role</span>
-            <input type="text" name="conference_role" placeholder="Enter role (presenter, attendee)" />
+          <!-- Dynamic Fields -->
+          <div class="col-md-6 dynamic-field hackathon-field coding-field">
+            <label class="form-label">Technical Stack / Tool</label>
+            <input type="text" name="technical_stack" class="form-control" placeholder="E.g. Python, React">
           </div>
 
-          <!-- Hackathon specific fields -->
-          <div class="input-box achievement-specific-field hackathon-field" style="display: none;">
-            <span class="details">Team Size</span>
-            <input type="number" name="team_size" placeholder="Enter team size" min="1" />
-          </div>
-          <div class="input-box achievement-specific-field hackathon-field" style="display: none;">
-            <span class="details">Project Title</span>
-            <input type="text" name="project_title" placeholder="Enter project title" />
+          <div class="col-md-6 dynamic-field paper-field">
+            <label class="form-label">Journal / Published Site</label>
+            <input type="text" name="journal_name" class="form-control" placeholder="IEEE, Springer etc">
           </div>
 
-          <!-- SQL specific fields -->
-          <div class="input-box achievement-specific-field sql-field" style="display: none;">
-            <span class="details">Database Type</span>
-            <input type="text" name="database_type" placeholder="Enter database type (MySQL, Oracle)" />
-          </div>
-          <div class="input-box achievement-specific-field sql-field" style="display: none;">
-            <span class="details">Difficulty Level</span>
-            <select name="difficulty_level">
-              <option value="">Select Level</option>
-              <option value="beginner">Beginner</option>
-              <option value="intermediate">Intermediate</option>
-              <option value="advanced">Advanced</option>
-              <option value="expert">Expert</option>
-            </select>
+          <div class="col-md-12">
+            <label class="form-label">Official Position / Rank</label>
+            <input type="text" name="position" class="form-control" placeholder="E.g. 1st Place / Participation"
+              required>
           </div>
 
-          <!-- Other achievement type field -->
-          <div class="input-box full-width achievement-specific-field other-field" style="display: none;">
-            <span class="details">Achievement Type Description</span>
-            <input type="text" name="other_description" placeholder="Describe achievement type" />
+          <div class="col-md-12">
+            <label class="form-label">Additional Context (Optional)</label>
+            <textarea name="achievement_description" class="form-control" rows="3"
+              placeholder="Brief details about the project or contribution..."></textarea>
           </div>
 
-          <div class="input-box full-width">
-            <span class="details">Achievement Description</span>
-            <textarea name="achievement_description"
-              placeholder="Enter detailed description of the achievement"></textarea>
+          <div class="col-md-12 mt-4">
+            <label class="form-label">Evidence Upload (PDF/JPG)</label>
+            <div class="p-4 rounded-3 border-dashed"
+              style="border: 2px dashed var(--border-color); background: rgba(255,255,255,0.02);">
+              <input type="file" name="certificate" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
+            </div>
           </div>
-        </div>
 
-        <div class="input-box full-width">
-          <span class="details">Upload Certificate/Proof</span>
-          <input type="file" name="certificate" accept=".pdf,.jpg,.jpeg,.png" />
-        </div>
-
-        <div class="button">
-          <input type="submit" value="Submit Achievement" />
+          <div class="col-md-12 mt-5">
+            <button type="submit" class="btn btn-primary w-100 py-3 rounded-pill fw-bold">Register Achievement</button>
+          </div>
         </div>
       </form>
-
-      <div class="back-link">
-        <a href="{{ url_for('teacher-dashboard') }}">Back to Dashboard</a>
-      </div>
     </div>
   </div>
+
+  <script>
+    function toggleFields() {
+      const type = document.getElementById('achievement-type').value;
+      document.querySelectorAll('.dynamic-field').forEach(f => f.style.display = 'none');
+      if (type) {
+        document.querySelectorAll(`.${type}-field`).forEach(f => f.style.display = 'block');
+      }
+    }
+
+    // Theme toggle
+    const modeToggle = document.getElementById('mode-toggle');
+    if (localStorage.getItem('theme') === 'light') {
+      document.body.classList.add('light-mode');
+      modeToggle.innerText = '🌙';
+    }
+
+    modeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      modeToggle.innerText = isLight ? '🌙' : '☀️';
+    });
+  </script>
 </body>
 
 </html>
