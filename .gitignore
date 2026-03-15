@@ -1,9 +1,13 @@
-/venv1
-/__pycache__
-/.env
-/*.db
+/venv/
+/venv1/
+/__pycache__/
+*.pyc
+*.db
+.env
 /instance/*
 .DS_Store
+ feature/add-sorting
 *.pyc
 static/uploads/
 ams.db
+main
