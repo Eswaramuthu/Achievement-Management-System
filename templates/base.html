@@ -3,23 +3,30 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>
       {% if title %}{{ title }}{% else %}Achievement Management System{% endif %}
     </title>
 
+    <!-- Main Styles -->
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='styles.css') }}"
     />
 
+    <!-- Google Fonts -->
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
       rel="stylesheet"
     />
 
-    <!-- ✅ FIXED: Font Awesome moved inside head -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- ✅ FIXED: Font Awesome inside head -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
 
+    <!-- Lenis Smooth Scroll -->
     <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
   </head>
 
@@ -30,6 +37,7 @@
         <div class="nav-brand">
           <h2>Achievement Management System</h2>
         </div>
+
         <ul class="nav-menu">
           <li><a href="{{ url_for('home') }}">Home</a></li>
           <li><a href="#about">About</a></li>
@@ -104,11 +112,13 @@
       <button id="mode-toggle" class="theme-toggle">🌙</button>
     </div>
 
+    <!-- Scripts -->
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const themeToggle = document.getElementById("mode-toggle");
         const body = document.body;
 
+        // Load saved theme
         const savedTheme = localStorage.getItem("theme");
         if (savedTheme === "dark") {
           body.classList.remove("light-mode");
@@ -116,6 +126,7 @@
           body.classList.add("light-mode");
         }
 
+        // Toggle theme
         themeToggle.addEventListener("click", function () {
           body.classList.toggle("light-mode");
           const isLightMode = body.classList.contains("light-mode");
@@ -123,9 +134,11 @@
           themeToggle.textContent = isLightMode ? "🌙" : "☀️";
         });
 
+        // Set initial icon
         const isLightMode = body.classList.contains("light-mode");
         themeToggle.textContent = isLightMode ? "🌙" : "☀️";
 
+        // Lenis smooth scroll
         const lenis = new Lenis({
           duration: 1.2,
           smoothWheel: true,
@@ -153,12 +166,14 @@
         });
       });
 
+      // Mobile menu toggle
       document
         .querySelector(".nav-toggle")
         .addEventListener("click", function () {
           document.querySelector(".nav-menu").classList.toggle("active");
         });
 
+      // Close menu on link click
       document.querySelectorAll(".nav-menu a").forEach((link) => {
         link.addEventListener("click", () => {
           document.querySelector(".nav-menu").classList.remove("active");
