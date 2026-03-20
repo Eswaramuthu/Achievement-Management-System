@@ -4,22 +4,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      {% if title %}{{ title }}{% else %}Achievement Management System{% endif
-      %}
+      {% if title %}{{ title }}{% else %}Achievement Management System{% endif %}
     </title>
+
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='styles.css') }}"
     />
+
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
       rel="stylesheet"
     />
+
+    <!-- ✅ FIXED: Font Awesome moved inside head -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
-
-
   </head>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <body class="light-mode">
     <!-- Header/Navbar -->
     <header class="header">
@@ -32,6 +35,7 @@
           <li><a href="#about">About</a></li>
           <li><a href="#features">Features</a></li>
           <li><a href="#contact">Contact</a></li>
+
           {% if session.get('student_id') %}
           <li><a href="{{ url_for('student_dashboard') }}">Dashboard</a></li>
           {% elif session.get('teacher_id') %}
@@ -40,8 +44,10 @@
           <li><a href="{{ url_for('student') }}">Student Login</a></li>
           <li><a href="{{ url_for('teacher') }}">Teacher Login</a></li>
           {% endif %}
+
           <li><a href="#FAQ">FAQ</a></li>
         </ul>
+
         <div class="nav-toggle">
           <span class="bar"></span>
           <span class="bar"></span>
@@ -51,7 +57,9 @@
     </header>
 
     <!-- Main Content -->
-    <main class="main-content">{% block content %}{% endblock %}</main>
+    <main class="main-content">
+      {% block content %}{% endblock %}
+    </main>
 
     <!-- Footer -->
     <footer class="footer">
@@ -63,6 +71,7 @@
             academic achievements in one place.
           </p>
         </div>
+
         <div class="footer-section">
           <h3>Quick Links</h3>
           <ul>
@@ -74,12 +83,14 @@
             <li><a href="{{ url_for('terms') }}">Terms &amp; Conditions</a></li>
           </ul>
         </div>
+
         <div class="footer-section">
           <h3>Contact Info</h3>
           <p>Email: info@achievement-system.com</p>
           <p>Phone: +1 (123) 456-7890</p>
         </div>
       </div>
+
       <div class="footer-bottom">
         <p>
           &copy; 2026 Achievement Management System. All rights reserved.
@@ -94,12 +105,10 @@
     </div>
 
     <script>
-      // Theme toggle functionality
       document.addEventListener("DOMContentLoaded", function () {
         const themeToggle = document.getElementById("mode-toggle");
         const body = document.body;
 
-        // Check for saved theme preference
         const savedTheme = localStorage.getItem("theme");
         if (savedTheme === "dark") {
           body.classList.remove("light-mode");
@@ -111,12 +120,9 @@
           body.classList.toggle("light-mode");
           const isLightMode = body.classList.contains("light-mode");
           localStorage.setItem("theme", isLightMode ? "light" : "dark");
-
-          // Update icon
           themeToggle.textContent = isLightMode ? "🌙" : "☀️";
         });
 
-        // Set initial icon based on theme
         const isLightMode = body.classList.contains("light-mode");
         themeToggle.textContent = isLightMode ? "🌙" : "☀️";
 
@@ -135,12 +141,11 @@
         document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
           anchor.addEventListener("click", function (e) {
             e.preventDefault();
-
             const target = document.querySelector(this.getAttribute("href"));
 
             if (target) {
               lenis.scrollTo(target, {
-                offset: -140, 
+                offset: -140,
                 duration: 1.2,
               });
             }
@@ -148,19 +153,17 @@
         });
       });
 
-      // Mobile menu toggle
       document
         .querySelector(".nav-toggle")
         .addEventListener("click", function () {
           document.querySelector(".nav-menu").classList.toggle("active");
         });
 
-        // Close mobile menu when a link is clicked
-        document.querySelectorAll('.nav-menu a').forEach(link => {
-            link.addEventListener('click', () => {
-                document.querySelector('.nav-menu').classList.remove('active');
-            });
+      document.querySelectorAll(".nav-menu a").forEach((link) => {
+        link.addEventListener("click", () => {
+          document.querySelector(".nav-menu").classList.remove("active");
         });
+      });
     </script>
   </body>
 </html>
