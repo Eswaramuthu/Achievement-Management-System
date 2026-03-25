@@ -35,6 +35,7 @@ body {
   background-color: var(--bg-color);
   color: var(--text-color);
   padding: 20px;
+
 }
 
 .container {
@@ -45,6 +46,17 @@ body {
   padding: 30px;
   border: 1px solid var(--border-color);
   margin: 0 auto;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 400px;
+  padding: 40px;
+  background: var(--glass-bg);
+  border-radius: 15px;
+  border: 1px solid var(--border-color);
+  margin: 80px auto;
+  margin-top: 130px;
 }
 
 /* REMOVED unwanted red underline */
