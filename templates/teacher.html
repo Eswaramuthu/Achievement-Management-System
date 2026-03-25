@@ -69,22 +69,6 @@
       </div>
     </div>
   </div>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      var themeToggle = document.getElementById('mode-toggle');
-      var body = document.body;
-      var savedTheme = localStorage.getItem('theme');
-      if (savedTheme === 'dark') body.classList.remove('light-mode');
-      else body.classList.add('light-mode');
-      themeToggle.addEventListener('click', function () {
-        body.classList.toggle('light-mode');
-        localStorage.setItem('theme', body.classList.contains('light-mode') ? 'light' : 'dark');
-        themeToggle.textContent = body.classList.contains('light-mode') ? '🌙' : '☀️';
-      });
-      themeToggle.textContent = body.classList.contains('light-mode') ? '🌙' : '☀️';
-    });
-  </script>
 </body>
 
 </html>
