@@ -778,6 +778,26 @@ body {
   /* smooth hover base */
   transform: scale(1);
   transition: transform 0.4s ease;
+  /* ===== Contact UI Improvement ===== */
+
+.contact-box {
+  background: linear-gradient(135deg, #2c3e50, #4ca1af);
+  padding: 30px;
+  border-radius: 12px;
+  color: white;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  margin-top: 20px;
+}
+
+.contact-box:hover {
+  transform: scale(1.02);
+  transition: 0.3s ease;
+}
+
+.contact-info ul li {
+  margin: 10px 0;
+  font-size: 16px;
+}
 }
 
 #scrollTopBtn:hover {
