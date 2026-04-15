@@ -758,3 +758,118 @@ body {
     /* Offset for mobile navbar (80px + 20px) */
   }
 }
+
+
+/* this is new modification of design in contact section  */
+
+/* ===== Contact Section Styling ===== */
+
+.contact {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  padding: 3rem 2rem;
+  border-radius: 20px;
+  color: rgb(4, 4, 4);
+}
+
+/* Layout */
+.contact-content {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+  justify-content: center;
+}
+
+/* Info Box */
+.contact-info {
+  flex: 1;
+  min-width: 280px;
+  max-width: 400px;
+  background: rgba(255,255,255,0.05);
+  padding: 1.5rem;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.contact-info h3 {
+  margin-bottom: 10px;
+}
+
+.contact-info ul {
+  list-style: none;
+  padding: 0;
+}
+
+.contact-info li {
+  margin: 10px 0;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  transition: 0.3s;
+}
+
+.contact-info li:hover {
+  color: #38bdf8;
+  transform: translateX(5px);
+}
+
+/* Contact Form */
+.contact-form {
+  flex: 1;
+  min-width: 280px;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.contact-form input,
+.contact-form textarea {
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  outline: none;
+}
+
+.contact-form textarea {
+  height: 100px;
+}
+
+.contact-form button {
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: #38bdf8;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.contact-form button:hover {
+  background: #0ea5e9;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .contact-content {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+
+/* send message button modification */
+
+.send-btn {
+  display: inline-block;
+  padding: 10px;
+  background: #38bdf8;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.send-btn:hover {
+  background: #0ea5e9;
+}

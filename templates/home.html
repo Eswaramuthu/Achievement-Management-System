@@ -75,24 +75,61 @@
             </div>
         </div>
     </div>
-</section>
+</section><br> <br>
 
 <!-- Contact Section -->
 <section id="contact" class="contact">
     <div class="container">
-        <h2 class="title">Contact Us</h2>
+        <h2 style="color: #cc0000;">Contact Us</h2>
+
         <div class="contact-content">
+
             <div class="contact-info">
                 <h3>Get In Touch</h3>
                 <p>Have questions or feedback? Reach out to us!</p>
+
                 <ul>
-                    <li>Email: info@achievement-system.com</li>
-                    <li>Phone: +1 (123) 456-7890</li>
-                    <li>Location: SRM Institute of Science and Technology</li>
+                    <li><span>📧</span> info@achievement-system.com</li>
+                    <li><span>📞</span> +1 (123) 456-7890</li>
+                    <li><span>📍</span> SRM Institute of Science and Technology</li>
                 </ul>
             </div>
+
+            <div class="contact-form">
+                <input type="text" id="name" placeholder="Your Name">
+                <input type="email" id="email" placeholder="Your Email">
+                <textarea id="message" placeholder="Your Message"></textarea>
+
+                <button onclick="sendMail()">Send Message</button>
+            </div>
+
         </div>
     </div>
 </section>
+
+<!-- ✅ Script should be HERE -->
+<script>
+function sendMail() {
+    let name = document.getElementById("name").value;
+    let email = document.getElementById("email").value;
+    let message = document.getElementById("message").value;
+
+    if(name === "" || email === "" || message === "") {
+        alert("Please fill all fields!");
+        return;
+    }
+
+    let gmailURL = "https://mail.google.com/mail/?view=cm&fs=1" +
+        "&to=info@achievement-system.com" +
+        "&su=Contact Request" +
+        "&body=" + encodeURIComponent(
+            "Name: " + name + "\n" +
+            "Email: " + email + "\n\n" +
+            "Message:\n" + message
+        );
+
+    window.open(gmailURL, "_blank");
+}
+</script>
 
 {% endblock %}
