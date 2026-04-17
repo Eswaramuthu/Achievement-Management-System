@@ -280,8 +280,7 @@ body {
 
 /* Main content with proper spacing */
 .main-content {
-  margin-top: 140px;
-  /* Match navbar height */
+  margin-top: 0;
   min-height: calc(100vh - 200px);
 }
 
@@ -289,11 +288,10 @@ body {
 .hero {
   display: flex;
   justify-content: center;
-  align-items: center;
-  min-height: calc(90vh - 200px);
-  /* Subtract navbar height to center in remaining space */
+  align-items: flex-start;
+  min-height: auto;
   background: var(--bg-gradient);
-  padding: 0;
+  padding: 3rem 0 2rem;
   text-align: center;
 }
 
@@ -566,7 +564,7 @@ body {
   }
 
   .main-content {
-    margin-top: 80px;
+    margin-top: 0;
   }
 
   .nav-menu {
