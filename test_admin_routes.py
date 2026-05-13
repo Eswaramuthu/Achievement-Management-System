@@ -97,7 +97,7 @@ def test_database_tables():
     
     all_good = True
     for table in required_tables:
-        cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table}'")
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", (table,))
         if cursor.fetchone():
             print(f"✅ Table '{table}' exists")
         else:

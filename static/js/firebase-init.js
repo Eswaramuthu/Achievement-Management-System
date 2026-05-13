@@ -21,16 +21,21 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
 
 // Firebase configuration (Injected from backend if available)
+// IMPORTANT: Do NOT hardcode credentials here — they must come from the backend
 const firebaseConfig = window.FIREBASE_CONFIG || {
-  apiKey: "AIzaSyAxhL77J1VfZJd3rqRyR-AtlPYSnZoXnn4",
-  authDomain: "task-mate-90eee.firebaseapp.com",
-  databaseURL: "https://task-mate-90eee-default-rtdb.firebaseio.com",
-  projectId: "task-mate-90eee",
-  storageBucket: "task-mate-90eee.firebasestorage.app",
-  messagingSenderId: "112228413597",
-  appId: "1:112228413597:web:9f77d62ecf0478394f6474",
-  measurementId: "G-YVTN10T1Q2"
+  apiKey: "",
+  authDomain: "",
+  databaseURL: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: "",
+  measurementId: ""
 };
+
+if (!firebaseConfig.apiKey) {
+  console.warn("⚠️ Firebase config not provided by backend. Authentication features will not work.");
+}
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);

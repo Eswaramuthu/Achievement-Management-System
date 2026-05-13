@@ -148,22 +148,6 @@
             }
           });
         });
-      });
-
-      // Mobile menu toggle
-      document
-        .querySelector(".nav-toggle")
-        .addEventListener("click", function () {
-          document.querySelector(".nav-menu").classList.toggle("active");
-        });
-
-        // Close mobile menu when a link is clicked
-        document.querySelectorAll('.nav-menu a').forEach(link => {
-            link.addEventListener('click', () => {
-                document.querySelector('.nav-menu').classList.remove('active');
-            });
-        });
-
       // Scroll-to-top button logic
       const scrollBtn = document.getElementById("scrollTopBtn");
 
@@ -182,6 +166,21 @@
           window.scrollTo({ top: 0, behavior: "smooth" });
         }
       });
+      });
+
+      // Mobile menu toggle
+      document
+        .querySelector(".nav-toggle")
+        .addEventListener("click", function () {
+          document.querySelector(".nav-menu").classList.toggle("active");
+        });
+
+        // Close mobile menu when a link is clicked
+        document.querySelectorAll('.nav-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.querySelector('.nav-menu').classList.remove('active');
+            });
+        });
     </script>
   </body>
 </html>
