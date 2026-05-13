@@ -47,9 +47,33 @@
             <input type="text" name="tname" placeholder="Enter your Teacher ID" required />
           </div>
           <div class="input-box full-width">
-            <span class="details">Password</span>
-            <input type="password" name="password" placeholder="Enter your password" required />
-          </div>
+    <span class="details">Password</span>
+
+    <div style="position: relative;">
+        <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Enter your password"
+            required
+            style="width: 100%; padding-right: 40px;"
+        />
+
+        <span
+            onclick="togglePassword()"
+            style="
+                position: absolute;
+                right: 12px;
+                top: 50%;
+                transform: translateY(-50%);
+                cursor: pointer;
+                user-select: none;
+            "
+        >
+            👁️
+        </span>
+    </div>
+</div>
         </div>
 
         {% if error %}
@@ -85,6 +109,17 @@
       themeToggle.textContent = body.classList.contains('light-mode') ? '🌙' : '☀️';
     });
   </script>
+  <script>
+function togglePassword() {
+    const passwordInput = document.getElementById("password");
+
+    if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+    } else {
+        passwordInput.type = "password";
+    }
+}
+</script>
 </body>
 
 </html>
