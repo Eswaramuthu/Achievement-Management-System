@@ -126,7 +126,8 @@ def init_db():
             student_gender TEXT,
             student_dept TEXT,
             is_approved BOOLEAN DEFAULT 1,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            profile_picture TEXT
         )
     """)
 
