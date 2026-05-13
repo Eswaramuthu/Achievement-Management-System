@@ -21,32 +21,60 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
 
 // Firebase configuration (Injected from backend if available)
+// IMPORTANT: Do NOT hardcode credentials here — they must come from the backend
 const firebaseConfig = window.FIREBASE_CONFIG || {
-  apiKey: "AIzaSyAxhL77J1VfZJd3rqRyR-AtlPYSnZoXnn4",
-  authDomain: "task-mate-90eee.firebaseapp.com",
-  databaseURL: "https://task-mate-90eee-default-rtdb.firebaseio.com",
-  projectId: "task-mate-90eee",
-  storageBucket: "task-mate-90eee.firebasestorage.app",
-  messagingSenderId: "112228413597",
-  appId: "1:112228413597:web:9f77d62ecf0478394f6474",
-  measurementId: "G-YVTN10T1Q2"
+  apiKey: "",
+  authDomain: "",
+  databaseURL: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: "",
+  measurementId: ""
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const auth = getAuth(app);
+// Guard: If Firebase config is missing or has empty strings, export safe stubs
+// This prevents the module from crashing when backend passes DEFAULT_FIREBASE_CONFIG
+// (an object with all empty strings) which is truthy and bypasses the || fallback above.
+const isFirebaseConfigured = !!(firebaseConfig.apiKey && firebaseConfig.projectId);
 
-// Keep user logged in
-setPersistence(auth, browserLocalPersistence);
+let app = null;
+let analytics = null;
+let auth = null;
+let googleProvider = null;
 
-// Google Auth Provider
-const googleProvider = new GoogleAuthProvider();
+if (!isFirebaseConfigured) {
+  console.warn("⚠️ Firebase config not provided by backend. Authentication features will not work.");
+} else {
+  // Initialize Firebase only when valid config is available
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+
+  // Analytics can fail independently — guard it separately
+  try {
+    if (firebaseConfig.measurementId) {
+      analytics = getAnalytics(app);
+    }
+  } catch (analyticsError) {
+    console.warn("⚠️ Firebase Analytics failed to initialize:", analyticsError.message);
+  }
+
+  // Keep user logged in
+  setPersistence(auth, browserLocalPersistence);
+
+  // Google Auth Provider
+  googleProvider = new GoogleAuthProvider();
+}
 
 /**
  * Sign in with Google
  */
 export function signInWithGoogle() {
+  if (!isFirebaseConfigured || !auth) {
+    console.error("Firebase is not configured. Cannot sign in.");
+    return Promise.reject(new Error("Authentication is not available. Please contact the administrator."));
+  }
+
   return signInWithPopup(auth, googleProvider)
     .then((result) => {
       const user = result.user;
@@ -65,6 +93,13 @@ export function signInWithGoogle() {
  * Sign out user
  */
 export function signOutGoogle() {
+  if (!isFirebaseConfigured || !auth) {
+    console.warn("Firebase is not configured. Redirecting to logout.");
+    return fetch("/auth/logout", { method: "POST" })
+      .then(response => response.json())
+      .catch(error => console.error("Logout error:", error));
+  }
+
   return signOut(auth)
     .then(() => {
       console.log("User signed out");
@@ -83,6 +118,10 @@ export function signOutGoogle() {
  * Get current authenticated user
  */
 export function getCurrentUser() {
+  if (!isFirebaseConfigured || !auth) {
+    return Promise.resolve(null);
+  }
+
   return new Promise((resolve) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       unsubscribe();
@@ -97,6 +136,10 @@ export function getCurrentUser() {
  * Useful for protected API calls and token expiration handling
  */
 export function refreshUserSession() {
+  if (!isFirebaseConfigured || !auth) {
+    return Promise.resolve(null);
+  }
+
   const user = auth.currentUser;
 
   if (!user) {
@@ -153,4 +196,8 @@ function sendUserToBackend(user) {
 // Export instances
 export { auth, googleProvider, app };
 
-console.log("Firebase initialized successfully");
+if (isFirebaseConfigured) {
+  console.log("Firebase initialized successfully");
+} else {
+  console.log("Firebase module loaded with stub exports (not configured)");
+}

@@ -7,7 +7,7 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from app import app
+from app import app, DB_PATH
 import sqlite3
 from werkzeug.security import check_password_hash
 
@@ -16,7 +16,7 @@ def test_admin_login():
     print("Testing admin login...")
     
     # Test database connection
-    conn = sqlite3.connect('ams.db')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     
     # Check if admin exists
@@ -83,7 +83,7 @@ def test_database_tables():
     """Test that all required tables exist"""
     print("\nTesting database tables...")
     
-    conn = sqlite3.connect('ams.db')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     
     required_tables = [
@@ -97,7 +97,7 @@ def test_database_tables():
     
     all_good = True
     for table in required_tables:
-        cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table}'")
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", (table,))
         if cursor.fetchone():
             print(f"✅ Table '{table}' exists")
         else:

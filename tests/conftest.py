@@ -38,7 +38,10 @@ def test_app():
             phone_number TEXT,
             password TEXT NOT NULL,
             student_gender TEXT,
-            student_dept TEXT
+            student_dept TEXT,
+            is_approved BOOLEAN DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            profile_picture TEXT
         )''')
         
         cursor.execute('''
@@ -49,7 +52,9 @@ def test_app():
             phone_number TEXT,
             password TEXT NOT NULL,
             teacher_gender TEXT,
-            teacher_dept TEXT
+            teacher_dept TEXT,
+            is_approved BOOLEAN DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )''')
         
         # Add test data

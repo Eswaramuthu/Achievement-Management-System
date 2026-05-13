@@ -126,7 +126,8 @@ def init_db():
             student_gender TEXT,
             student_dept TEXT,
             is_approved BOOLEAN DEFAULT 1,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            profile_picture TEXT
         )
     """)
 
@@ -317,61 +318,14 @@ def teacher_required(f):
 def inject_csrf():
     """Provide csrf_token() for templates that expect it (e.g. tests)."""
     return {"csrf_token": lambda: ""}
-# Permission decorators for RBAC
-def login_required(f):
-    """Decorator to check if user is logged in"""
-    from functools import wraps
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not session.get("logged_in"):
-            return redirect(url_for("home"))
-        return f(*args, **kwargs)
-    return decorated_function
-
-def admin_required(f):
-    """Decorator to check if user is admin"""
-    from functools import wraps
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not session.get("logged_in") or not session.get("admin_id"):
-            return redirect(url_for("home"))
-        return f(*args, **kwargs)
-    return decorated_function
-
-def superadmin_required(f):
-    """Decorator to check if user is super admin"""
-    from functools import wraps
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not session.get("logged_in") or not session.get("admin_id") or not session.get("is_superuser"):
-            return redirect(url_for("admin_dashboard"))
-        return f(*args, **kwargs)
-    return decorated_function
-
-def student_required(f):
-    """Decorator to check if user is student"""
-    from functools import wraps
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not session.get("logged_in") or not session.get("student_id"):
-            return redirect(url_for("student"))
-        return f(*args, **kwargs)
-    return decorated_function
-
-def teacher_required(f):
-    """Decorator to check if user is teacher"""
-    from functools import wraps
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not session.get("logged_in") or not session.get("teacher_id"):
-            return redirect(url_for("teacher"))
-        return f(*args, **kwargs)
-    return decorated_function
 
 
 @app.route("/")
 def home():
-    firebase_config = get_firebase_config()
+    if FIREBASE_AVAILABLE:
+        firebase_config = get_firebase_config()
+    else:
+        firebase_config = DEFAULT_FIREBASE_CONFIG
     return render_template("home.html", firebase_config=firebase_config)
 
 
@@ -620,6 +574,7 @@ def student_profile_edit():
         
         # Connect to database
         connection = sqlite3.connect(DB_PATH)
+        connection.row_factory = sqlite3.Row
         cursor = connection.cursor()
         
         # Get current student data
@@ -634,7 +589,7 @@ def student_profile_edit():
         # Handle password change if requested
         if current_password and new_password and confirm_password:
             # Verify current password
-            if not check_password_hash(student[4], current_password):
+            if not check_password_hash(student["password"], current_password):
                 connection.close()
                 flash('Current password is incorrect', 'danger')
                 return redirect(url_for('student-profile'))
@@ -655,7 +610,7 @@ def student_profile_edit():
             hashed_password = generate_password_hash(new_password)
         else:
             # Keep existing password
-            hashed_password = student[4]
+            hashed_password = student["password"]
         
         # Handle profile picture upload
         profile_picture_path = None
@@ -676,8 +631,8 @@ def student_profile_edit():
                     profile_picture_path = f"uploads/profiles/{secure_name}"
                     
                     # Delete old profile picture if exists
-                    if student[7]:  # profile_picture is at index 7
-                        old_picture_path = os.path.join('static', student[7])
+                    if student["profile_picture"]:
+                        old_picture_path = os.path.join('static', student["profile_picture"])
                         if os.path.exists(old_picture_path):
                             try:
                                 os.remove(old_picture_path)
@@ -859,16 +814,17 @@ def admin_login():
         password = request.form.get("password")
 
         connection = sqlite3.connect(DB_PATH)
+        connection.row_factory = sqlite3.Row
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM admin WHERE admin_id = ?", (admin_id,))
         admin_data = cursor.fetchone()
         connection.close()
 
-        if admin_data and check_password_hash(admin_data[3], password):
+        if admin_data and check_password_hash(admin_data["password"], password):
             session["logged_in"] = True
-            session["admin_id"] = admin_data[1]
-            session["admin_name"] = admin_data[0]
-            session["is_superuser"] = bool(admin_data[4])
+            session["admin_id"] = admin_data["admin_id"]
+            session["admin_name"] = admin_data["admin_name"]
+            session["is_superuser"] = bool(admin_data["is_superuser"])
             return redirect(url_for("admin_dashboard"))
         else:
             return render_template("admin_login.html", error="Invalid credentials. Please try again.")
@@ -1320,7 +1276,7 @@ def admin_logout():
 @app.route("/student-new", methods=["GET", "POST"])
 @app.route("/student_new", methods=["GET", "POST"])
 def student_new():
-    firebase_config = get_firebase_config()
+    firebase_config = get_firebase_config() if FIREBASE_AVAILABLE else DEFAULT_FIREBASE_CONFIG
     
     if request.method == "POST":
         student_name = request.form.get("student_name")
@@ -1395,20 +1351,21 @@ def student():
         password = request.form.get("password")
 
         connection = sqlite3.connect(DB_PATH)
+        connection.row_factory = sqlite3.Row
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM student WHERE student_id = ?", (student_id,))
         student_data = cursor.fetchone()
         connection.close()
 
-        if student_data and check_password_hash(student_data[4], password):
+        if student_data and check_password_hash(student_data["password"], password):
             # Check if student is approved
-            if not student_data[7]:  # is_approved is at index 7
+            if not student_data["is_approved"]:
                 return render_template("student.html", error="Your account is pending admin approval. Please wait for activation.", firebase_config=firebase_config)
             
             session["logged_in"] = True
-            session["student_id"] = student_data[1]
-            session["student_name"] = student_data[0]
-            session["student_dept"] = student_data[6]
+            session["student_id"] = student_data["student_id"]
+            session["student_name"] = student_data["student_name"]
+            session["student_dept"] = student_data["student_dept"]
             return redirect(url_for("student-dashboard"))
         else:
             return render_template("student.html", error="Invalid credentials. Please try again.", firebase_config=firebase_config)
@@ -1424,20 +1381,21 @@ def teacher():
         password = request.form.get("password")
 
         connection = sqlite3.connect(DB_PATH)
+        connection.row_factory = sqlite3.Row
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM teacher WHERE teacher_id = ?", (teacher_id,))
         teacher_data = cursor.fetchone()
         connection.close()
 
-        if teacher_data and check_password_hash(teacher_data[4], password):
+        if teacher_data and check_password_hash(teacher_data["password"], password):
             # Check if teacher is approved
-            if not teacher_data[7]:  # is_approved is at index 7
+            if not teacher_data["is_approved"]:
                 return render_template("teacher.html", error="Your account is pending admin approval. Please wait for activation.")
             
             session["logged_in"] = True
-            session["teacher_id"] = teacher_data[1]
-            session["teacher_name"] = teacher_data[0]
-            session["teacher_dept"] = teacher_data[6]
+            session["teacher_id"] = teacher_data["teacher_id"]
+            session["teacher_name"] = teacher_data["teacher_name"]
+            session["teacher_dept"] = teacher_data["teacher_dept"]
             return redirect(url_for("teacher-dashboard"))
         else:
             return render_template("teacher.html", error="Invalid credentials. Please try again.")

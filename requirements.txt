@@ -1,7 +1,7 @@
 Flask
-Flask-SQLAlchemy
 Flask-WTF
 python-dotenv
+werkzeug
 pytest
 pytest-cov
 pytest-mock
