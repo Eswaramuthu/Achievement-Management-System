@@ -1,273 +1,218 @@
-# 🏆 Achievement Management System
+# Achievement Management System
 
-> A centralized platform for tracking and showcasing academic achievements. Students access their accomplishments instantly. Teachers record them effortlessly. Everyone gets clarity.
+A Flask-based web application for managing student achievements across departments. It provides role-based workflows for students, teachers, and administrators, including certificate upload and achievement analytics.
 
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/Eswaramuthu/Achievement-Management-System)
 [![Python](https://img.shields.io/badge/Python-3.8+-green?logo=python)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-2.0+-lightgrey?logo=flask)](https://flask.palletsprojects.com/)
 [![License](https://img.shields.io/badge/License-Academic-orange)]()
 
----
+## Highlights
+- Centralized achievement records with category-specific metadata
+- Role-based access for `student`, `teacher`, and `admin`
+- Certificate upload (`pdf`, `png`, `jpg`, `jpeg`) with duplicate detection via SHA-256 hash
+- Built-in analytics and filtering views
+- Admin tools for department, user approval, and category management
+- Optional Firebase client configuration for front-end integration
 
-## 🎯 The Problem
+## Tech Stack
+- Python 3.8+
+- Flask
+- SQLite (default: `ams.db`)
+- Jinja2 templates + vanilla JavaScript
+- Pytest for test coverage
 
-Academic achievements are scattered chaos:
-- 📧 Certificates buried in email threads
-- 📁 Paper documents lost in folders
-- 📊 Teachers drowning in spreadsheets
-- 🎓 Students can't showcase accomplishments during placements
-
-**Result:** Wasted time, missed opportunities, zero visibility into actual progress.
-
----
-
-## ✨ The Solution
-
-**Achievement Management System** brings everything into one organized dashboard:
-
-- 📍 **Centralized tracking** — All achievements in one place
-- 📈 **Visual analytics** — Progress trends and insights at a glance
-- ⚡ **Fast entry** — Teachers add records in seconds with auto-complete
-- 🔍 **Smart filtering** — Find exactly what you need instantly
-- 📄 **Certificate storage** — Digital proofs accessible anytime
-
----
-
-## 🚀 Quick Start
-
-### Windows (PowerShell)
-
-```powershell
-# Clone and navigate
-git clone https://github.com/Eswaramuthu/Achievement-Management-System.git
-cd Achievement-Management-System
-
-# Set up environment
-python -m venv venv
-venv\Scripts\activate
-pip install -r requirements.txt
-
-# Initialize and run
-python init_db.py
-python app.py
+## Repository Structure
+```text
+Achievement-Management-System/
+|- app.py                         # Main Flask application and routes
+|- config.py                      # App configuration classes
+|- requirements.txt               # Python dependencies
+|- .env.example                   # Environment variable template
+|- services/
+|  |- certificate_service.py      # OCR + parsing + duplicate hash orchestration
+|- utils/
+|  |- certificate_ocr.py
+|  |- certificate_parser.py
+|- templates/                     # Jinja2 templates
+|- static/                        # CSS, JS, images, uploaded files
+|- tests/                         # Test suite
+`- README.md
 ```
 
-### macOS / Linux
-
+## Getting Started
+### 1. Clone
 ```bash
-# Clone and navigate
 git clone https://github.com/Eswaramuthu/Achievement-Management-System.git
 cd Achievement-Management-System
+```
 
-# Set up environment
-python3 -m venv venv
-source venv/bin/activate
+### 2. Create virtual environment
+Windows (PowerShell):
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+macOS/Linux:
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### 3. Install dependencies
+```bash
 pip install -r requirements.txt
+```
 
-# Initialize and run
-python init_db.py
+### 4. Configure environment
+```bash
+cp .env.example .env
+```
+On Windows PowerShell:
+```powershell
+Copy-Item .env.example .env
+```
+
+Set at least:
+- `SECRET_KEY` for session security
+- Firebase variables only if you need Firebase-enabled front-end behavior
+
+### 5. Run the app
+```bash
 python app.py
 ```
+The app runs by default at `http://127.0.0.1:5000`.
 
-**🌐 Open your browser** → `http://localhost:5000`
+Note: The database schema is initialized automatically on startup.
 
----
-
-## 🛠️ Tech Stack
-
-| Technology | Purpose |
-|------------|---------|
-| **Flask** | Lightweight Python web framework |
-| **SQLite** | Embedded database for local storage |
-| **JavaScript** | Dynamic interactivity (vanilla JS) |
-| **HTML/CSS** | Responsive UI with theme support |
-| **Jinja2** | Server-side templating |
-
----
-
-## 💡 Core Features
-
-### 👨‍🎓 For Students
-
-| Feature | Description |
-|---------|-------------|
-| **Dashboard** | View all achievements with stats at a glance |
-| **Analytics** | Track your progress over time with visual charts |
-| **Filters** | Search by type, year, position, or keyword |
-| **Certificates** | Download proof of achievements instantly |
-| **Profile** | Manage personal details and preferences |
-
-### 👨‍🏫 For Teachers
-
-| Feature | Description |
-|---------|-------------|
-| **Quick Entry** | Add achievements with intuitive forms |
-| **Auto-Complete** | Find students instantly as you type |
-| **Upload** | Attach certificates (PDF, JPG, PNG up to 5MB) |
-| **Batch Mode** | Manage multiple entries efficiently |
-| **Dashboard** | View submission statistics and trends |
-
-### 🎪 Achievement Types
-
-The system supports comprehensive tracking for:
-
-- 💻 **Hackathons** — Team projects, difficulty levels, project titles
-- 🏅 **Coding Competitions** — Platforms, languages, problem difficulty
-- 📝 **Paper Presentations** — Journal names, conference levels, paper titles
-- 🎤 **Conferences** — Roles, presentation types, conference tiers
-- 🎭 **Symposiums** — Themes, event scope, participation types
-- ✨ **Custom Events** — Flexible fields for unique achievements
-
----
-
-## 📂 Project Structure
-
+## Running Tests
+```bash
+pytest -v
 ```
-achievement-management-system/
-│
-├── app.py                    # Flask application + routing logic
-├── init_db.py                # Database schema initialization
-├── requirements.txt          # Python dependencies
-│
-├── static/
-│   ├── css/                  # Stylesheets + dark/light themes
-│   ├── js/                   # Client-side JavaScript
-│   └── certificates/         # Uploaded certificate files
-│
-├── templates/                # Jinja2 HTML templates
-├── database/                 # SQLite database files
-│
-├── README.md                 # This file
-└── CONTRIBUTING.md           # Contribution guidelines
+Or:
+```bash
+python run_tests.py
 ```
 
----
-
-## 🗄️ Database Schema
-
+## Architecture Diagram
+```text
+Browser (Student / Teacher / Admin)
+            |
+            v
+   Flask App (`app.py`)
+            |
+            +--> Auth + Session Guards
+            |    - student_required
+            |    - teacher_required
+            |    - admin_required
+            |
+            +--> Route Handlers + Jinja Templates
+            |    - templates/*
+            |    - static/*
+            |
+            +--> Certificate Pipeline
+            |    - services/certificate_service.py
+            |    - utils/certificate_ocr.py
+            |    - utils/certificate_parser.py
+            |
+            +--> SQLite Storage (`ams.db`)
+                 - student
+                 - teacher
+                 - admin
+                 - achievements
+                 - departments
+                 - achievement_categories
 ```
-┌─────────────┐            ┌─────────────┐            ┌─────────────┐
-│   Student   │            │ Achievement │            │   Teacher   │
-├─────────────┤            ├─────────────┤            ├─────────────┤
-│ student_id  │ PK         │ id          │ PK         │ teacher_id  │ PK
-│ name        │            │ student_id  │ FK         │ name        │
-│ email       │    1:N     │ teacher_id  │ FK   N:1   │ email       │
-│ password    │ ─────────> │ type        │ <───────── │ password    │
-│ department  │            │ event_name  │            │ department  │
-│ ...         │            │ date        │            │ ...         │
-└─────────────┘            │ position    │            └─────────────┘
-                           │ certificate │
-                           │ ...         │
-                           └─────────────┘
+
+## Workflow Diagram
+```text
+Student/Teacher/Admin opens web app
+                |
+                v
+         Login or Register
+                |
+                v
+     Role-based dashboard rendered
+                |
+      +---------+----------+
+      |                    |
+      v                    v
+Teacher submits        Student views
+achievement + file     achievements/profile
+      |                    |
+      v                    v
+Certificate processed   Filter/search analytics
+(OCR + parse + hash)         |
+      |                    |
+      +---------+----------+
+                |
+                v
+         SQLite data updated
+                |
+                v
+    Admin reviews users/departments/categories
 ```
 
----
+## Role Workflow (Sequence)
+```text
+Teacher -> /teacher (login)
+Teacher -> /submit_achievements (GET form)
+Teacher -> /submit_achievements (POST record + certificate)
+App -> certificate_service.py (OCR + parser + SHA-256)
+App -> ams.db (insert achievement)
+Student -> /student-dashboard (view stats)
+Student -> /student-achievements (view records)
+Admin -> /admin/users (approve users)
+Admin -> /admin/departments and /admin/categories (manage masters)
+```
 
-## 🎨 Key Features Explained
+## API-Style Route Table
+| Method | Route | Access | Purpose |
+|---|---|---|---|
+| GET | `/` | Public | Home page |
+| GET | `/terms` | Public | Terms page |
+| GET | `/privacy-policy` | Public | Privacy policy page |
+| GET | `/student-achievements` | Student | Student achievements view |
+| GET | `/student-dashboard` | Student | Student dashboard |
+| GET | `/student/profile` | Student | Student profile page |
+| POST | `/student/profile/edit` | Student | Update student profile |
+| GET | `/teacher-achievements` | Teacher | Teacher achievements view |
+| GET, POST | `/submit_achievements` | Teacher | Submit new achievement records |
+| GET | `/teacher-dashboard` | Teacher | Teacher dashboard |
+| GET | `/all-achievements` | Authenticated | Consolidated achievements listing |
+| GET, POST | `/student` | Public | Student login/auth flow |
+| GET, POST | `/teacher` | Public | Teacher login/auth flow |
+| GET, POST | `/student-new` | Public | Student registration |
+| GET, POST | `/student_new` | Public | Student registration (alias route) |
+| GET, POST | `/teacher-new` | Public | Teacher registration |
+| GET, POST | `/admin` | Public | Admin login |
+| GET | `/admin/dashboard` | Admin | Admin dashboard |
+| GET | `/admin/users` | Admin | Admin user management |
+| POST | `/admin/user/approve` | Admin | Approve pending users |
+| GET | `/admin/departments` | Admin | Department management page |
+| POST | `/admin/department/add` | Admin | Add department |
+| POST | `/admin/department/delete` | Admin | Delete department |
+| GET | `/admin/categories` | Admin | Achievement category management page |
+| POST | `/admin/category/add` | Admin | Add achievement category |
+| GET | `/admin/export` | Admin | Export admin data/report |
+| GET | `/admin/logout` | Admin | End admin session |
 
-### 🌓 Dark/Light Mode
-Toggle between themes with one click. Preferences persist across sessions using localStorage. Smooth transitions and eye-friendly color schemes.
+## Configuration Notes
+- Default SQLite DB path: `ams.db` in project root
+- Upload folder: `static/uploads`
+- Max upload size: 5 MB (configured in `config.py`)
 
-### 🔎 Smart Student Search
-Type student ID or name — results appear instantly. No more scrolling through endless lists. Auto-complete makes teacher workflows lightning-fast.
+## Security Notes
+- Do not commit `.env`
+- Change default admin credentials in production
+- Always set a strong `SECRET_KEY`
 
-### 📊 Achievement Analytics
-Visual dashboards show:
-- Achievements by type (pie charts)
-- Progress over time (line graphs)
-- Position distribution (bar charts)
-- Year-wise breakdown
+## Documentation
+- [Contributing Guide](Contributing.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Firebase Setup](FIREBASE_SETUP.md)
 
-### 📁 Certificate Management
-- Upload formats: PDF, JPG, PNG
-- Max file size: 5MB
-- Secure storage with unique filenames
-- One-click download access
+## License
+This project is maintained as an academic/institutional project at SRM Institute of Science and Technology. Add an explicit OSS license file if public redistribution terms are required.
 
-### 🔧 Custom Fields by Type
-Each achievement category has specialized fields:
-
-**Hackathons:** Team size, project title, tech stack, difficulty  
-**Competitions:** Platform, language, problem set, ranking  
-**Papers:** Journal, conference tier, impact factor, citations  
-**Conferences:** Role, presentation format, audience size  
-**Symposiums:** Theme, scope, participation mode
-
----
-
-## 🌐 Navigation Map
-
-| Page | Route | Access |
-|------|-------|--------|
-| Home | `/` | Public |
-| Student Login | `/student-login` | Public |
-| Teacher Login | `/teacher-login` | Public |
-| Student Dashboard | `/student-dashboard` | Students only |
-| Teacher Dashboard | `/teacher-dashboard` | Teachers only |
-| View Achievements | `/view-achievements` | Students only |
-| Add Achievement | `/add-achievement` | Teachers only |
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Here's how to get started:
-
-1. **Fork** the repository
-2. **Clone** your fork locally
-3. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
-4. **Commit** your changes (`git commit -m 'Add amazing feature'`)
-5. **Push** to your branch (`git push origin feature/amazing-feature`)
-6. **Open** a Pull Request
-
-📖 Read [`CONTRIBUTING.md`](CONTRIBUTING.md) for detailed guidelines.
-
----
-
-## 🗺️ Roadmap
-
-### Phase 1 (Current)
-- [x] Core achievement tracking
-- [x] Student & teacher dashboards
-- [x] Certificate upload/download
-- [x] Dark mode support
-
-### Phase 2 (Planned)
-- [ ] 📱 Mobile app (iOS + Android)
-- [ ] 🔗 LinkedIn integration for sharing
-- [ ] 🤖 AI-powered certificate validation
-- [ ] 📧 Email notifications for new achievements
-- [ ] 🌍 Multi-language support
-
-### Phase 3 (Future)
-- [ ] 📊 Advanced predictive analytics
-- [ ] 📄 Export as PDF portfolio
-- [ ] 🔐 OAuth authentication
-- [ ] ☁️ Cloud deployment options
-
----
-
-## 📜 License
-
-Academic project developed at **SRM Institute of Science and Technology**.  
-For educational and institutional use.
-
----
-
-## 📬 Contact & Support
-
-**Found a bug?** **Have an idea?** **Need help?**
-
-- 🐛 [Report Issues](https://github.com/Eswaramuthu/Achievement-Management-System/issues)
-- 💬 [Discussions](https://github.com/Eswaramuthu/Achievement-Management-System/discussions)
-- 📧 Open an issue for direct contact
-
----
-
-<div align="center">
-
-**⭐ Star this repo if you find it helpful!**
-
-Made with ❤️ at SRM Institute of Science and Technology
-
-</div>
