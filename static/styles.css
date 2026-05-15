@@ -425,21 +425,20 @@ body.light-mode .navbar {
   padding: 0 2px;
 }
 
-.bar {
+.chart-bar {
   flex: 1;
   height: var(--h, 60%);
   background: linear-gradient(180deg, #e5261f 0%, #9e1b15 100%);
   border-radius: 5px 5px 3px 3px;
   transition: opacity var(--ease);
   will-change: transform;
-  /* GPU layer, no repaints */
 }
 
-.bar.bar-tall {
+.chart-bar.bar-tall {
   background: linear-gradient(180deg, #ff3a2e 0%, #e5261f 100%);
 }
 
-.bar:hover {
+.chart-bar:hover {
   opacity: 0.85;
 }
 
@@ -1568,4 +1567,9 @@ body.light-mode .navbar {
   .login-card {
     padding: 1.5rem 1.2rem;
   }
+}
+
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
 }
