@@ -786,3 +786,36 @@ body {
   transform: scale(1.12);
   font-weight: bolder;
 }
+@media (max-width: 768px) {
+
+  body {
+    overflow-x: hidden;
+    padding: 10px;
+  }
+
+  .header,
+  .navbar,
+  .nav-links,
+  .hero,
+  .container,
+  .content {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  h1, h2, h3 {
+    font-size: 90%;
+    text-align: center;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  button {
+    width: 100%;
+    margin-top: 10px;
+  }
+}
