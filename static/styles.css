@@ -786,3 +786,7 @@ body {
   transform: scale(1.12);
   font-weight: bolder;
 }
+
+.back-link a {
+    text-decoration: none;
+}
