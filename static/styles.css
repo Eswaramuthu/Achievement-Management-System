@@ -434,7 +434,7 @@ body.light-mode .navbar {
   will-change: transform;
 }
 
-.chart-bar.bar-tall {
+.chart-bar.chart-bar-tall {
   background: linear-gradient(180deg, #ff3a2e 0%, #e5261f 100%);
 }
 
