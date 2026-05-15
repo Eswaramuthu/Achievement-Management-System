@@ -6,9 +6,11 @@
   <title>Student Dashboard - Achievement Management System</title>
   <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
   <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     .dashboard-container {
-      max-width: 900px !important;
+      max-width: 1400px !important;
+      width: 95%;
     }
     
     .dashboard-stats {
@@ -183,14 +185,190 @@
   right: 20px;
   z-index: 100;
   }
+  
+  .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    padding: 20px;
+    text-align: center;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    z-index: 50;
+  }
+  
+  .header-text {
+    color: var(--text-color);
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+  }
+  
+  .header-text strong {
+    color: var(--primary-color);
+  }
+  
+/* ===== Full Dashboard Footer ===== */
+/* ===== Full Width Footer Wrapper ===== */
+.footer {
+  position: relative;
+  margin-top: 60px;
+
+  /* FORCE full viewport width */
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border-color);
+}
+
+/* ===== Footer Main Content ===== */
+.footer-content {
+  width: 100%;
+  padding: 40px 80px;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 40px;
+}
+
+/* ===== Branding ===== */
+.footer-brand h3 {
+  margin: 0 0 10px;
+  color: var(--primary-color);
+  font-size: 20px;
+}
+
+.footer-brand p {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* ===== Footer Links ===== */
+.footer-links h4 {
+  margin-bottom: 10px;
+  font-size: 15px;
+  color: var(--text-color);
+}
+
+.footer-links a {
+  display: block;
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  margin-bottom: 6px;
+}
+
+.footer-links a:hover {
+  color: var(--primary-color);
+}
+
+/* ===== Bottom Bar ===== */
+.footer-bottom {
+  width: 100%;
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+  padding: 15px 80px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.footer-bottom strong {
+  color: var(--primary-color);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .footer-content {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding: 30px 20px;
+  }
+
+  .footer-bottom {
+    padding: 15px 20px;
+  }
+}
+
+  /* ===== Page Layout for Sticky Footer ===== */
+.dashboard-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main content grows, footer pushed down */
+.dashboard-main {
+  flex: 1;
+  padding-top: 120px; /* header space */
+}
+
+/* ===== FINAL PERFORMANCE CHART LAYOUT ===== */
+
+.performance-charts{
+  display:flex;
+  justify-content:center;
+  gap:48px;
+  flex-wrap:wrap;
+  margin-top:25px;
+}
+
+.performance-card{
+  width:390px;
+  background:var(--glass-bg);
+  border:1px solid var(--border-color);
+  border-radius:12px;
+  padding:18px;
+  text-align:center;
+}
+
+.performance-card canvas{
+  width:100% !important;
+  height:240px !important;
+}
+
+/* performance score big card */
+.score-card{
+  width:100%;
+  background:linear-gradient(90deg,#2b0f1a,#1c1f3a);
+  text-align:center;
+  padding:25px;
+  border-radius:14px;
+  margin-bottom:20px;
+}
+
+.score-number{
+  font-size:48px;
+  font-weight:bold;
+  color:#ff3b3b;
+}
+
   </style>
 </head>
-<body style="height: auto; align-items: flex-start; padding-top: 80px;">
+<body class="dashboard-page">
+  <!-- Header -->
+  <header class="header">
+    <h1 class="header-text">
+      <strong>Achievement-Management-System</strong>
+    </h1>
+  </header>
+  
   <div class="toggle-container">
     <button id="mode-toggle">Dark Mode 🌙</button>
   </div>
   
+<main class="dashboard-main">
   <div class="container dashboard-container">
+    <!-- existing dashboard content -->
+  </div>
+</main>
+
     <div class="title">Student Dashboard</div>
     <div class="content">
       <!-- Student Info -->
@@ -230,12 +408,65 @@
           <div class="action-title">Analytics</div>
           <div class="action-description">Track your achievement progress over time</div>
         </a>
-        <a href="#" class="dashboard-action">
+        <a href="{{ url_for('student-profile') }}" class="dashboard-action">
           <div class="action-icon">👤</div>
           <div class="action-title">Profile</div>
           <div class="action-description">Update your personal information</div>
         </a>
       </div>
+     <!-- ================= STUDENT PERFORMANCE SECTION ================= -->
+<div class="recent-section">
+  <div class="section-header">
+    <div class="section-title">📊 Student Performance</div>
+  </div>
+
+  <!-- category cards -->
+  <div class="dashboard-stats">
+    <div class="stat-card">
+      <div class="stat-number" id="hackathons">0</div>
+      <div class="stat-label">Hackathons</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="coding">0</div>
+      <div class="stat-label">Coding</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="papers">0</div>
+      <div class="stat-label">Papers</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="extra">0</div>
+      <div class="stat-label">Extracurricular</div>
+    </div>
+  </div>
+
+  <!-- score -->
+  <div class="score-card">
+    <div class="score-number" id="score">0</div>
+    <div>Performance Score</div>
+  </div>
+
+  <!-- charts -->
+  <div class="performance-charts">
+
+    <div class="performance-card">
+      <h4>Category Distribution</h4>
+      <canvas id="categoryChart"></canvas>
+    </div>
+
+    <div class="performance-card">
+      <h4>Position Breakdown</h4>
+      <canvas id="positionChart"></canvas>
+    </div>
+
+    <div class="performance-card">
+      <h4>Monthly Progress</h4>
+      <canvas id="monthlyChart"></canvas>
+    </div>
+
+  </div>
+</div>
+<!-- ================= END ================= -->
       
       <!-- Recent Achievements -->
       <div class="recent-section">
@@ -270,5 +501,103 @@
       </div>
     </div>
   </div>
+  
+  <!-- Footer -->
+<footer class="footer">
+  <div class="footer-content">
+
+    <div class="footer-brand">
+      <h3>Achievement Management System</h3>
+      <p>Track, manage, and showcase student achievements efficiently.</p>
+    </div>
+
+    <div class="footer-links">
+      <h4>Quick Links</h4>
+      <a href="{{ url_for('student-achievements') }}">My Achievements</a>
+      <a href="#">Analytics</a>
+      <a href="{{ url_for('student-profile') }}">Profile</a>
+    </div>
+
+    <div class="footer-links">
+      <h4>Support</h4>
+      <a href="#">Help</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Use</a>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    © 2026 <strong>OSCG</strong> · Open Source Project
+  </div>
+</footer>
+<script>
+const data = {
+  hackathon: 5,
+  coding: 4,
+  papers: 3,
+  extracurricular: 2,
+  first: 3,
+  second: 2,
+  third: 2,
+  participation: 7,
+  monthly:[2,5,3,6,4,7,5,3,4,6,2,5]
+};
+
+let score = (data.first*10)+(data.second*8)+(data.third*6)+(data.participation*3);
+
+document.getElementById("hackathons").innerText=data.hackathon;
+document.getElementById("coding").innerText=data.coding;
+document.getElementById("papers").innerText=data.papers;
+document.getElementById("extra").innerText=data.extracurricular;
+document.getElementById("score").innerText=score;
+
+Chart.defaults.color = "#cccccc";
+Chart.defaults.font.family = "Poppins";
+
+// Category Doughnut
+new Chart(document.getElementById('categoryChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Hackathons','Coding','Papers','Extracurricular'],
+    datasets: [{
+      data: [data.hackathon,data.coding,data.papers,data.extracurricular],
+      backgroundColor:['#ff4d4d','#36a2eb','#ffce56','#4caf50'],
+      borderWidth:0
+    }]
+  },
+  options:{plugins:{legend:{position:'bottom'}},cutout:'55%'}
+});
+
+// Position Bar
+new Chart(document.getElementById('positionChart'), {
+  type:'bar',
+  data:{
+    labels:['1st','2nd','3rd','Participation'],
+    datasets:[{
+      data:[data.first,data.second,data.third,data.participation],
+      backgroundColor:'rgba(255,0,0,0.6)',
+      borderRadius:6
+    }]
+  },
+  options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+});
+
+// Monthly Line
+new Chart(document.getElementById('monthlyChart'), {
+  type:'line',
+  data:{
+    labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    datasets:[{
+      data:data.monthly,
+      borderColor:'#ff4d4d',
+      backgroundColor:'rgba(255,0,0,0.1)',
+      fill:true,
+      tension:0.4
+    }]
+  },
+  options:{plugins:{legend:{display:false}}}
+});
+</script>
 </body>
 </html>

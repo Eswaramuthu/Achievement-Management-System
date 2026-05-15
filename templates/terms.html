@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+  .legal-page {
+    padding: 40px 15px;
+  }
+
+  .legal-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--glass-bg);
+    padding: 40px 45px;
+    border-radius: 15px;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+  }
+
+  .legal-container h1 {
+    text-align: center;
+    font-size: 32px;
+    margin-bottom: 8px;
+    color: var(--text-color);
+  }
+
+  .legal-container .last-update {
+    text-align: center;
+    font-size: 14px;
+    color: #ffffff;
+    margin-bottom: 25px;
+  }
+
+  .legal-container .intro {
+    text-align: center;
+    color: #ffffff;
+    font-size: 16px;
+    margin-bottom: 35px;
+    line-height: 1.7;
+  }
+
+  .legal-container h2 {
+    margin-top: 32px;
+    margin-bottom: 12px;
+    font-size: 22px;
+    color: var(--primary-color);
+    position: relative;
+    padding-left: 15px;
+  }
+
+  .legal-container h2::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 3px;
+    width: 5px;
+    height: 80%;
+    background: linear-gradient(to bottom, #667eea, #764ba2);
+    border-radius: 5px;
+  }
+
+  .legal-container p {
+    color: var(--text-secondary);
+    font-size: 15px;
+    line-height: 1.8;
+    margin-bottom: 15px;
+  }
+
+  .legal-container ul {
+    margin-left: 25px;
+    margin-bottom: 20px;
+  }
+
+  .legal-container ul li {
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    font-size: 15px;
+  }
+
+  .legal-footer-link {
+    text-align: center;
+    margin-top: 32px;
+  }
+
+  .legal-footer-link a {
+    display: inline-block;
+    padding: 10px 24px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    text-decoration: none;
+    border-radius: 24px;
+    font-size: 14px;
+    transition: 0.3s;
+  }
+
+  .legal-footer-link a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  @media (max-width: 600px) {
+    .legal-container {
+      padding: 25px 20px;
+    }
+
+    .legal-container h1 {
+      font-size: 26px;
+    }
+
+    .legal-container h2 {
+      font-size: 19px;
+    }
+  }
+</style>
+
+<section class="legal-page">
+  <div class="legal-container">
+    <h1>Terms &amp; Conditions</h1>
+
+    <p class="last-update">Last Updated: 12 February 2026</p>
+
+    <p class="intro">
+      These Terms &amp; Conditions govern the use of the Achievement Management System.
+      By accessing or using this platform, you agree to comply with these terms.
+    </p>
+
+    <h2>1. Acceptance of Terms</h2>
+    <p>
+      By using this platform, you confirm that you have read, understood, and agreed
+      to these Terms &amp; Conditions.
+    </p>
+
+    <h2>2. User Responsibilities</h2>
+    <ul>
+      <li>Provide accurate and updated information</li>
+      <li>Maintain confidentiality of login credentials</li>
+      <li>Use the platform for academic purposes only</li>
+      <li>Respect institutional rules and regulations</li>
+    </ul>
+
+    <h2>3. Acceptable Use Policy</h2>
+    <ul>
+      <li>No unauthorized access attempts</li>
+      <li>No submission of false or misleading information</li>
+      <li>No misuse of system resources</li>
+      <li>No violation of academic integrity</li>
+    </ul>
+
+    <h2>4. Data Usage</h2>
+    <p>
+      User data is collected and processed in accordance with the Privacy Policy.
+      The platform ensures responsible handling of personal and academic records.
+    </p>
+
+    <h2>5. Intellectual Property</h2>
+    <p>
+      All content, software, and materials on this platform are the property of
+      the system administrators unless otherwise stated.
+    </p>
+
+    <h2>6. Limitation of Liability</h2>
+    <p>
+      The platform is provided "as is" without warranties. The administrators
+      are not responsible for data loss, service interruptions, or damages.
+    </p>
+
+    <h2>7. Account Suspension &amp; Termination</h2>
+    <p>
+      Accounts may be suspended or terminated in case of policy violations,
+      misuse, or security threats.
+    </p>
+
+    <h2>8. Dispute Resolution</h2>
+    <p>
+      Any disputes related to platform usage shall be handled in accordance
+      with institutional policies and applicable laws.
+    </p>
+
+    <h2>9. Changes to Terms</h2>
+    <p>
+      These Terms &amp; Conditions may be updated periodically. Continued use
+      of the platform indicates acceptance of the revised terms.
+    </p>
+
+    <h2>10. Contact Information</h2>
+    <p>
+      For questions regarding these Terms &amp; Conditions, please contact
+      the system administrator through official channels.
+    </p>
+
+    <div class="legal-footer-link">
+      <a href="{{ url_for('home') }}">← Back to Home</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
