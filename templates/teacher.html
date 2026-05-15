@@ -8,27 +8,266 @@
   <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
   <script src="{{ url_for('static', filename = 'script.js') }}"></script>
   <style>
+    /* ===== Teacher Login Page Styling ===== */
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top right, rgba(239, 68, 68, 0.15), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.12), transparent 30%),
+        linear-gradient(135deg, #050816, #0f172a);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+    }
+
+    body.light-mode {
+      background:
+        radial-gradient(circle at top right, rgba(239, 68, 68, 0.08), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.08), transparent 30%),
+        linear-gradient(135deg, #f8fafc, #e2e8f0);
+    }
+
+    /* ===== Login Container ===== */
+
+    .login-container {
+      width: 100%;
+      max-width: 460px;
+      padding: 40px 34px;
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      position: relative;
+      overflow: hidden;
+    }
+
+    body.light-mode .login-container {
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+    }
+
+    .login-container::before {
+      content: "";
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      background: rgba(239, 68, 68, 0.16);
+      border-radius: 50%;
+      filter: blur(80px);
+      top: -60px;
+      right: -60px;
+    }
+
+    /* ===== Title ===== */
+
+    .title {
+      font-size: 34px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 30px;
+      color: #fff;
+      position: relative;
+      z-index: 2;
+    }
+
+    body.light-mode .title {
+      color: #111827;
+    }
+
+    /* ===== Input Fields ===== */
+
+    .user-details {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .input-box {
+      width: 100%;
+    }
+
+    .details {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #cbd5e1;
+    }
+
+    body.light-mode .details {
+      color: #475569;
+    }
+
+    .input-box input {
+      width: 100%;
+      height: 52px;
+      padding: 0 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      font-size: 15px;
+      transition: 0.3s ease;
+    }
+
+    body.light-mode .input-box input {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      color: #111827;
+    }
+
+    .input-box input:focus {
+      outline: none;
+      border-color: #ef4444;
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
+    }
+
+    .input-box input::placeholder {
+      color: #94a3b8;
+    }
+
+    /* ===== Login Button ===== */
+
+    .button {
+      margin-top: 28px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .button input {
+      width: 100%;
+      height: 54px;
+      border: none;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.35s ease;
+      box-shadow: 0 14px 30px rgba(239, 68, 68, 0.25);
+    }
+
+    .button input:hover {
+      transform: translateY(-3px);
+      background: linear-gradient(135deg, #ff4d4d, #dc2626);
+    }
+
+    /* ===== Error Message ===== */
+
+    .error-message {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #fca5a5 !important;
+      font-size: 14px;
+    }
+
+    /* ===== Auth Links ===== */
+
+    .auth-links {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .register-cta {
+      color: #ef4444;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: 0.3s ease;
+    }
+
+    .register-cta:hover {
+      color: #ff6b6b;
+    }
+
+    .back-home {
+      color: #94a3b8;
+      font-size: 13px;
+      text-decoration: none;
+      transition: 0.3s ease;
+    }
+
+    .back-home:hover {
+      color: #fff;
+    }
+
+    body.light-mode .back-home:hover {
+      color: #111827;
+    }
+
+    /* ===== Theme Toggle ===== */
+
     .theme-toggle {
       position: fixed;
-      top: 16px;
-      right: 20px;
-      width: 42px;
-      height: 42px;
+      top: 18px;
+      right: 22px;
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
-      border: none;
-      background: #ffffff;
-      color: #000;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      color: #fff;
       font-size: 20px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: 0.35s ease;
       z-index: 9999;
     }
-    body:not(.light-mode) .theme-toggle {
-      background: #1f1f1f;
-      color: #fff;
+
+    body.light-mode .theme-toggle {
+      background: rgba(255, 255, 255, 0.8);
+      color: #111827;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .theme-toggle:hover {
+      transform: translateY(-3px) scale(1.05);
+      background: rgba(239, 68, 68, 0.15);
+    }
+
+    /* ===== Mobile ===== */
+
+    @media(max-width: 600px) {
+
+      body {
+        padding: 20px;
+      }
+
+      .login-container {
+        padding: 34px 24px;
+        border-radius: 24px;
+      }
+
+      .title {
+        font-size: 28px;
+      }
+
+      .theme-toggle {
+        width: 44px;
+        height: 44px;
+        top: 14px;
+        right: 16px;
+      }
     }
   </style>
 </head>

@@ -8,18 +8,161 @@
   <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
   <script src="{{ url_for('static', filename = 'script.js') }}"></script>
   <style>
-    .google-signin-container {
-      margin-top: 20px;
-      padding-top: 20px;
-      border-top: 1px solid #ddd;
+    /* ===== Login Page Modern Theme ===== */
+
+    body {
+      background: #050816;
+      color: #fff;
+      overflow-x: hidden;
     }
+
+    /* Background Glow */
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at top right, rgba(239, 68, 68, 0.18), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.15), transparent 30%),
+        radial-gradient(circle at center, rgba(255, 255, 255, 0.03), transparent 40%);
+      z-index: -2;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: -1;
+    }
+
+    /* Container */
+
+    .login-container {
+      width: 100%;
+      max-width: 480px;
+      margin: 80px auto;
+      padding: 40px;
+
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 28px;
+
+      backdrop-filter: blur(12px);
+
+      box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    /* Title */
+
+    .title {
+      font-size: 34px;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 35px;
+      letter-spacing: -1px;
+    }
+
+    /* Inputs */
+
+    .input-box {
+      margin-bottom: 22px;
+    }
+
+    .details {
+      display: block;
+      margin-bottom: 10px;
+      color: #cbd5e1;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .input-box input {
+      width: 100%;
+      height: 56px;
+      padding: 0 18px;
+
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+
+      background: rgba(255, 255, 255, 0.04);
+      color: #fff;
+
+      font-size: 15px;
+      transition: 0.3s ease;
+    }
+
+    .input-box input::placeholder {
+      color: #64748b;
+    }
+
+    .input-box input:focus {
+      outline: none;
+      border-color: #ef4444;
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12);
+    }
+
+    /* Password Wrapper */
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-toggle-btn {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    /* Login Button */
+
+    .button input {
+      width: 100%;
+      height: 56px;
+
+      border: none;
+      border-radius: 18px;
+
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+
+      cursor: pointer;
+      transition: 0.35s ease;
+
+      box-shadow: 0 15px 35px rgba(239, 68, 68, 0.25);
+    }
+
+    .button input:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 20px 40px rgba(239, 68, 68, 0.35);
+    }
+
+    /* Divider */
+
     .signin-divider {
       text-align: center;
-      margin: 15px 0;
+      margin: 28px 0;
       position: relative;
-      font-size: 12px;
-      color: #999;
+      font-size: 13px;
+      color: #94a3b8;
     }
+
     .signin-divider::before {
       content: "";
       position: absolute;
@@ -27,128 +170,147 @@
       top: 50%;
       width: 100%;
       height: 1px;
-      background: #ddd;
+      background: rgba(255, 255, 255, 0.08);
     }
+
     .signin-divider span {
-      background: white;
-      padding: 0 8px;
       position: relative;
-      display: inline-block;
+      padding: 0 14px;
+      background: #111827;
     }
+
+    /* Google Button */
+
     .google-signin-btn {
       width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      background-color: white;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      cursor: pointer;
+      height: 56px;
+
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+
+      background: rgba(255, 255, 255, 0.04);
+      color: #fff;
+
+      font-size: 15px;
+      font-weight: 600;
+
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      font-size: 14px;
-      font-weight: 500;
-      transition: background-color 0.2s, box-shadow 0.2s;
-    }
-    .google-signin-btn:hover {
-      background-color: #f8f8f8;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    }
-    .google-signin-btn:active {
-      background-color: #f0f0f0;
-    }
-    .google-signin-btn img {
-      width: 18px;
-      height: 18px;
-    }
-    .loading {
-      opacity: 0.6;
-      pointer-events: none;
+      gap: 12px;
+
+      cursor: pointer;
+      transition: 0.3s ease;
     }
 
-    /* ===== Theme Toggle (Top Right) ===== */
+    .google-signin-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .google-signin-btn img {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Theme Toggle */
+
     .theme-toggle {
       position: fixed;
-      top: 16px;
+      top: 20px;
       right: 20px;
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
+
+      width: 52px;
+      height: 52px;
+
       border: none;
-      background: #ffffff;
-      color: #000;
-      font-size: 20px;
-      cursor: pointer;
+      border-radius: 50%;
+
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+
+      font-size: 22px;
+
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      z-index: 9999;
+
+      cursor: pointer;
+
+      backdrop-filter: blur(10px);
+
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+
+      transition: 0.3s ease;
     }
 
-    body:not(.light-mode) .theme-toggle {
-      background: #1f1f1f;
-      color: #fff;
+    .theme-toggle:hover {
+      background: #ef4444;
+      transform: scale(1.08);
     }
 
-    /* ===== Auth Links Section ===== */
+    /* Auth Links */
+
     .auth-links {
-      margin-top: 22px;
+      margin-top: 28px;
+
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
-    /* Register CTA (secondary action) */
     .register-cta {
+      color: #ef4444;
       font-size: 14px;
-      color: #d10000;
-      text-decoration: none;
       font-weight: 600;
+      text-decoration: none;
     }
 
     .register-cta:hover {
       text-decoration: underline;
     }
 
-    /* Back to Home (tertiary navigation) */
     .back-home {
+      color: #94a3b8;
       font-size: 13px;
-      color: #666;
       text-decoration: none;
     }
 
     .back-home:hover {
-      text-decoration: underline;
-    }
-
-    /* ===== Password visibility toggle ===== */
-    .password-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    .password-wrapper input[type="password"],
-    .password-wrapper input[type="text"] {
-      width: 100%;
-      padding-right: 40px; 
-    }
-
-    .password-toggle-btn {
-      position: absolute;
-      right: 10px;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      font-size: 16px;
       color: #fff;
     }
 
-    .password-toggle-btn:focus {
-      outline: none;
+    /* Error Message */
+
+    .error-message {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      color: #fca5a5;
+      padding: 14px;
+      border-radius: 14px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    /* Responsive */
+
+    @media(max-width:600px) {
+
+      .login-container {
+        margin: 40px 16px;
+        padding: 28px;
+      }
+
+      .title {
+        font-size: 28px;
+      }
+
+      .theme-toggle {
+        width: 46px;
+        height: 46px;
+        font-size: 20px;
+      }
     }
   </style>
 </head>
@@ -169,20 +331,10 @@
           <div class="input-box full-width">
             <span class="details">Password</span>
             <div class="password-wrapper">
-              <input
-                autocomplete="off"
-                type="password"
-                name="password"
-                id="student-login-password"
-                placeholder="Enter your password"
-                required
-              />
-              <button
-                type="button"
-                class="password-toggle-btn"
-                aria-label="Show password"
-                data-target="student-login-password"
-              >
+              <input autocomplete="off" type="password" name="password" id="student-login-password"
+                placeholder="Enter your password" required />
+              <button type="button" class="password-toggle-btn" aria-label="Show password"
+                data-target="student-login-password">
                 👁
               </button>
             </div>
