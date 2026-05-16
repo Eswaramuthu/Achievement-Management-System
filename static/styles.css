@@ -155,6 +155,25 @@ body {
   text-decoration: underline;
 }
 
+.back-link {
+  margin-top: 14px;
+  text-align: center;
+}
+
+.back-link a {
+  display: inline-block;
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.back-link a:hover {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
+
 /* Home page */
 
 .home-container {
