@@ -1389,31 +1389,52 @@ def student():
         firebase_config = get_firebase_config()
     else:
         firebase_config = DEFAULT_FIREBASE_CONFIG
-    
+
     if request.method == "POST":
         student_id = request.form.get("sname")
         password = request.form.get("password")
 
         connection = sqlite3.connect(DB_PATH)
+        connection.row_factory = sqlite3.Row
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM student WHERE student_id = ?", (student_id,))
+
+        cursor.execute(
+            "SELECT * FROM student WHERE student_id = ?",
+            (student_id,)
+        )
+
         student_data = cursor.fetchone()
         connection.close()
 
-        if student_data and check_password_hash(student_data[4], password):
-            # Check if student is approved
-            if not student_data[7]:  # is_approved is at index 7
-                return render_template("student.html", error="Your account is pending admin approval. Please wait for activation.", firebase_config=firebase_config)
-            
-            session["logged_in"] = True
-            session["student_id"] = student_data[1]
-            session["student_name"] = student_data[0]
-            session["student_dept"] = student_data[6]
-            return redirect(url_for("student-dashboard"))
-        else:
-            return render_template("student.html", error="Invalid credentials. Please try again.", firebase_config=firebase_config)
+        if student_data:
+            stored_password = student_data["password"]
 
-    return render_template("student.html", firebase_config=firebase_config)
+            if check_password_hash(stored_password, password):
+
+                if not student_data["is_approved"]:
+                    return render_template(
+                        "student.html",
+                        error="Your account is pending admin approval. Please wait for activation.",
+                        firebase_config=firebase_config
+                    )
+
+                session["logged_in"] = True
+                session["student_id"] = student_data["student_id"]
+                session["student_name"] = student_data["student_name"]
+                session["student_dept"] = student_data["student_dept"]
+
+                return redirect(url_for("student-dashboard"))
+
+        return render_template(
+            "student.html",
+            error="Invalid credentials. Please try again.",
+            firebase_config=firebase_config
+        )
+
+    return render_template(
+        "student.html",
+        firebase_config=firebase_config
+    )
 
 
 # Update teacher login to check approval status
@@ -1424,23 +1445,39 @@ def teacher():
         password = request.form.get("password")
 
         connection = sqlite3.connect(DB_PATH)
+        connection.row_factory = sqlite3.Row
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM teacher WHERE teacher_id = ?", (teacher_id,))
+
+        cursor.execute(
+            "SELECT * FROM teacher WHERE teacher_id = ?",
+            (teacher_id,)
+        )
+
         teacher_data = cursor.fetchone()
         connection.close()
 
-        if teacher_data and check_password_hash(teacher_data[4], password):
-            # Check if teacher is approved
-            if not teacher_data[7]:  # is_approved is at index 7
-                return render_template("teacher.html", error="Your account is pending admin approval. Please wait for activation.")
-            
-            session["logged_in"] = True
-            session["teacher_id"] = teacher_data[1]
-            session["teacher_name"] = teacher_data[0]
-            session["teacher_dept"] = teacher_data[6]
-            return redirect(url_for("teacher-dashboard"))
-        else:
-            return render_template("teacher.html", error="Invalid credentials. Please try again.")
+        if teacher_data:
+            stored_password = teacher_data["password"]
+
+            if check_password_hash(stored_password, password):
+
+                if not teacher_data["is_approved"]:
+                    return render_template(
+                        "teacher.html",
+                        error="Your account is pending admin approval. Please wait for activation."
+                    )
+
+                session["logged_in"] = True
+                session["teacher_id"] = teacher_data["teacher_id"]
+                session["teacher_name"] = teacher_data["teacher_name"]
+                session["teacher_dept"] = teacher_data["teacher_dept"]
+
+                return redirect(url_for("teacher-dashboard"))
+
+        return render_template(
+            "teacher.html",
+            error="Invalid credentials. Please try again."
+        )
 
     return render_template("teacher.html")
 
