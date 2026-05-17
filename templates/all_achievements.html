@@ -1,170 +1,201 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>All Achievements - Achievement Management System</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
-  <style>
-    .dashboard-container {
-      max-width: 1100px !important;
-    }
-    
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-    }
-    
-    .back-button {
-      text-decoration: none;
-      color: var(--primary-color);
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    
-    .achievements-table {
-      width: 100%;
-      border-collapse: collapse;
-      background: var(--glass-bg);
-      border-radius: 10px;
-      overflow: hidden;
-      margin-bottom: 30px;
-    }
-    
-    .achievements-table th, 
-    .achievements-table td {
-      padding: 12px 15px;
-      text-align: left;
-      border-bottom: 1px solid var(--border-color);
-    }
-    
-    .achievements-table th {
-      background-color: rgba(255, 0, 0, 0.1);
-      font-weight: 600;
-    }
-    
-    .achievements-table tbody tr:hover {
-      background-color: rgba(255, 0, 0, 0.05);
-    }
-    
-    .achievements-table tbody tr:last-child td {
-      border-bottom: none;
-    }
-    
-    .achievement-type-badge {
-      background-color: var(--primary-color);
-      color: white;
-      padding: 3px 10px;
-      border-radius: 5px;
-      display: inline-block;
-      font-size: 14px;
-    }
-    
-    .view-button {
-      background-color: var(--primary-color);
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 5px;
-      cursor: pointer;
-      text-decoration: none;
-      font-size: 14px;
-    }
-    
-    .view-button:hover {
-      opacity: 0.9;
-    }
-    
-    .certificate-link {
-      color: var(--primary-color);
-      text-decoration: none;
-    }
-    
-    .certificate-link:hover {
-      text-decoration: underline;
-    }
-    
-    .no-achievements {
-      text-align: center;
-      padding: 30px;
-      background: var(--glass-bg);
-      border-radius: 10px;
-      border: 1px solid var(--border-color);
-    }
-    
-    .toggle-container {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 100;
-    }
-    
-    @media (max-width: 768px) {
-      .achievements-table {
-        display: block;
-        overflow-x: auto;
-      }
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>All Achievements - Achievement Management System</title>
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+
+    <!-- External JS -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    <!-- Filter Script -->
+    <script>
+        function filterAchievements() {
+            const filter = document.getElementById("typeFilter").value.toLowerCase();
+            const rows = document.querySelectorAll(".achievement-row");
+
+            rows.forEach(row => {
+                const type = row.dataset.type.toLowerCase();
+
+                if (filter === "all" || type.includes(filter)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+    </script>
+
+    <!-- Page Specific Styles -->
+    <style>
+        .dashboard-container {
+            max-width: 1100px !important;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .back-button {
+            text-decoration: none;
+            color: var(--primary-color);
+        }
+
+        .filter-box {
+            margin-bottom: 20px;
+        }
+
+        .filter-box select {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .achievements-table {
+            width: 100%;
+            border-collapse: collapse;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .achievements-table th,
+        .achievements-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .achievement-type-badge {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .view-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .certificate-link {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .certificate-link:hover {
+            text-decoration: underline;
+        }
+
+        .no-achievements {
+            text-align: center;
+            padding: 30px;
+            background: var(--glass-bg);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+    </style>
 </head>
-<body style="height: auto; align-items: flex-start; padding-top: 80px;">
-  <div class="toggle-container">
-    <button id="mode-toggle">Dark Mode 🌙</button>
-  </div>
-  
-  <div class="container dashboard-container">
-    <div class="page-header">
-      <div class="title">All Recorded Achievements</div>
-      <a href="{{ url_for('teacher-dashboard') }}" class="back-button">← Back to Dashboard</a>
+
+<body style="height:auto; align-items:flex-start; padding-top:80px;">
+
+    <div class="toggle-container">
+        <button id="mode-toggle">Dark Mode 🌙</button>
     </div>
-    
-    <div class="content">
-      {% if achievements %}
-        <table class="achievements-table">
-          <thead>
-            <tr>
-              <th>Student</th>
-              <th>Type</th>
-              <th>Event</th>
-              <th>Date</th>
-              <th>Position</th>
-              <th>Certificate</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for achievement in achievements %}
-              <tr>
-                <td>{{ achievement.student_name }} ({{ achievement.student_id }})</td>
-                <td><span class="achievement-type-badge">{{ achievement.achievement_type }}</span></td>
-                <td>{{ achievement.event_name }}</td>
-                <td>{{ achievement.achievement_date }}</td>
-                <td>{{ achievement.position }}</td>
-                <td>
-                  {% if achievement.certificate_path %}
-                    <a href="{{ url_for('static', filename=achievement.certificate_path) }}" class="certificate-link" target="_blank">View</a>
-                  {% else %}
-                    -
-                  {% endif %}
-                </td>
-                <td>
-                  <a href="#" class="view-button">Details</a>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      {% else %}
-        <div class="no-achievements">
-          <h3>No achievements have been recorded yet.</h3>
-          <p>Start recording student achievements using the "Record Achievement" option on your dashboard.</p>
+
+    <div class="container dashboard-container">
+
+        <div class="page-header">
+            <div class="title">All Recorded Achievements</div>
+            <a href="{{ url_for('teacher-dashboard') }}" class="back-button">
+                ← Back to Dashboard
+            </a>
         </div>
-      {% endif %}
+
+        <div class="content">
+
+            <!-- Filter Section -->
+            <div class="filter-box">
+                <label><b>Filter by Achievement Type:</b></label>
+                <select id="typeFilter" onchange="filterAchievements()">
+                    <option value="all">All</option>
+                    <option value="hackathon">Hackathon</option>
+                    <option value="coding">Coding Competition</option>
+                    <option value="paper">Paper Presentation</option>
+                    <option value="conference">Conference</option>
+                    <option value="symposium">Symposium</option>
+                </select>
+            </div>
+
+            {% if achievements %}
+            <table class="achievements-table">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Type</th>
+                        <th>Event</th>
+                        <th>Date</th>
+                        <th>Position</th>
+                        <th>Certificate</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for achievement in achievements %}
+                    <tr class="achievement-row"
+                        data-type="{{ achievement.achievement_type }}">
+
+                        <td>
+                            {{ achievement.student_name }} 
+                            ({{ achievement.student_id }})
+                        </td>
+
+                        <td>
+                            <span class="achievement-type-badge">
+                                {{ achievement.achievement_type }}
+                            </span>
+                        </td>
+
+                        <td>{{ achievement.event_name }}</td>
+                        <td>{{ achievement.achievement_date }}</td>
+                        <td>{{ achievement.position }}</td>
+
+                        <td>
+                            {% if achievement.certificate_path %}
+                                <a href="{{ url_for('static', filename=achievement.certificate_path) }}"
+                                   class="certificate-link"
+                                   target="_blank">
+                                    View
+                                </a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <a href="#" class="view-button">Details</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <div class="no-achievements">
+                    <h3>No achievements recorded yet.</h3>
+                </div>
+            {% endif %}
+
+        </div>
     </div>
-  </div>
+
 </body>
 </html>

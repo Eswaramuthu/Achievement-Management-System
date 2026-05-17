@@ -1,0 +1,9 @@
+/venv1
+/__pycache__
+/.env
+/*.db
+/instance/*
+.DS_Store
+*.pyc
+static/uploads/
+ams.db
