@@ -10,12 +10,14 @@ from flask_wtf import CSRFProtect
 
 try:
     from dotenv import load_dotenv
+
     load_dotenv()
 except ImportError:
     pass
 
 try:
     from firebase_config import get_firebase_config
+
     FIREBASE_AVAILABLE = True
 except ImportError:
     get_firebase_config = None
@@ -29,6 +31,7 @@ DEFAULT_FIREBASE_CONFIG = {
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(16))
+
 
 # csrf = CSRFProtect(app)
 
@@ -66,12 +69,11 @@ def ensure_achievements_schema(connection):
     # Add certificate_hash if missing
     if "certificate_hash" not in column_names:
         cursor.execute("ALTER TABLE achievements ADD COLUMN certificate_hash TEXT")
-    
+
     # This works even if the column was added via ALTER TABLE earlier
     cursor.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_cert_hash ON achievements (certificate_hash)")
 
     connection.commit()
-
 
 
 def add_profile_picture_column():
@@ -102,7 +104,6 @@ def add_profile_picture_column():
         print(f"Error adding profile_picture column: {e}")
 
 
-
 # Define a function to check allowed file extensions
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {"pdf", "png", "jpg", "jpeg"}
@@ -117,107 +118,262 @@ def init_db():
 
     # Student table
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS student (
-            student_name TEXT NOT NULL,
-            student_id TEXT PRIMARY KEY,
-            email TEXT UNIQUE NOT NULL,
-            phone_number TEXT,
-            password TEXT NOT NULL,
-            student_gender TEXT,
-            student_dept TEXT,
-            is_approved BOOLEAN DEFAULT 1,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
+                   CREATE TABLE IF NOT EXISTS student
+                   (
+                       student_name
+                       TEXT
+                       NOT
+                       NULL,
+                       student_id
+                       TEXT
+                       PRIMARY
+                       KEY,
+                       email
+                       TEXT
+                       UNIQUE
+                       NOT
+                       NULL,
+                       phone_number
+                       TEXT,
+                       password
+                       TEXT
+                       NOT
+                       NULL,
+                       student_gender
+                       TEXT,
+                       student_dept
+                       TEXT,
+                       is_approved
+                       BOOLEAN
+                       DEFAULT
+                       1,
+                       created_at
+                       TIMESTAMP
+                       DEFAULT
+                       CURRENT_TIMESTAMP
+                   )
+                   """)
 
     # Teacher table
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS teacher (
-            teacher_name TEXT NOT NULL,
-            teacher_id TEXT PRIMARY KEY,
-            email TEXT UNIQUE NOT NULL,
-            phone_number TEXT,
-            password TEXT NOT NULL,
-            teacher_gender TEXT,
-            teacher_dept TEXT,
-            is_approved BOOLEAN DEFAULT 1,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
+                   CREATE TABLE IF NOT EXISTS teacher
+                   (
+                       teacher_name
+                       TEXT
+                       NOT
+                       NULL,
+                       teacher_id
+                       TEXT
+                       PRIMARY
+                       KEY,
+                       email
+                       TEXT
+                       UNIQUE
+                       NOT
+                       NULL,
+                       phone_number
+                       TEXT,
+                       password
+                       TEXT
+                       NOT
+                       NULL,
+                       teacher_gender
+                       TEXT,
+                       teacher_dept
+                       TEXT,
+                       is_approved
+                       BOOLEAN
+                       DEFAULT
+                       1,
+                       created_at
+                       TIMESTAMP
+                       DEFAULT
+                       CURRENT_TIMESTAMP
+                   )
+                   """)
 
     # Admin table
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS admin (
-            admin_name TEXT NOT NULL,
-            admin_id TEXT PRIMARY KEY,
-            email TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL,
-            is_superuser BOOLEAN DEFAULT 0,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
+                   CREATE TABLE IF NOT EXISTS admin
+                   (
+                       admin_name
+                       TEXT
+                       NOT
+                       NULL,
+                       admin_id
+                       TEXT
+                       PRIMARY
+                       KEY,
+                       email
+                       TEXT
+                       UNIQUE
+                       NOT
+                       NULL,
+                       password
+                       TEXT
+                       NOT
+                       NULL,
+                       is_superuser
+                       BOOLEAN
+                       DEFAULT
+                       0,
+                       created_at
+                       TIMESTAMP
+                       DEFAULT
+                       CURRENT_TIMESTAMP
+                   )
+                   """)
 
     # Departments table for admin management
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS departments (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            dept_code TEXT UNIQUE NOT NULL,
-            dept_name TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
+                   CREATE TABLE IF NOT EXISTS departments
+                   (
+                       id
+                       INTEGER
+                       PRIMARY
+                       KEY
+                       AUTOINCREMENT,
+                       dept_code
+                       TEXT
+                       UNIQUE
+                       NOT
+                       NULL,
+                       dept_name
+                       TEXT
+                       NOT
+                       NULL,
+                       created_at
+                       TIMESTAMP
+                       DEFAULT
+                       CURRENT_TIMESTAMP
+                   )
+                   """)
 
     # Achievement categories table
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS achievement_categories (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            category_code TEXT UNIQUE NOT NULL,
-            category_name TEXT NOT NULL,
-            description TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
+                   CREATE TABLE IF NOT EXISTS achievement_categories
+                   (
+                       id
+                       INTEGER
+                       PRIMARY
+                       KEY
+                       AUTOINCREMENT,
+                       category_code
+                       TEXT
+                       UNIQUE
+                       NOT
+                       NULL,
+                       category_name
+                       TEXT
+                       NOT
+                       NULL,
+                       description
+                       TEXT,
+                       created_at
+                       TIMESTAMP
+                       DEFAULT
+                       CURRENT_TIMESTAMP
+                   )
+                   """)
 
     # Achievements table
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS achievements (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            teacher_id TEXT NOT NULL,
-            student_id TEXT NOT NULL,
-            achievement_type TEXT NOT NULL,
-            event_name TEXT NOT NULL,
-            achievement_date DATE NOT NULL,
-            organizer TEXT NOT NULL,
-            position TEXT NOT NULL,
-            achievement_description TEXT,
-            certificate_path TEXT,
-            symposium_theme TEXT,
-            programming_language TEXT,
-            coding_platform TEXT,
-            paper_title TEXT,
-            journal_name TEXT,
-            conference_level TEXT,
-            conference_role TEXT,
-            team_size INTEGER,
-            project_title TEXT,
-            database_type TEXT,
-            difficulty_level TEXT,
-            other_description TEXT,
-            certificate_hash TEXT UNIQUE,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (student_id) REFERENCES student(student_id),
-            FOREIGN KEY (teacher_id) REFERENCES teacher(teacher_id)
-        )
-    """)
+                   CREATE TABLE IF NOT EXISTS achievements
+                   (
+                       id
+                       INTEGER
+                       PRIMARY
+                       KEY
+                       AUTOINCREMENT,
+                       teacher_id
+                       TEXT
+                       NOT
+                       NULL,
+                       student_id
+                       TEXT
+                       NOT
+                       NULL,
+                       achievement_type
+                       TEXT
+                       NOT
+                       NULL,
+                       event_name
+                       TEXT
+                       NOT
+                       NULL,
+                       achievement_date
+                       DATE
+                       NOT
+                       NULL,
+                       organizer
+                       TEXT
+                       NOT
+                       NULL,
+                       position
+                       TEXT
+                       NOT
+                       NULL,
+                       achievement_description
+                       TEXT,
+                       certificate_path
+                       TEXT,
+                       symposium_theme
+                       TEXT,
+                       programming_language
+                       TEXT,
+                       coding_platform
+                       TEXT,
+                       paper_title
+                       TEXT,
+                       journal_name
+                       TEXT,
+                       conference_level
+                       TEXT,
+                       conference_role
+                       TEXT,
+                       team_size
+                       INTEGER,
+                       project_title
+                       TEXT,
+                       database_type
+                       TEXT,
+                       difficulty_level
+                       TEXT,
+                       other_description
+                       TEXT,
+                       certificate_hash
+                       TEXT
+                       UNIQUE,
+                       created_at
+                       TIMESTAMP
+                       DEFAULT
+                       CURRENT_TIMESTAMP,
+                       FOREIGN
+                       KEY
+                   (
+                       student_id
+                   ) REFERENCES student
+                   (
+                       student_id
+                   ),
+                       FOREIGN KEY
+                   (
+                       teacher_id
+                   ) REFERENCES teacher
+                   (
+                       teacher_id
+                   )
+                       )
+                   """)
 
     # Insert default super admin if not exists
     cursor.execute("SELECT COUNT(*) FROM admin WHERE admin_id = 'superadmin'")
     if cursor.fetchone()[0] == 0:
         default_password = generate_password_hash("admin123")
         cursor.execute("""
-            INSERT INTO admin (admin_name, admin_id, email, password, is_superuser)
-            VALUES (?, ?, ?, ?, ?)
-        """, ("Super Administrator", "superadmin", "admin@system.com", default_password, 1))
+                       INSERT INTO admin (admin_name, admin_id, email, password, is_superuser)
+                       VALUES (?, ?, ?, ?, ?)
+                       """, ("Super Administrator", "superadmin", "admin@system.com", default_password, 1))
 
     # Insert default departments if not exists
     default_departments = [
@@ -249,17 +405,18 @@ def init_db():
     for cat_code, cat_name, description in default_categories:
         cursor.execute("SELECT COUNT(*) FROM achievement_categories WHERE category_code = ?", (cat_code,))
         if cursor.fetchone()[0] == 0:
-            cursor.execute("INSERT INTO achievement_categories (category_code, category_name, description) VALUES (?, ?, ?)",
-                          (cat_code, cat_name, description))
+            cursor.execute(
+                "INSERT INTO achievement_categories (category_code, category_name, description) VALUES (?, ?, ?)",
+                (cat_code, cat_name, description))
 
     connection.commit()
     connection.close()
     print("Database initialized successfully")
 
 
-
 # Call initialization function
 init_db()
+
 
 # Permission decorators for RBAC
 def login_required(f):
@@ -270,7 +427,9 @@ def login_required(f):
         if not session.get("logged_in"):
             return redirect(url_for("home"))
         return f(*args, **kwargs)
+
     return decorated_function
+
 
 def admin_required(f):
     """Decorator to check if user is admin"""
@@ -280,7 +439,9 @@ def admin_required(f):
         if not session.get("logged_in") or not session.get("admin_id"):
             return redirect(url_for("home"))
         return f(*args, **kwargs)
+
     return decorated_function
+
 
 def superadmin_required(f):
     """Decorator to check if user is super admin"""
@@ -290,7 +451,9 @@ def superadmin_required(f):
         if not session.get("logged_in") or not session.get("admin_id") or not session.get("is_superuser"):
             return redirect(url_for("admin_dashboard"))
         return f(*args, **kwargs)
+
     return decorated_function
+
 
 def student_required(f):
     """Decorator to check if user is student"""
@@ -300,7 +463,9 @@ def student_required(f):
         if not session.get("logged_in") or not session.get("student_id"):
             return redirect(url_for("student"))
         return f(*args, **kwargs)
+
     return decorated_function
+
 
 def teacher_required(f):
     """Decorator to check if user is teacher"""
@@ -310,6 +475,7 @@ def teacher_required(f):
         if not session.get("logged_in") or not session.get("teacher_id"):
             return redirect(url_for("teacher"))
         return f(*args, **kwargs)
+
     return decorated_function
 
 
@@ -317,6 +483,8 @@ def teacher_required(f):
 def inject_csrf():
     """Provide csrf_token() for templates that expect it (e.g. tests)."""
     return {"csrf_token": lambda: ""}
+
+
 # Permission decorators for RBAC
 def login_required(f):
     """Decorator to check if user is logged in"""
@@ -326,7 +494,9 @@ def login_required(f):
         if not session.get("logged_in"):
             return redirect(url_for("home"))
         return f(*args, **kwargs)
+
     return decorated_function
+
 
 def admin_required(f):
     """Decorator to check if user is admin"""
@@ -336,7 +506,9 @@ def admin_required(f):
         if not session.get("logged_in") or not session.get("admin_id"):
             return redirect(url_for("home"))
         return f(*args, **kwargs)
+
     return decorated_function
+
 
 def superadmin_required(f):
     """Decorator to check if user is super admin"""
@@ -346,7 +518,9 @@ def superadmin_required(f):
         if not session.get("logged_in") or not session.get("admin_id") or not session.get("is_superuser"):
             return redirect(url_for("admin_dashboard"))
         return f(*args, **kwargs)
+
     return decorated_function
+
 
 def student_required(f):
     """Decorator to check if user is student"""
@@ -356,7 +530,9 @@ def student_required(f):
         if not session.get("logged_in") or not session.get("student_id"):
             return redirect(url_for("student"))
         return f(*args, **kwargs)
+
     return decorated_function
+
 
 def teacher_required(f):
     """Decorator to check if user is teacher"""
@@ -366,6 +542,7 @@ def teacher_required(f):
         if not session.get("logged_in") or not session.get("teacher_id"):
             return redirect(url_for("teacher"))
         return f(*args, **kwargs)
+
     return decorated_function
 
 
@@ -385,19 +562,6 @@ def privacy_policy():
     return render_template("privacy-policy.html")
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 @app.route("/teacher-achievements", endpoint="teacher-achievements")
 def teacher_achievements():
     return render_template("teacher_achievements_2.html")
@@ -413,7 +577,7 @@ def submit_achievements():
     if request.method == "POST":
         try:
             import hashlib
-            
+
             # Extract standard form data
             student_id = request.form.get("student_id")
             achievement_type = request.form.get("achievement_type")
@@ -422,7 +586,7 @@ def submit_achievements():
             organizer = request.form.get("organizer")
             position = request.form.get("position")
             achievement_description = request.form.get("achievement_description")
-            
+
             # Handle numeric fields
             team_size = request.form.get("team_size")
             team_size = int(team_size) if team_size and team_size.strip() else None
@@ -456,18 +620,18 @@ def submit_achievements():
                         return render_template("submit_achievements.html", error="Invalid file type.")
 
                     # 1. Read bytes for hashing
-                    file.seek(0) 
+                    file.seek(0)
                     file_bytes = file.read()
                     certificate_hash = hashlib.sha256(file_bytes).hexdigest()
-                    file.seek(0) # 2. Reset pointer so we can save it later
+                    file.seek(0)  # 2. Reset pointer so we can save it later
 
                     # 3. DB Check for existing Hash
                     with sqlite3.connect(DB_PATH) as check_conn:
                         cursor = check_conn.cursor()
                         cursor.execute("SELECT id FROM achievements WHERE certificate_hash = ?", (certificate_hash,))
                         if cursor.fetchone():
-                            return render_template("submit_achievements.html", 
-                                                 error="Duplicate detected! This certificate is already registered.")
+                            return render_template("submit_achievements.html",
+                                                   error="Duplicate detected! This certificate is already registered.")
 
                     # 4. Save File if check passed
                     timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
@@ -497,35 +661,35 @@ def submit_achievements():
                 student_row = cursor.fetchone()
                 if not student_row:
                     return render_template("submit_achievements.html", error="Student ID not found.")
-                
+
                 student_name = student_row[0]
 
                 query = """
-                    INSERT INTO achievements (
-                        student_id, teacher_id, achievement_type, event_name, achievement_date,
-                        organizer, position, achievement_description, certificate_path,
-                        symposium_theme, programming_language, coding_platform, paper_title,
-                        journal_name, conference_level, conference_role, team_size,
-                        project_title, database_type, difficulty_level, other_description,
-                        certificate_hash
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """
-                
+                        INSERT INTO achievements (student_id, teacher_id, achievement_type, event_name, \
+                                                  achievement_date, \
+                                                  organizer, position, achievement_description, certificate_path, \
+                                                  symposium_theme, programming_language, coding_platform, paper_title, \
+                                                  journal_name, conference_level, conference_role, team_size, \
+                                                  project_title, database_type, difficulty_level, other_description, \
+                                                  certificate_hash) \
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) \
+                        """
+
                 params = (
                     student_id, teacher_id, achievement_type, event_name, achievement_date,
                     organizer, position, achievement_description, certificate_path,
-                    details["symposium_theme"], details["programming_language"], 
-                    details["coding_platform"], details["paper_title"], details["journal_name"], 
+                    details["symposium_theme"], details["programming_language"],
+                    details["coding_platform"], details["paper_title"], details["journal_name"],
                     details["conference_level"], details["conference_role"], team_size,
-                    details["project_title"], details["database_type"], 
+                    details["project_title"], details["database_type"],
                     details["difficulty_level"], details["other_description"], certificate_hash
                 )
 
                 cursor.execute(query, params)
                 connection.commit()
 
-            return render_template("submit_achievements.html", 
-                                 success=f"Success! Achievement for {student_name} recorded.")
+            return render_template("submit_achievements.html",
+                                   success=f"Success! Achievement for {student_name} recorded.")
 
         except sqlite3.IntegrityError:
             return render_template("submit_achievements.html", error="Database error: Duplicate certificate hash.")
@@ -569,34 +733,34 @@ def student_profile():
 
     # Get student ID from session
     student_id = session.get('student_id')
-    
+
     # Connect to database
     connection = sqlite3.connect(DB_PATH)
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
-    
+
     # Get student data from database
     cursor.execute("SELECT * FROM student WHERE student_id = ?", (student_id,))
     student = cursor.fetchone()
-    
+
     connection.close()
-    
+
     if not student:
         # Student not found in database (should not happen)
         session.clear()
         return redirect(url_for('student'))
-    
+
     # Convert row to dict for easier template access
     student_dict = dict(student)
-    
+
     # Build profile picture URL if exists
     profile_picture_url = None
     if student_dict.get('profile_picture'):
         profile_picture_url = url_for('static', filename=student_dict['profile_picture'])
-    
-    return render_template("student_profile.html", 
-                          student=student_dict, 
-                          profile_picture_url=profile_picture_url)
+
+    return render_template("student_profile.html",
+                           student=student_dict,
+                           profile_picture_url=profile_picture_url)
 
 
 @app.route("/student/profile/edit", endpoint="student_profile_edit", methods=["POST"])
@@ -604,9 +768,9 @@ def student_profile_edit():
     # Check if user is logged in
     if not session.get('logged_in') or not session.get('student_id'):
         return redirect(url_for('student'))
-    
+
     student_id = session.get('student_id')
-    
+
     try:
         # Get form data
         student_name = request.form.get('student_name')
@@ -617,20 +781,20 @@ def student_profile_edit():
         current_password = request.form.get('current_password')
         new_password = request.form.get('new_password')
         confirm_password = request.form.get('confirm_password')
-        
+
         # Connect to database
         connection = sqlite3.connect(DB_PATH)
         cursor = connection.cursor()
-        
+
         # Get current student data
         cursor.execute("SELECT * FROM student WHERE student_id = ?", (student_id,))
         student = cursor.fetchone()
-        
+
         if not student:
             connection.close()
             session.clear()
             return redirect(url_for('student'))
-        
+
         # Handle password change if requested
         if current_password and new_password and confirm_password:
             # Verify current password
@@ -638,25 +802,25 @@ def student_profile_edit():
                 connection.close()
                 flash('Current password is incorrect', 'danger')
                 return redirect(url_for('student-profile'))
-            
+
             # Verify new passwords match
             if new_password != confirm_password:
                 connection.close()
                 flash('New passwords do not match', 'danger')
                 return redirect(url_for('student-profile'))
-            
+
             # Verify password length
             if len(new_password) < 6:
                 connection.close()
                 flash('New password must be at least 6 characters long', 'danger')
                 return redirect(url_for('student-profile'))
-            
+
             # Hash new password
             hashed_password = generate_password_hash(new_password)
         else:
             # Keep existing password
             hashed_password = student[4]
-        
+
         # Handle profile picture upload
         profile_picture_path = None
         if 'profile_picture' in request.files:
@@ -666,15 +830,15 @@ def student_profile_edit():
                     # Create a secure filename with timestamp to prevent duplicates
                     timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
                     secure_name = f"profile_{student_id}_{timestamp}_{secure_filename(file.filename)}"
-                    
+
                     # Create profiles subdirectory if it doesn't exist
                     profiles_dir = os.path.join(UPLOAD_FOLDER, 'profiles')
                     os.makedirs(profiles_dir, exist_ok=True)
-                    
+
                     file_path = os.path.join(profiles_dir, secure_name)
                     file.save(file_path)
                     profile_picture_path = f"uploads/profiles/{secure_name}"
-                    
+
                     # Delete old profile picture if exists
                     if student[7]:  # profile_picture is at index 7
                         old_picture_path = os.path.join('static', student[7])
@@ -687,36 +851,44 @@ def student_profile_edit():
                     connection.close()
                     flash('Invalid file type. Please upload JPG, JPEG, or PNG files.', 'danger')
                     return redirect(url_for('student-profile'))
-        
+
         # Update student data in database
         if profile_picture_path:
             cursor.execute("""
-                UPDATE student 
-                SET student_name = ?, email = ?, phone_number = ?, 
-                    student_gender = ?, student_dept = ?, password = ?, 
-                    profile_picture = ?
-                WHERE student_id = ?
-            """, (student_name, email, phone_number, student_gender, 
-                  student_dept, hashed_password, profile_picture_path, student_id))
+                           UPDATE student
+                           SET student_name    = ?,
+                               email           = ?,
+                               phone_number    = ?,
+                               student_gender  = ?,
+                               student_dept    = ?,
+                               password        = ?,
+                               profile_picture = ?
+                           WHERE student_id = ?
+                           """, (student_name, email, phone_number, student_gender,
+                                 student_dept, hashed_password, profile_picture_path, student_id))
         else:
             cursor.execute("""
-                UPDATE student 
-                SET student_name = ?, email = ?, phone_number = ?, 
-                    student_gender = ?, student_dept = ?, password = ?
-                WHERE student_id = ?
-            """, (student_name, email, phone_number, student_gender, 
-                  student_dept, hashed_password, student_id))
-        
+                           UPDATE student
+                           SET student_name   = ?,
+                               email          = ?,
+                               phone_number   = ?,
+                               student_gender = ?,
+                               student_dept   = ?,
+                               password       = ?
+                           WHERE student_id = ?
+                           """, (student_name, email, phone_number, student_gender,
+                                 student_dept, hashed_password, student_id))
+
         connection.commit()
         connection.close()
-        
+
         # Update session data
         session['student_name'] = student_name
         session['student_dept'] = student_dept
-        
+
         flash('Profile updated successfully!', 'success')
         return redirect(url_for('student-profile'))
-        
+
     except Exception as e:
         print(f"Error updating profile: {e}")
         flash(f'Error updating profile: {str(e)}', 'danger')
@@ -754,14 +926,17 @@ def teacher_dashboard():
     this_week_count = cursor.fetchone()[0]
 
     cursor.execute("""
-        SELECT a.id, a.student_id, s.student_name, a.achievement_type,
-               a.event_name, a.achievement_date
-        FROM achievements a
-        JOIN student s ON a.student_id = s.student_id
-        WHERE a.teacher_id = ?
-        ORDER BY a.created_at DESC
-        LIMIT 5
-    """, (teacher_id,))
+                   SELECT a.id,
+                          a.student_id,
+                          s.student_name,
+                          a.achievement_type,
+                          a.event_name,
+                          a.achievement_date
+                   FROM achievements a
+                            JOIN student s ON a.student_id = s.student_id
+                   WHERE a.teacher_id = ?
+                   ORDER BY a.created_at DESC LIMIT 5
+                   """, (teacher_id,))
     recent_entries = cursor.fetchall()
 
     # ===============================
@@ -775,41 +950,41 @@ def teacher_dashboard():
     # ===============================
     # 📊 PERFORMANCE ANALYTICS COUNTS
     # ===============================
-        
+
     cursor.execute("""
-        SELECT student_id, COUNT(*) as total
-        FROM achievements
-        WHERE teacher_id = ?
-        GROUP BY student_id
-    """, (teacher_id,))
+                   SELECT student_id, COUNT(*) as total
+                   FROM achievements
+                   WHERE teacher_id = ?
+                   GROUP BY student_id
+                   """, (teacher_id,))
     rows = cursor.fetchall()
-    
+
     top_students = []
     avg_students = []
     low_students = []
-    
+
     for r in rows:
         sid = r["student_id"]
         total = r["total"]
-    
+
         cursor.execute("SELECT student_name FROM student WHERE student_id = ?", (sid,))
         name_row = cursor.fetchone()
         name = name_row["student_name"] if name_row else sid
-    
+
         if total >= 5:
             top_students.append((name, total))
         elif total >= 2:
             avg_students.append((name, total))
         else:
             low_students.append((name, total))
-    
+
     # counts for chart
     top_count = len(top_students)
     avg_count = len(avg_students)
     low_count = len(low_students)
-        
+
     return render_template(
-       "teacher_dashboard.html",
+        "teacher_dashboard.html",
         teacher=teacher_data,
         stats=stats,
         recent_entries=recent_entries,
@@ -819,7 +994,7 @@ def teacher_dashboard():
         top_count=top_count,
         avg_count=avg_count,
         low_count=low_count
-       )
+    )
 
 
 @app.route("/all-achievements", endpoint="all-achievements")
@@ -834,14 +1009,20 @@ def all_achievements():
     cursor = connection.cursor()
 
     cursor.execute("""
-        SELECT a.id, a.student_id, s.student_name, a.achievement_type,
-               a.event_name, a.achievement_date, a.position, a.organizer,
-               a.certificate_path
-        FROM achievements a
-        JOIN student s ON a.student_id = s.student_id
-        WHERE a.teacher_id = ?
-        ORDER BY a.achievement_date DESC
-    """, (teacher_id,))
+                   SELECT a.id,
+                          a.student_id,
+                          s.student_name,
+                          a.achievement_type,
+                          a.event_name,
+                          a.achievement_date,
+                          a.position,
+                          a.organizer,
+                          a.certificate_path
+                   FROM achievements a
+                            JOIN student s ON a.student_id = s.student_id
+                   WHERE a.teacher_id = ?
+                   ORDER BY a.achievement_date DESC
+                   """, (teacher_id,))
 
     achievements = cursor.fetchall()
     connection.close()
@@ -902,33 +1083,28 @@ def admin_dashboard():
 
     # Recent activities
     cursor.execute("""
-        SELECT type, name, id, is_approved, created_at FROM (
-            SELECT 'student' as type, student_name as name, student_id as id, is_approved, created_at 
-            FROM student 
-            ORDER BY created_at DESC 
-            LIMIT 5
-        )
-        UNION ALL
-        SELECT type, name, id, is_approved, created_at FROM (
-            SELECT 'teacher' as type, teacher_name as name, teacher_id as id, is_approved, created_at 
-            FROM teacher 
-            ORDER BY created_at DESC 
-            LIMIT 5
-        )
-        ORDER BY created_at DESC 
-        LIMIT 10
-    """)
+                   SELECT type, name, id, is_approved, created_at
+                   FROM (SELECT 'student' as type, student_name as name, student_id as id, is_approved, created_at
+                         FROM student
+                         ORDER BY created_at DESC LIMIT 5)
+                   UNION ALL
+                   SELECT type, name, id, is_approved, created_at
+                   FROM (SELECT 'teacher' as type, teacher_name as name, teacher_id as id, is_approved, created_at
+                         FROM teacher
+                         ORDER BY created_at DESC LIMIT 5)
+                   ORDER BY created_at DESC LIMIT 10
+                   """)
     recent_activities = cursor.fetchall()
 
     # Department statistics
     cursor.execute("""
-        SELECT student_dept, COUNT(*) as count 
-        FROM student 
-        WHERE student_dept IS NOT NULL AND student_dept != ''
-        GROUP BY student_dept 
-        ORDER BY count DESC 
-        LIMIT 5
-    """)
+                   SELECT student_dept, COUNT(*) as count
+                   FROM student
+                   WHERE student_dept IS NOT NULL AND student_dept != ''
+                   GROUP BY student_dept
+                   ORDER BY count DESC
+                       LIMIT 5
+                   """)
     dept_stats = cursor.fetchall()
 
     connection.close()
@@ -957,7 +1133,7 @@ def admin_users():
     """Manage users (students and teachers)"""
     user_type = request.args.get("type", "students")
     status = request.args.get("status", "all")
-    
+
     connection = sqlite3.connect(DB_PATH)
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
@@ -965,12 +1141,12 @@ def admin_users():
     if user_type == "students":
         query = "SELECT * FROM student WHERE 1=1"
         params = []
-        
+
         if status == "pending":
             query += " AND is_approved = 0"
         elif status == "approved":
             query += " AND is_approved = 1"
-        
+
         query += " ORDER BY created_at DESC"
         cursor.execute(query, params)
         users = cursor.fetchall()
@@ -978,12 +1154,12 @@ def admin_users():
     else:
         query = "SELECT * FROM teacher WHERE 1=1"
         params = []
-        
+
         if status == "pending":
             query += " AND is_approved = 0"
         elif status == "approved":
             query += " AND is_approved = 1"
-        
+
         query += " ORDER BY created_at DESC"
         cursor.execute(query, params)
         users = cursor.fetchall()
@@ -1047,15 +1223,16 @@ def admin_departments():
 
     # Get department usage statistics
     cursor.execute("""
-        SELECT d.dept_code, d.dept_name, 
-               COUNT(s.student_id) as student_count,
-               COUNT(t.teacher_id) as teacher_count
-        FROM departments d
-        LEFT JOIN student s ON d.dept_code = s.student_dept
-        LEFT JOIN teacher t ON d.dept_code = t.teacher_dept
-        GROUP BY d.dept_code, d.dept_name
-        ORDER BY d.dept_name
-    """)
+                   SELECT d.dept_code,
+                          d.dept_name,
+                          COUNT(s.student_id) as student_count,
+                          COUNT(t.teacher_id) as teacher_count
+                   FROM departments d
+                            LEFT JOIN student s ON d.dept_code = s.student_dept
+                            LEFT JOIN teacher t ON d.dept_code = t.teacher_dept
+                   GROUP BY d.dept_code, d.dept_name
+                   ORDER BY d.dept_name
+                   """)
     dept_stats = cursor.fetchall()
 
     connection.close()
@@ -1108,10 +1285,12 @@ def admin_delete_department():
     cursor = connection.cursor()
 
     # Check if department is in use
-    cursor.execute("SELECT COUNT(*) FROM student WHERE student_dept = (SELECT dept_code FROM departments WHERE id = ?)", (dept_id,))
+    cursor.execute("SELECT COUNT(*) FROM student WHERE student_dept = (SELECT dept_code FROM departments WHERE id = ?)",
+                   (dept_id,))
     student_count = cursor.fetchone()[0]
 
-    cursor.execute("SELECT COUNT(*) FROM teacher WHERE teacher_dept = (SELECT dept_code FROM departments WHERE id = ?)", (dept_id,))
+    cursor.execute("SELECT COUNT(*) FROM teacher WHERE teacher_dept = (SELECT dept_code FROM departments WHERE id = ?)",
+                   (dept_id,))
     teacher_count = cursor.fetchone()[0]
 
     if student_count > 0 or teacher_count > 0:
@@ -1141,13 +1320,14 @@ def admin_categories():
 
     # Get category usage statistics
     cursor.execute("""
-        SELECT c.category_code, c.category_name, 
-               COUNT(a.id) as achievement_count
-        FROM achievement_categories c
-        LEFT JOIN achievements a ON c.category_code = a.achievement_type
-        GROUP BY c.category_code, c.category_name
-        ORDER BY c.category_name
-    """)
+                   SELECT c.category_code,
+                          c.category_name,
+                          COUNT(a.id) as achievement_count
+                   FROM achievement_categories c
+                            LEFT JOIN achievements a ON c.category_code = a.achievement_type
+                   GROUP BY c.category_code, c.category_name
+                   ORDER BY c.category_name
+                   """)
     category_stats = cursor.fetchall()
 
     connection.close()
@@ -1176,8 +1356,9 @@ def admin_add_category():
     cursor = connection.cursor()
 
     try:
-        cursor.execute("INSERT INTO achievement_categories (category_code, category_name, description) VALUES (?, ?, ?)", 
-                      (category_code, category_name, description))
+        cursor.execute(
+            "INSERT INTO achievement_categories (category_code, category_name, description) VALUES (?, ?, ?)",
+            (category_code, category_name, description))
         connection.commit()
         connection.close()
         return jsonify({"success": True, "message": "Category added successfully"})
@@ -1194,7 +1375,7 @@ def admin_add_category():
 def admin_export():
     """Export system data"""
     export_type = request.args.get("type", "students")
-    
+
     connection = sqlite3.connect(DB_PATH)
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
@@ -1204,15 +1385,15 @@ def admin_export():
         data = cursor.fetchall()
         filename = "students_export.csv"
         headers = ["Student ID", "Name", "Email", "Phone", "Gender", "Department", "Approved", "Created At"]
-        
+
         # Create CSV content
         import io
         import csv
-        
+
         output = io.StringIO()
         writer = csv.writer(output)
         writer.writerow(headers)
-        
+
         for row in data:
             writer.writerow([
                 row["student_id"],
@@ -1224,23 +1405,23 @@ def admin_export():
                 "Yes" if row["is_approved"] else "No",
                 row["created_at"]
             ])
-        
+
         content = output.getvalue()
         output.close()
-        
+
     elif export_type == "teachers":
         cursor.execute("SELECT * FROM teacher ORDER BY teacher_name")
         data = cursor.fetchall()
         filename = "teachers_export.csv"
         headers = ["Teacher ID", "Name", "Email", "Phone", "Gender", "Department", "Approved", "Created At"]
-        
+
         import io
         import csv
-        
+
         output = io.StringIO()
         writer = csv.writer(output)
         writer.writerow(headers)
-        
+
         for row in data:
             writer.writerow([
                 row["teacher_id"],
@@ -1252,31 +1433,31 @@ def admin_export():
                 "Yes" if row["is_approved"] else "No",
                 row["created_at"]
             ])
-        
+
         content = output.getvalue()
         output.close()
-        
+
     else:  # achievements
         cursor.execute("""
-            SELECT a.*, s.student_name, t.teacher_name
-            FROM achievements a
-            JOIN student s ON a.student_id = s.student_id
-            JOIN teacher t ON a.teacher_id = t.teacher_id
-            ORDER BY a.achievement_date DESC
-        """)
+                       SELECT a.*, s.student_name, t.teacher_name
+                       FROM achievements a
+                                JOIN student s ON a.student_id = s.student_id
+                                JOIN teacher t ON a.teacher_id = t.teacher_id
+                       ORDER BY a.achievement_date DESC
+                       """)
         data = cursor.fetchall()
         filename = "achievements_export.csv"
-        headers = ["ID", "Student ID", "Student Name", "Teacher ID", "Teacher Name", 
-                  "Achievement Type", "Event Name", "Date", "Organizer", "Position", 
-                  "Description", "Certificate Path", "Created At"]
-        
+        headers = ["ID", "Student ID", "Student Name", "Teacher ID", "Teacher Name",
+                   "Achievement Type", "Event Name", "Date", "Organizer", "Position",
+                   "Description", "Certificate Path", "Created At"]
+
         import io
         import csv
-        
+
         output = io.StringIO()
         writer = csv.writer(output)
         writer.writerow(headers)
-        
+
         for row in data:
             writer.writerow([
                 row["id"],
@@ -1293,7 +1474,7 @@ def admin_export():
                 row["certificate_path"] or "",
                 row["created_at"]
             ])
-        
+
         content = output.getvalue()
         output.close()
 
@@ -1321,7 +1502,7 @@ def admin_logout():
 @app.route("/student_new", methods=["GET", "POST"])
 def student_new():
     firebase_config = get_firebase_config()
-    
+
     if request.method == "POST":
         student_name = request.form.get("student_name")
         student_id = request.form.get("student_id")
@@ -1336,13 +1517,15 @@ def student_new():
 
         try:
             cursor.execute("""
-                INSERT INTO student (student_name, student_id, email, phone_number, password, student_gender, student_dept, is_approved)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """, (student_name, student_id, email, phone_number, password, student_gender, student_dept, 0))
+                           INSERT INTO student (student_name, student_id, email, phone_number, password, student_gender,
+                                                student_dept, is_approved)
+                           VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                           """,
+                           (student_name, student_id, email, phone_number, password, student_gender, student_dept, 0))
             connection.commit()
-            return render_template("student_new_2.html", 
-                                 success="Registration submitted! Your account will be activated after admin approval.",
-                                 firebase_config=firebase_config)
+            return render_template("student_new_2.html",
+                                   success="Registration submitted! Your account will be activated after admin approval.",
+                                   firebase_config=firebase_config)
         except sqlite3.Error as e:
             return render_template("student_new_2.html", error=f"Database error: {e}", firebase_config=firebase_config)
         finally:
@@ -1368,12 +1551,14 @@ def teacher_new():
 
         try:
             cursor.execute("""
-                INSERT INTO teacher (teacher_name, teacher_id, email, phone_number, password, teacher_gender, teacher_dept, is_approved)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """, (teacher_name, teacher_id, email, phone_number, password, teacher_gender, teacher_dept, 0))
+                           INSERT INTO teacher (teacher_name, teacher_id, email, phone_number, password, teacher_gender,
+                                                teacher_dept, is_approved)
+                           VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                           """,
+                           (teacher_name, teacher_id, email, phone_number, password, teacher_gender, teacher_dept, 0))
             connection.commit()
-            return render_template("teacher_new_2.html", 
-                                 success="Registration submitted! Your account will be activated after admin approval.")
+            return render_template("teacher_new_2.html",
+                                   success="Registration submitted! Your account will be activated after admin approval.")
         except sqlite3.Error as e:
             return render_template("teacher_new_2.html", error=f"Database error: {e}")
         finally:
@@ -1389,7 +1574,7 @@ def student():
         firebase_config = get_firebase_config()
     else:
         firebase_config = DEFAULT_FIREBASE_CONFIG
-    
+
     if request.method == "POST":
         student_id = request.form.get("sname")
         password = request.form.get("password")
@@ -1403,15 +1588,18 @@ def student():
         if student_data and check_password_hash(student_data[4], password):
             # Check if student is approved
             if not student_data[7]:  # is_approved is at index 7
-                return render_template("student.html", error="Your account is pending admin approval. Please wait for activation.", firebase_config=firebase_config)
-            
+                return render_template("student.html",
+                                       error="Your account is pending admin approval. Please wait for activation.",
+                                       firebase_config=firebase_config)
+
             session["logged_in"] = True
             session["student_id"] = student_data[1]
             session["student_name"] = student_data[0]
             session["student_dept"] = student_data[6]
             return redirect(url_for("student-dashboard"))
         else:
-            return render_template("student.html", error="Invalid credentials. Please try again.", firebase_config=firebase_config)
+            return render_template("student.html", error="Invalid credentials. Please try again.",
+                                   firebase_config=firebase_config)
 
     return render_template("student.html", firebase_config=firebase_config)
 
@@ -1432,8 +1620,9 @@ def teacher():
         if teacher_data and check_password_hash(teacher_data[4], password):
             # Check if teacher is approved
             if not teacher_data[7]:  # is_approved is at index 7
-                return render_template("teacher.html", error="Your account is pending admin approval. Please wait for activation.")
-            
+                return render_template("teacher.html",
+                                       error="Your account is pending admin approval. Please wait for activation.")
+
             session["logged_in"] = True
             session["teacher_id"] = teacher_data[1]
             session["teacher_name"] = teacher_data[0]
@@ -1449,4 +1638,3 @@ if __name__ == "__main__":
     init_db()
     add_profile_picture_column()
     app.run(debug=True)
-
