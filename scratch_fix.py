@@ -1,90 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
+import os
+import re
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Teacher Registration</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-    <script src="{{ url_for('static', filename = 'script.js') }}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            console.log("Form method: " + document.querySelector('form').method);
-            console.log("Form action: " + document.querySelector('form').action);
+filepath = r'c:\Users\DEV\Desktop\AchieveManagement\Achievement-Management-System\templates\teacher_new_2.html'
+with open(filepath, 'r', encoding='utf-8') as f:
+    content = f.read()
 
-            document.querySelector('form').addEventListener('submit', function (event) {
-                console.log("Form is being submitted");
-            });
-        });
+# We need to remove the first broken form start up to the second form start.
+# Looking at the file, the first form starts with:
+# <form action="/teacher-new" method="POST" onsubmit="return validatePasswords(event)">
+# Then it breaks at:
+#                     <div class="input-box">
+# 
+#         /* Style for dropdown options */
 
-        function validatePasswords(event) {
-            const password = document.getElementById("password").value;
-            const confirmPassword = document.getElementById("confirm-password").value;
-            const message = document.getElementById("password-message");
+# We can just extract everything before the first form, and everything after the second form ends.
+# Better yet, let's just replace the entire content between `<div class="content">` and `</div>\n    </div>\n</body>`
 
-            console.log("Validating passwords...");
-
-            if (password !== confirmPassword) {
-                event.preventDefault(); // This stops form submission
-                message.textContent = "❌ Passwords do not match!";
-                message.style.color = "red";
-                console.log("Password validation failed - preventing submission");
-                return false;
-            } else {
-                message.textContent = "✅ Passwords match!";
-                message.style.color = "limegreen";
-                console.log("Password validation passed - allowing submission");
-                return true; // Explicitly return true to allow form submission
-            }
-        }
-    </script>
-    <style>
-        /* Additional styles to make select elements match input styling */
-        .input-box select {
-            width: 100%;
-            height: 45px;
-            padding-left: 15px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            background-color: rgba(255, 255, 255, 0.1);
-            color: var(--text-color);
-            transition: all 0.3s ease;
-            /* Remove default styling */
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            /* Add custom dropdown arrow for dark mode */
-            background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-        }
-
-        .input-box select:focus {
-            border-color: var(--primary-color);
-        }
-
-        /* Change dropdown arrow color in light mode */
-        body.light-mode .input-box select {
-            background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
-        }
-
-        /* Style for dropdown options */
-        .input-box select option {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            padding: 10px;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="toggle-container">
-        <button id="mode-toggle">Dark Mode 🌙</button>
-    </div>
-
-    <div class="container">
-        <div class="title">Teacher Registration</div>
-        <div class="content">
+new_content = re.sub(
+    r'<div class="content">.*?<div class="back-link">',
+    '''<div class="content">
             {% if error %}
             <div style="color: red; text-align: center; margin-bottom: 10px; font-weight: bold;">
                 {{ error }}
@@ -161,11 +95,11 @@
                 </div>
             </form>
 
-            <div class="back-link">
-                <a href="{{ url_for('teacher') }}">Back to Login</a>
-            </div>
-        </div>
-    </div>
-</body>
+            <div class="back-link">''',
+    content,
+    flags=re.DOTALL
+)
 
-</html>
+with open(filepath, 'w', encoding='utf-8') as f:
+    f.write(new_content)
+print("Done")
