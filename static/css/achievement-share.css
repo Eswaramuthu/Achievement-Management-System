@@ -1,0 +1,326 @@
+/**
+ * Achievement Share Modal Styles
+ * Responsive modal UI for sharing achievements
+ */
+
+:root {
+    --modal-bg: #1f1f1f;
+    --modal-text: #ffffff;
+    --modal-accent: #ff1c1c;
+    --modal-border: rgba(255, 255, 255, 0.1);
+    --modal-option-bg: rgba(255, 255, 255, 0.05);
+    --modal-option-hover: rgba(255, 28, 28, 0.1);
+}
+
+body.light-mode {
+    --modal-bg: #ffffff;
+    --modal-text: #1a1a1a;
+    --modal-accent: #d40000;
+    --modal-border: rgba(0, 0, 0, 0.1);
+    --modal-option-bg: rgba(0, 0, 0, 0.03);
+    --modal-option-hover: rgba(212, 0, 0, 0.08);
+}
+
+/* ========================= */
+/* MODAL OVERLAY & CONTAINER */
+/* ========================= */
+
+.share-modal {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.share-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+}
+
+.share-modal-content {
+    position: relative;
+    z-index: 1;
+    background: var(--modal-bg);
+    border-radius: 20px;
+    box-shadow: 
+        0 25px 50px rgba(0, 0, 0, 0.3),
+        0 0 1px var(--modal-border);
+    max-width: 500px;
+    width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease-out;
+    border: 1px solid var(--modal-border);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================= */
+/* MODAL HEADER */
+/* ========================= */
+
+.share-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    border-bottom: 1px solid var(--modal-border);
+    background: linear-gradient(135deg, rgba(255, 28, 28, 0.1) 0%, transparent 100%);
+}
+
+.share-modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--modal-text);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: var(--modal-text);
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-btn:hover {
+    opacity: 1;
+}
+
+/* ========================= */
+/* MODAL BODY */
+/* ========================= */
+
+.share-modal-body {
+    padding: 24px;
+}
+
+.share-intro {
+    font-size: 14px;
+    color: var(--modal-text);
+    margin-bottom: 20px;
+    opacity: 0.8;
+}
+
+/* ========================= */
+/* SHARE OPTIONS */
+/* ========================= */
+
+.share-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.share-option {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: var(--modal-option-bg);
+    border: 1px solid var(--modal-border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+    color: var(--modal-text);
+    font-family: 'Poppins', sans-serif;
+}
+
+.share-option:hover {
+    background: var(--modal-option-hover);
+    border-color: var(--modal-accent);
+    transform: translateX(4px);
+}
+
+.share-option:active {
+    transform: translateX(2px);
+}
+
+.option-icon {
+    font-size: 24px;
+    min-width: 32px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.option-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.option-text strong {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--modal-text);
+}
+
+.option-desc {
+    font-size: 12px;
+    opacity: 0.7;
+    color: var(--modal-text);
+}
+
+/* ========================= */
+/* MODAL FOOTER */
+/* ========================= */
+
+.share-modal-footer {
+    padding: 16px;
+    background: rgba(255, 28, 28, 0.08);
+    border-radius: 8px;
+    border: 1px solid var(--modal-border);
+}
+
+.share-info {
+    font-size: 12px;
+    margin: 0;
+    color: var(--modal-text);
+    line-height: 1.5;
+}
+
+.share-info strong {
+    color: var(--modal-accent);
+}
+
+/* ========================= */
+/* TOAST NOTIFICATION */
+/* ========================= */
+
+.share-notification {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: linear-gradient(135deg, #00d084 0%, #00a85c 100%);
+    color: white;
+    padding: 14px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 208, 132, 0.3);
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 10001;
+    transition: transform 0.3s ease;
+}
+
+.share-notification.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ========================= */
+/* RESPONSIVE DESIGN */
+/* ========================= */
+
+@media (max-width: 600px) {
+    .share-modal-content {
+        width: 95vw;
+        max-height: 80vh;
+    }
+
+    .share-modal-header {
+        padding: 16px;
+    }
+
+    .share-modal-header h2 {
+        font-size: 18px;
+    }
+
+    .share-modal-body {
+        padding: 16px;
+    }
+
+    .share-option {
+        padding: 12px;
+        gap: 12px;
+    }
+
+    .option-icon {
+        font-size: 20px;
+    }
+
+    .option-text strong {
+        font-size: 13px;
+    }
+
+    .option-desc {
+        font-size: 11px;
+    }
+}
+
+/* ========================= */
+/* ACCESSIBILITY */
+/* ========================= */
+
+.share-option:focus {
+    outline: 2px solid var(--modal-accent);
+    outline-offset: 2px;
+}
+
+.close-btn:focus {
+    outline: 2px solid var(--modal-accent);
+    outline-offset: 2px;
+}
+
+/* Keyboard navigation */
+.share-option:focus-visible {
+    outline: 2px solid var(--modal-accent);
+    outline-offset: -2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .share-modal,
+    .share-modal-content,
+    .share-notification {
+        animation: none;
+        transition: none;
+    }
+
+    .share-option:hover {
+        transform: none;
+    }
+
+    .share-option:active {
+        transform: none;
+    }
+}

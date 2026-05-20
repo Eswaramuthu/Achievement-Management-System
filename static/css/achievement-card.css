@@ -1,0 +1,572 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+
+:root {
+    /* Light Mode Colors */
+    --card-bg: #ffffff;
+    --card-text: #1a1a1a;
+    --card-accent: #d40000;
+    --card-accent-light: rgba(212, 0, 0, 0.1);
+    --card-border: rgba(0, 0, 0, 0.08);
+    --card-shadow: rgba(0, 0, 0, 0.12);
+    --badge-bg: #f0f0f0;
+    --detail-label: #666666;
+    --detail-value: #1a1a1a;
+    --footer-text: #999999;
+    --export-bg: #f8f8f8;
+}
+
+body.light-mode {
+    --card-bg: #ffffff;
+    --card-text: #1a1a1a;
+    --card-accent: #d40000;
+    --card-accent-light: rgba(212, 0, 0, 0.1);
+    --card-border: rgba(0, 0, 0, 0.08);
+    --card-shadow: rgba(0, 0, 0, 0.12);
+    --badge-bg: #f0f0f0;
+    --detail-label: #666666;
+    --detail-value: #1a1a1a;
+    --footer-text: #999999;
+    --export-bg: #f8f8f8;
+}
+
+body.dark-mode,
+body {
+    --card-bg: #1f1f1f;
+    --card-text: #ffffff;
+    --card-accent: #ff1c1c;
+    --card-accent-light: rgba(255, 28, 28, 0.15);
+    --card-border: rgba(255, 255, 255, 0.1);
+    --card-shadow: rgba(0, 0, 0, 0.4);
+    --badge-bg: #2a2a2a;
+    --detail-label: #b0b0b0;
+    --detail-value: #ffffff;
+    --footer-text: #888888;
+    --export-bg: #0d0d0d;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--export-bg);
+    color: var(--card-text);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    min-height: 100vh;
+}
+
+/* ========================= */
+/* ACHIEVEMENT CARD STYLES */
+/* ========================= */
+
+.achievement-card-export {
+    width: 100%;
+    max-width: 600px;
+    aspect-ratio: 3/4;
+    background: linear-gradient(135deg, var(--card-bg) 0%, var(--card-bg) 100%);
+    border-radius: 24px;
+    border: 1px solid var(--card-border);
+    box-shadow: 
+        0 20px 60px var(--card-shadow),
+        0 0 1px var(--card-border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+
+    /* Export optimization */
+    transform: scale(1);
+    background-color: var(--card-bg);
+}
+
+/* Subtle gradient background effect */
+.achievement-card-export::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background: linear-gradient(135deg, var(--card-accent-light) 0%, transparent 100%);
+    pointer-events: none;
+    border-radius: 24px 24px 0 0;
+}
+
+/* ========================= */
+/* CARD HEADER */
+/* ========================= */
+
+.card-header {
+    text-align: center;
+    padding: 30px 20px 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.card-logo {
+    font-size: 48px;
+    margin-bottom: 12px;
+    display: inline-block;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.card-brand {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--card-accent);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* ========================= */
+/* CARD CONTENT */
+/* ========================= */
+
+.card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0 30px;
+    overflow: hidden;
+}
+
+.card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--card-accent);
+    text-align: center;
+    margin-bottom: 24px;
+    line-height: 1.2;
+}
+
+.card-certificate {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.certificate-text {
+    font-size: 12px;
+    color: var(--detail-label);
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+.certificate-text-main {
+    font-size: 12px;
+    color: var(--detail-label);
+    text-align: center;
+    margin-top: 8px;
+}
+
+/* ========================= */
+/* STUDENT NAME DISPLAY */
+/* ========================= */
+
+.student-name-display {
+    text-align: center;
+    margin: 12px 0;
+    padding: 12px 0;
+}
+
+.student-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--card-accent);
+    margin-bottom: 4px;
+    word-break: break-word;
+}
+
+.student-id {
+    font-size: 11px;
+    color: var(--detail-label);
+}
+
+/* ========================= */
+/* ACHIEVEMENT DETAILS */
+/* ========================= */
+
+.achievement-details {
+    background: var(--card-accent-light);
+    border-radius: 12px;
+    padding: 12px;
+    gap: 8px;
+    display: flex;
+    flex-direction: column;
+    margin: 8px 0;
+}
+
+.detail-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card-accent);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    justify-content: center;
+}
+
+.badge-icon {
+    font-size: 14px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    gap: 8px;
+}
+
+.detail-row label {
+    color: var(--detail-label);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.detail-value {
+    color: var(--detail-value);
+    font-weight: 600;
+    text-align: right;
+    flex: 1;
+    word-break: break-word;
+}
+
+.achievement-position {
+    color: var(--card-accent);
+    font-weight: 700;
+}
+
+.detail-description {
+    font-size: 9px;
+    color: var(--detail-value);
+    line-height: 1.4;
+    margin-top: 4px;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 6px;
+    max-height: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ========================= */
+/* VERIFICATION SECTION */
+/* ========================= */
+
+.verification-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 12px 0;
+    padding: 12px 0;
+    border-top: 1px solid var(--card-border);
+    border-bottom: 1px solid var(--card-border);
+}
+
+.qr-code-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.qr-code {
+    width: 80px;
+    height: 80px;
+    border: 2px solid var(--card-border);
+    border-radius: 8px;
+    background: white;
+    padding: 4px;
+}
+
+.qr-label {
+    font-size: 9px;
+    color: var(--detail-label);
+    font-weight: 500;
+}
+
+.verification-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.verify-text {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--card-accent);
+}
+
+.verify-url {
+    font-size: 8px;
+    color: var(--detail-value);
+    word-break: break-all;
+    font-family: 'Courier New', monospace;
+}
+
+.record-id {
+    font-size: 9px;
+    color: var(--detail-label);
+    font-weight: 500;
+}
+
+/* ========================= */
+/* CARD FOOTER */
+/* ========================= */
+
+.card-footer {
+    text-align: center;
+    padding: 16px 0 12px;
+    border-top: 1px solid var(--card-border);
+}
+
+.footer-line {
+    height: 1px;
+    background: var(--card-border);
+    margin: 0 auto 8px;
+    width: 60%;
+}
+
+.footer-text {
+    font-size: 10px;
+    color: var(--detail-label);
+    font-weight: 500;
+}
+
+.footer-date {
+    font-size: 9px;
+    color: var(--footer-text);
+    margin-top: 4px;
+}
+
+/* ========================= */
+/* EXPORT CONTROLS */
+/* ========================= */
+
+.export-controls {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--card-border);
+}
+
+.control-group {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.control-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--card-text);
+}
+
+.control-group input[type="radio"] {
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--card-accent);
+}
+
+.button-group {
+    display: flex;
+    gap: 12px;
+}
+
+.btn {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--card-accent) 0%, #cc0000 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(212, 0, 0, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(212, 0, 0, 0.4);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    background: var(--badge-bg);
+    color: var(--card-text);
+    border: 1px solid var(--card-border);
+}
+
+.btn-secondary:hover {
+    background: var(--card-accent-light);
+    border-color: var(--card-accent);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* ========================= */
+/* EXPORT STATUS */
+/* ========================= */
+
+.export-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--card-accent-light);
+    border-radius: 8px;
+    color: var(--card-accent);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.status-spinner {
+    display: inline-block;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ========================= */
+/* RESPONSIVE DESIGN */
+/* ========================= */
+
+@media (max-width: 768px) {
+    body {
+        padding: 12px;
+        gap: 16px;
+    }
+
+    .achievement-card-export {
+        max-width: 100%;
+        aspect-ratio: auto;
+        min-height: 500px;
+    }
+
+    .card-header {
+        padding: 20px 16px 16px;
+    }
+
+    .card-logo {
+        font-size: 36px;
+    }
+
+    .card-content {
+        padding: 0 20px;
+    }
+
+    .card-title {
+        font-size: 18px;
+        margin-bottom: 16px;
+    }
+
+    .student-name {
+        font-size: 18px;
+    }
+
+    .detail-row {
+        font-size: 11px;
+    }
+
+    .export-controls {
+        max-width: 100%;
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}
+
+/* ========================= */
+/* PRINT STYLES */
+/* ========================= */
+
+@media print {
+    body {
+        background: white;
+        padding: 0;
+    }
+
+    .export-controls {
+        display: none;
+    }
+
+    .achievement-card-export {
+        box-shadow: none;
+        border: none;
+        max-width: 100%;
+    }
+}
+
+/* ========================= */
+/* EXPORT OPTIMIZATION */
+/* ========================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .card-logo {
+        animation: none;
+    }
+
+    .status-spinner {
+        animation: none;
+    }
+}
+
+/* Ensure white background for QR code */
+.qr-code {
+    background-color: white !important;
+}

@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Verify achievement credentials from the Achievement Management System">
+    <title>Achievement Verification - {{ achievement.event_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        :root {
+            --bg-color: #0d0d0d;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --text-color: #fff;
+            --primary-color: #ff1c1c;
+            --border-color: rgba(255, 255, 255, 0.2);
+            --success-color: #00d084;
+        }
+
+        body.light-mode {
+            --bg-color: #f5f5f5;
+            --glass-bg: rgba(255, 255, 255, 0.9);
+            --text-color: #1a1a1a;
+            --primary-color: #d40000;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --success-color: #00a85c;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            transition: background-color 0.3s ease;
+        }
+
+        .verification-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Header Section */
+        .verification-header {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, rgba(212, 0, 0, 0.1) 100%);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .verification-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--success-color);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 208, 132, 0.3);
+            animation: slideInDown 0.6s ease-out;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .verification-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 15px 0;
+            color: var(--text-color);
+        }
+
+        .verification-subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin: 0;
+        }
+
+        body.light-mode .verification-subtitle {
+            color: rgba(0, 0, 0, 0.6);
+        }
+
+        /* Achievement Details Card */
+        .achievement-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .detail-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .detail-group {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 11px;
+            font-weight: 600;
+            opacity: 0.7;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-color);
+            word-break: break-word;
+        }
+
+        .detail-value.highlight {
+            color: var(--primary-color);
+            font-size: 18px;
+        }
+
+        .description-text {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary-color);
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-color);
+        }
+
+        body.light-mode .description-text {
+            background: rgba(0, 0, 0, 0.03);
+        }
+
+        /* Security Section */
+        .security-section {
+            background: linear-gradient(135deg, var(--success-color) 0%, rgba(0, 208, 132, 0.1) 100%);
+            border: 1px solid var(--success-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .security-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .security-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .checkmark {
+            color: var(--success-color);
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        /* Metadata */
+        .metadata-section {
+            background: var(--glass-bg);
+            border: 1px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .metadata-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            font-size: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .metadata-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .metadata-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .metadata-label {
+            opacity: 0.6;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metadata-value {
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+            font-weight: 600;
+        }
+
+        /* Action Section */
+        .action-section {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #cc0000 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(212, 0, 0, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 0, 0, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--glass-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(212, 0, 0, 0.1);
+            border-color: var(--primary-color);
+        }
+
+        /* QR Code Display */
+        .qr-section {
+            text-align: center;
+            padding: 20px;
+            background: var(--glass-bg);
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .qr-label {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            opacity: 0.8;
+        }
+
+        /* Footer */
+        .verification-footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            opacity: 0.6;
+            border-top: 1px solid var(--border-color);
+            margin-top: 30px;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 18px;
+            z-index: 1000;
+        }
+
+        /* Share Buttons */
+        .share-section {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .share-btn {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: none;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .share-linkedin {
+            background: #0077b5;
+            color: white;
+        }
+
+        .share-linkedin:hover {
+            background: #005a96;
+        }
+
+        .share-twitter {
+            background: #1da1f2;
+            color: white;
+        }
+
+        .share-twitter:hover {
+            background: #1a8cd8;
+        }
+
+        .share-copy {
+            background: var(--glass-bg);
+            color: var(--text-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .share-copy:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .success-message {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--success-color);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: none;
+            z-index: 1001;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle" id="theme-toggle">🌙</div>
+
+    <div class="success-message" id="success-message">
+        Copied to clipboard!
+    </div>
+
+    <div class="verification-container">
+        <!-- Header -->
+        <div class="verification-header">
+            <div class="verification-badge">
+                ✓ Verified Achievement
+            </div>
+            <h1 class="verification-title">{{ achievement.event_name }}</h1>
+            <p class="verification-subtitle">Achievement Management System Verified Record</p>
+        </div>
+
+        <!-- Main Achievement Card -->
+        <div class="achievement-card">
+            <!-- Student Information -->
+            <div class="card-section">
+                <div class="section-title">Student Information</div>
+                <div class="detail-group">
+                    <div class="detail-item">
+                        <div class="detail-label">Name</div>
+                        <div class="detail-value">{{ achievement.student_name }}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Student ID</div>
+                        <div class="detail-value highlight">{{ achievement.student_id }}</div>
+                    </div>
+                </div>
+                <div class="detail-group">
+                    <div class="detail-item">
+                        <div class="detail-label">Department</div>
+                        <div class="detail-value">{{ achievement.student_dept or 'Not Specified' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievement Details -->
+            <div class="card-section">
+                <div class="section-title">Achievement Details</div>
+                <div class="detail-group">
+                    <div class="detail-item">
+                        <div class="detail-label">Type</div>
+                        <div class="detail-value">{{ achievement.achievement_type }}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Position</div>
+                        <div class="detail-value highlight">{{ achievement.position }}</div>
+                    </div>
+                </div>
+                <div class="detail-group">
+                    <div class="detail-item">
+                        <div class="detail-label">Date</div>
+                        <div class="detail-value">{{ achievement.achievement_date }}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Organization</div>
+                        <div class="detail-value">{{ achievement.organizer }}</div>
+                    </div>
+                </div>
+                {% if achievement.achievement_description %}
+                <div class="card-section" style="margin-top: 15px;">
+                    <div class="detail-label">Description</div>
+                    <div class="description-text">{{ achievement.achievement_description }}</div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Security Verification -->
+            <div class="security-section">
+                <div class="security-title">🔒 Security Information</div>
+                <div class="security-item">
+                    <span class="checkmark">✓</span>
+                    <span>Record is digitally verified and authenticated</span>
+                </div>
+                <div class="security-item">
+                    <span class="checkmark">✓</span>
+                    <span>Verified on: {{ verified_timestamp }}</span>
+                </div>
+                <div class="security-item">
+                    <span class="checkmark">✓</span>
+                    <span>Database ID: #{{ achievement.id }}</span>
+                </div>
+                {% if achievement.certificate_hash %}
+                <div class="security-item">
+                    <span class="checkmark">✓</span>
+                    <span>Certificate hash recorded for authenticity</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Metadata -->
+            <div class="metadata-section">
+                <div class="section-title" style="margin-bottom: 15px;">Technical Details</div>
+                <div class="metadata-grid">
+                    <div class="metadata-item">
+                        <div class="metadata-label">Record ID</div>
+                        <div class="metadata-value">#{{ achievement.id }}</div>
+                    </div>
+                    <div class="metadata-item">
+                        <div class="metadata-label">Verified URL</div>
+                        <div class="metadata-value">{{ verification_url }}</div>
+                    </div>
+                    <div class="metadata-item">
+                        <div class="metadata-label">Issued</div>
+                        <div class="metadata-value">{{ issued_date }}</div>
+                    </div>
+                    <div class="metadata-item">
+                        <div class="metadata-label">Verification Time</div>
+                        <div class="metadata-value">{{ verified_timestamp }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="action-section">
+                <button class="action-btn btn-primary" onclick="printVerification()">
+                    🖨️ Print Certificate
+                </button>
+                <button class="action-btn btn-secondary" onclick="viewAchievementCard()">
+                    🎫 View Card
+                </button>
+            </div>
+
+            <!-- Share Buttons -->
+            <div class="share-section">
+                <button class="share-btn share-linkedin" onclick="shareOnLinkedIn()">
+                    in Share on LinkedIn
+                </button>
+                <button class="share-btn share-twitter" onclick="shareOnTwitter()">
+                    𝕏 Share on Twitter
+                </button>
+                <button class="share-btn share-copy" onclick="copyLink()">
+                    📋 Copy Link
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="verification-footer">
+            <p>This achievement record is maintained by the Achievement Management System and is publicly verifiable.</p>
+            <p>For more information, contact your institution's administration.</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+            themeToggle.textContent = document.body.classList.contains('light-mode') ? '☀️' : '🌙';
+        });
+
+        // Load saved theme
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+            themeToggle.textContent = '☀️';
+        }
+
+        function printVerification() {
+            window.print();
+        }
+
+        function viewAchievementCard() {
+            // Placeholder - would navigate to achievement export card
+            alert('View card feature coming soon!');
+        }
+
+        function shareOnLinkedIn() {
+            const url = encodeURIComponent('{{ verification_url }}');
+            const title = encodeURIComponent('{{ achievement.event_name }} - Achievement Verified');
+            window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
+        }
+
+        function shareOnTwitter() {
+            const url = encodeURIComponent('{{ verification_url }}');
+            const text = encodeURIComponent(`I just verified my achievement: {{ achievement.event_name }}! 🎖️`);
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+        }
+
+        function copyLink() {
+            const link = '{{ verification_url }}';
+            navigator.clipboard.writeText(link).then(() => {
+                const message = document.getElementById('success-message');
+                message.style.display = 'block';
+                setTimeout(() => {
+                    message.style.display = 'none';
+                }, 2000);
+            });
+        }
+
+        // Print styles
+        @media print {
+            .theme-toggle,
+            .action-section,
+            .share-section {
+                display: none;
+            }
+            .verification-container {
+                margin: 0;
+                padding: 0;
+            }
+        }
+    </script>
+</body>
+</html>

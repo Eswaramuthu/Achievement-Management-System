@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achievement Card</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/achievement-card.css') }}">
+</head>
+<body>
+    <!-- Card Container - Optimized for Export (1080x1440px at 1x scale) -->
+    <div class="achievement-card-export" id="achievement-card-export">
+        <!-- Header with Logo -->
+        <div class="card-header">
+            <div class="card-logo">🏆</div>
+            <h1 class="card-brand">Achievement Management System</h1>
+        </div>
+
+        <!-- Main Content -->
+        <div class="card-content">
+            <div class="card-title">Achievement of Excellence</div>
+            
+            <div class="card-certificate">
+                <p class="certificate-text">This certifies that</p>
+                
+                <div class="student-name-display">
+                    <h2 class="student-name">{{ achievement.student_name }}</h2>
+                    <p class="student-id">Student ID: {{ achievement.student_id }}</p>
+                </div>
+
+                <p class="certificate-text-main">has successfully achieved:</p>
+
+                <!-- Achievement Details -->
+                <div class="achievement-details">
+                    <div class="detail-badge achievement-type-badge">
+                        <span class="badge-icon">🎖️</span>
+                        <span class="badge-text">{{ achievement.achievement_type }}</span>
+                    </div>
+
+                    <div class="detail-row">
+                        <label>Event:</label>
+                        <span class="detail-value">{{ achievement.event_name }}</span>
+                    </div>
+
+                    <div class="detail-row">
+                        <label>Position:</label>
+                        <span class="detail-value achievement-position">{{ achievement.position }}</span>
+                    </div>
+
+                    <div class="detail-row">
+                        <label>Date:</label>
+                        <span class="detail-value">{{ achievement.achievement_date }}</span>
+                    </div>
+
+                    <div class="detail-row">
+                        <label>Organization:</label>
+                        <span class="detail-value">{{ achievement.organizer }}</span>
+                    </div>
+
+                    {% if achievement.achievement_description %}
+                    <div class="detail-description">
+                        <p>{{ achievement.achievement_description }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- QR Code and Verification Section -->
+            <div class="verification-section">
+                <div class="qr-code-container">
+                    <img src="{{ qr_code_data }}" alt="QR Code" class="qr-code" id="qr-code-img">
+                    <p class="qr-label">Scan to verify</p>
+                </div>
+
+                <div class="verification-details">
+                    <p class="verify-text">Verify Achievement</p>
+                    <p class="verify-url">{{ verification_url }}</p>
+                    <p class="record-id">Record ID: #{{ achievement.id }}</p>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="card-footer">
+                <div class="footer-line"></div>
+                <p class="footer-text">Issued by Achievement Management System</p>
+                <p class="footer-date">Issued on {{ issued_date }}</p>
+            </div>
+        </div>
+
+        <!-- Hidden metadata for export -->
+        <div class="card-metadata" style="display: none;">
+            <span class="achievement-id">{{ achievement.id }}</span>
+            <span class="student-name-data">{{ achievement.student_name }}</span>
+            <span class="event-name-data">{{ achievement.event_name }}</span>
+        </div>
+    </div>
+
+    <!-- Export Controls (not captured in export) -->
+    <div class="export-controls">
+        <div class="control-group">
+            <label>
+                <input type="radio" name="export-format" value="png" checked> 
+                Download as PNG
+            </label>
+            <label>
+                <input type="radio" name="export-format" value="pdf"> 
+                Download as PDF
+            </label>
+        </div>
+
+        <div class="button-group">
+            <button id="btn-download" class="btn btn-primary">
+                ⬇️ Download Card
+            </button>
+            <button id="btn-close" class="btn btn-secondary">
+                ✕ Close
+            </button>
+        </div>
+
+        <div id="export-status" class="export-status" style="display: none;">
+            <span class="status-spinner">⏳</span>
+            <span class="status-text">Generating export...</span>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="{{ url_for('static', filename='js/achievement-export.js') }}"></script>
+</body>
+</html>

@@ -1461,6 +1461,162 @@ def teacher():
     return render_template("teacher.html")
 
 
+# ==================== ACHIEVEMENT EXPORT ROUTES ====================
+
+@app.route("/api/achievement/<int:achievement_id>")
+@student_required
+def api_get_achievement(achievement_id):
+    """
+    API endpoint to fetch achievement data for export.
+    Only accessible to authenticated students.
+    Students can only access their own achievements.
+    
+    Returns: JSON with achievement details and QR code
+    """
+    student_id = session.get("student_id")
+    
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+    
+    # Fetch achievement with owner check
+    cursor.execute("""
+        SELECT a.*, s.student_name 
+        FROM achievements a
+        JOIN student s ON a.student_id = s.student_id
+        WHERE a.id = ? AND a.student_id = ?
+    """, (achievement_id, student_id))
+    
+    achievement = cursor.fetchone()
+    connection.close()
+    
+    if not achievement:
+        return jsonify({"error": "Achievement not found or access denied"}), 404
+    
+    try:
+        from utils.qr_handler import generate_qr_code, get_verification_url
+        
+        # Generate QR code
+        verification_url = get_verification_url(request.host, achievement_id)
+        qr_code_data = generate_qr_code(verification_url)
+        
+        # Convert row to dictionary
+        achievement_dict = dict(achievement)
+        achievement_dict["qr_code"] = qr_code_data
+        achievement_dict["verification_url"] = verification_url
+        
+        return jsonify(achievement_dict)
+        
+    except Exception as e:
+        print(f"Error generating QR code: {e}")
+        return jsonify({"error": "Failed to generate QR code"}), 500
+
+
+@app.route("/verify-achievement/<int:achievement_id>")
+def verify_achievement(achievement_id):
+    """
+    Public achievement verification page.
+    NO authentication required - anyone can verify an achievement by ID.
+    
+    Displays:
+    - Achievement details
+    - Student name and ID
+    - Verification badge
+    - Authenticity metadata
+    """
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+    
+    # Fetch achievement details
+    cursor.execute("""
+        SELECT a.*, s.student_name, s.student_id, s.student_dept
+        FROM achievements a
+        JOIN student s ON a.student_id = s.student_id
+        WHERE a.id = ?
+    """, (achievement_id,))
+    
+    achievement = cursor.fetchone()
+    connection.close()
+    
+    if not achievement:
+        return render_template("404.html"), 404
+    
+    # Format dates for display
+    issued_date = datetime.datetime.now().strftime("%B %d, %Y")
+    verified_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC")
+    
+    # Convert to dictionary for easier templating
+    achievement_data = dict(achievement)
+    
+    return render_template(
+        "verify_achievement.html",
+        achievement=achievement_data,
+        issued_date=issued_date,
+        verified_timestamp=verified_timestamp,
+        verification_url=request.url
+    )
+
+
+@app.route("/export-achievement/<int:achievement_id>")
+@student_required
+def export_achievement(achievement_id):
+    """
+    Generate and display the achievement export card.
+    Students can only export their own achievements.
+    
+    Renders an exportable card with:
+    - Achievement details
+    - Student information
+    - QR code linking to verification page
+    - Export controls (PNG/PDF download)
+    """
+    student_id = session.get("student_id")
+    
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+    
+    # Fetch achievement with ownership verification
+    cursor.execute("""
+        SELECT a.*, s.student_name, s.student_id
+        FROM achievements a
+        JOIN student s ON a.student_id = s.student_id
+        WHERE a.id = ? AND a.student_id = ?
+    """, (achievement_id, student_id))
+    
+    achievement = cursor.fetchone()
+    connection.close()
+    
+    if not achievement:
+        return render_template("404.html"), 404
+    
+    try:
+        from utils.qr_handler import generate_qr_code, get_verification_url
+        
+        # Generate QR code
+        verification_url = get_verification_url(request.host, achievement_id)
+        qr_code_data = generate_qr_code(verification_url)
+        
+        # Format dates
+        issued_date = datetime.datetime.now().strftime("%B %d, %Y")
+        
+        achievement_dict = dict(achievement)
+        
+        return render_template(
+            "achievement_export.html",
+            achievement=achievement_dict,
+            qr_code_data=qr_code_data,
+            verification_url=verification_url,
+            issued_date=issued_date
+        )
+        
+    except Exception as e:
+        print(f"Error generating export card: {e}")
+        flash("Failed to generate export card. Please try again.", "danger")
+        return redirect(url_for("student-achievements"))
+
+
 if __name__ == "__main__":
     init_db()
     add_profile_picture_column()
