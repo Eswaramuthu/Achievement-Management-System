@@ -48,7 +48,6 @@ venv\Scripts\activate
 pip install -r requirements.txt
 
 # Initialize and run
-python init_db.py
 python app.py
 ```
 
@@ -65,7 +64,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 # Initialize and run
-python init_db.py
+
 python app.py
 ```
 
@@ -126,7 +125,6 @@ The system supports comprehensive tracking for:
 achievement-management-system/
 │
 ├── app.py                    # Flask application + routing logic
-├── init_db.py                # Database schema initialization
 ├── requirements.txt          # Python dependencies
 │
 ├── static/

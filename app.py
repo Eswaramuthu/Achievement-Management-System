@@ -1343,13 +1343,21 @@ def student_new():
             return render_template("student_new_2.html", 
                                  success="Registration submitted! Your account will be activated after admin approval.",
                                  firebase_config=firebase_config)
+        except sqlite3.IntegrityError as e:
+            err = str(e)
+            if "student.student_id" in err:
+                friendly = f"Student ID '{student_id}' is already registered. Please use a different Student ID."
+            elif "student.email" in err:
+                friendly = f"Email '{email}' is already registered. Please use a different email address."
+            else:
+                friendly = "An account with these details already exists. Please check your Student ID and email."
+            return render_template("student_new_2.html", error=friendly, firebase_config=firebase_config)
         except sqlite3.Error as e:
-            return render_template("student_new_2.html", error=f"Database error: {e}", firebase_config=firebase_config)
+            return render_template("student_new_2.html", error=f"An unexpected error occurred. Please try again.", firebase_config=firebase_config)
         finally:
             connection.close()
 
     return render_template("student_new_2.html", firebase_config=firebase_config)
-
 
 # Update teacher registration to require approval
 @app.route("/teacher-new", endpoint="teacher-new", methods=["GET", "POST"])
@@ -1374,13 +1382,21 @@ def teacher_new():
             connection.commit()
             return render_template("teacher_new_2.html", 
                                  success="Registration submitted! Your account will be activated after admin approval.")
+        except sqlite3.IntegrityError as e:
+            err = str(e)
+            if "teacher.teacher_id" in err:
+                friendly = f"Teacher ID '{teacher_id}' is already registered. Please use a different Teacher ID."
+            elif "teacher.email" in err:
+                friendly = f"Email '{email}' is already registered. Please use a different email address."
+            else:
+                friendly = "An account with these details already exists. Please check your Teacher ID and email."
+            return render_template("teacher_new_2.html", error=friendly)
         except sqlite3.Error as e:
-            return render_template("teacher_new_2.html", error=f"Database error: {e}")
+            return render_template("teacher_new_2.html", error="An unexpected error occurred. Please try again.")
         finally:
             connection.close()
 
     return render_template("teacher_new_2.html")
-
 
 # Update student login to check approval status
 @app.route("/student", methods=["GET", "POST"])
