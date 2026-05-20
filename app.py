@@ -5,6 +5,7 @@ import secrets
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
+from datetime import timedelta
 from services.certificate_service import process_certificate
 from flask_wtf import CSRFProtect
 
@@ -29,6 +30,7 @@ DEFAULT_FIREBASE_CONFIG = {
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(16))
+app.permanent_session_lifetime = timedelta(days=30)
 
 # csrf = CSRFProtect(app)
 
@@ -367,6 +369,12 @@ def teacher_required(f):
             return redirect(url_for("teacher"))
         return f(*args, **kwargs)
     return decorated_function
+
+# Custom 404 Error Handler
+@app.errorhandler(404)
+def page_not_found(error):
+    """Handle 404 errors with custom template"""
+    return render_template("404.html"), 404
 
 
 @app.route("/")
@@ -1409,6 +1417,10 @@ def student():
             session["student_id"] = student_data[1]
             session["student_name"] = student_data[0]
             session["student_dept"] = student_data[6]
+            
+            if request.form.get('remember'):
+                session.permanent = True
+                
             return redirect(url_for("student-dashboard"))
         else:
             return render_template("student.html", error="Invalid credentials. Please try again.", firebase_config=firebase_config)
@@ -1438,6 +1450,10 @@ def teacher():
             session["teacher_id"] = teacher_data[1]
             session["teacher_name"] = teacher_data[0]
             session["teacher_dept"] = teacher_data[6]
+            
+            if request.form.get('remember'):
+                session.permanent = True
+                
             return redirect(url_for("teacher-dashboard"))
         else:
             return render_template("teacher.html", error="Invalid credentials. Please try again.")

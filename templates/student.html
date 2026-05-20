@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Student Login - Achievement Management System</title>
   <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+  <script src="{{ url_for('static', filename = 'script.js') }}" defer></script>
   <style>
     /* ===== Login Page Modern Theme ===== */
 
@@ -255,7 +255,6 @@
       margin-top: 28px;
 
       display: flex;
-      flex-direction: column;
       align-items: center;
       gap: 12px;
     }
@@ -267,14 +266,40 @@
       text-decoration: none;
     }
 
-    .register-cta:hover {
-      text-decoration: underline;
+    .forgot-password:hover {
+      opacity: 0.8;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(255, 28, 28, 0.2);
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(255, 28, 28, 0.3);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
     }
 
     .back-home {
       color: #94a3b8;
       font-size: 13px;
       text-decoration: none;
+      font-weight: 600;
+      transition: opacity 0.2s;
     }
 
     .back-home:hover {
@@ -316,17 +341,18 @@
 </head>
 
 <body>
-  <button id="mode-toggle" class="theme-toggle" title="Toggle theme"></button>
-
-  <div class="container login-container">
-    <div class="title">Student Login</div>
-    <div class="content">
-      <form action="/student" method="post">
-        <div class="user-details">
-          <div class="input-box full-width">
-            <span class="details">Student ID</span>
-            <input autocomplete="off" autofocus type="text" name="sname" placeholder="Enter your Student ID" required />
-          </div>
+  <!-- Professional Navbar -->
+  <div class="auth-nav">
+    <a href="{{ url_for('home') }}" class="auth-brand">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor" />
+        <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" />
+        <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" />
+      </svg>
+      <span>Achievement Management System</span>
+    </a>
 
           <div class="input-box full-width">
             <span class="details">Password</span>
@@ -340,20 +366,63 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Right Panel (Login Form) -->
+      <div class="auth-form-section">
+        <div class="auth-header">
+          <h1>Welcome back, Student</h1>
+          <p>Please enter your details to access your dashboard.</p>
+        </div>
 
         {% if error %}
-        <div class="error-message" style="color: red; text-align: center; margin-bottom: 15px;">
+        <div class="error-message">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
           {{ error }}
         </div>
         {% endif %}
 
-        <div class="button">
-          <input type="submit" value="Login" />
-        </div>
-      </form>
+        <form action="/student" method="post" class="auth-form">
+          <div class="form-group">
+            <label for="sname">Student ID</label>
+            <div class="input-wrapper">
+              <input autocomplete="off" autofocus type="text" name="sname" id="sname" placeholder="e.g. STU12345"
+                required />
+            </div>
+          </div>
 
-      <!-- Firebase Google Sign-In Option -->
-      <div class="google-signin-container">
+          <div class="form-group">
+            <label for="student-login-password">Password</label>
+            <div class="input-wrapper">
+              <input autocomplete="off" type="password" name="password" id="student-login-password"
+                placeholder="Enter your password" required />
+              <button type="button" class="password-toggle-btn" aria-label="Show password"
+                data-target="student-login-password">
+                <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="auth-options">
+            <label class="remember-me">
+              <input type="checkbox" name="remember">
+              <span>Remember me for 30 days</span>
+            </label>
+          </div>
+
+          <button type="submit" class="btn-submit">Sign in to dashboard</button>
+        </form>
+
+        <!-- Firebase Google Sign-In Option -->
         <div class="signin-divider">
           <span>OR</span>
         </div>
@@ -361,16 +430,10 @@
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
           Sign in with Google
         </button>
-      </div>
 
-      <div class="auth-links">
-        <a class="register-cta" href="{{ url_for('student_new') }}">
-          New student? Register here
-        </a>
-
-        <a class="back-home" href="{{ url_for('home') }}">
-          ← Back to Home
-        </a>
+        <div class="auth-footer">
+          New student? <a href="{{ url_for('student_new') }}">Register here</a>
+        </div>
       </div>
 
     </div>
@@ -422,10 +485,13 @@
     console.log("✅ Firebase Google Sign-In initialized on Student Login page");
   </script>
 
-  <!-- Password visibility toggle logic  -->
+  <!-- Password visibility toggle logic -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const toggleButtons = document.querySelectorAll('.password-toggle-btn');
+
+      const eyeIcon = `<svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+      const eyeOffIcon = `<svg class="eye-off-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
 
       toggleButtons.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -436,7 +502,7 @@
           const isPassword = input.type === 'password';
           input.type = isPassword ? 'text' : 'password';
           btn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
-          btn.textContent = isPassword ? '🙈' : '👁';
+          btn.innerHTML = isPassword ? eyeOffIcon : eyeIcon;
         });
       });
     });

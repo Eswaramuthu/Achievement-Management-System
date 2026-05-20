@@ -5,7 +5,7 @@
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/Eswaramuthu/Achievement-Management-System)
 [![Python](https://img.shields.io/badge/Python-3.8+-green?logo=python)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-2.0+-lightgrey?logo=flask)](https://flask.palletsprojects.com/)
-[![License](https://img.shields.io/badge/License-Academic-orange)]()
+[![License](https://img.shields.io/badge/License-Academic-orange)](#-license)
 
 ---
 
@@ -135,10 +135,11 @@ achievement-management-system/
 │   └── certificates/         # Uploaded certificate files
 │
 ├── templates/                # Jinja2 HTML templates
-├── database/                 # SQLite database files
+├── ams.db                    # SQLite database
+├── instance/                 # Instance-specific files
 │
 ├── README.md                 # This file
-└── CONTRIBUTING.md           # Contribution guidelines
+└── Contributing.md           # Contribution guidelines
 ```
 
 ---
@@ -220,7 +221,7 @@ We welcome contributions! Here's how to get started:
 5. **Push** to your branch (`git push origin feature/amazing-feature`)
 6. **Open** a Pull Request
 
-📖 Read [`CONTRIBUTING.md`](CONTRIBUTING.md) for detailed guidelines.
+📖 Read [`Contributing.md`](Contributing.md) for detailed guidelines.
 
 ---
 

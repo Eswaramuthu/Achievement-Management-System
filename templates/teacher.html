@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Teacher Login - Achievement Management System</title>
   <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+  <script src="{{ url_for('static', filename = 'script.js') }}" defer></script>
   <style>
     /* ===== Teacher Login Page Styling ===== */
 
@@ -273,7 +272,7 @@
 </head>
 
 <body>
-  <button id="mode-toggle" class="theme-toggle" title="Toggle theme">🌙</button>
+   <button id="mode-toggle" class="theme-toggle" title="Toggle theme">🌙</button>
 
   <div class="container login-container">
     <div class="title">Teacher Login</div>
@@ -325,5 +324,4 @@
     });
   </script>
 </body>
-
 </html>

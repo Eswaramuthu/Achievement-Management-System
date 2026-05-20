@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 - Page Not Found</title>
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='styles.css') }}"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    /* 404 Specific Styles */
+    .error-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: calc(100vh - 140px);
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+
+    .error-content {
+      max-width: 600px;
+      width: 100%;
+    }
+
+    .error-code {
+      font-size: clamp(5rem, 12vw, 10rem);
+      font-weight: 900;
+      color: var(--primary-color);
+      line-height: 1;
+      margin-bottom: 1rem;
+      text-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    body.light-mode .error-code {
+      text-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .error-title {
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
+      font-weight: 700;
+      color: var(--text-color);
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .error-message {
+      font-size: clamp(1rem, 3vw, 1.1rem);
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+
+    .error-description {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      margin-bottom: 2.5rem;
+      line-height: 1.5;
+      opacity: 0.85;
+    }
+
+    .error-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .error-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 12px 28px;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    .error-btn-primary {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .error-btn-primary:hover {
+      background: var(--primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(255, 28, 28, 0.3);
+    }
+
+    body.light-mode .error-btn-primary:hover {
+      box-shadow: 0 8px 16px rgba(212, 0, 0, 0.2);
+    }
+
+    .error-btn-secondary {
+      background: transparent;
+      color: var(--text-color);
+      border: 2px solid var(--border-color);
+    }
+
+    .error-btn-secondary:hover {
+      background: var(--glass-bg);
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+      transform: translateY(-2px);
+    }
+
+    .error-icon {
+      font-size: 0.9em;
+    }
+
+    /* Decorative element */
+    .error-decoration {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        var(--primary-color),
+        transparent
+      );
+      opacity: 0.05;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .error-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .error-container {
+        padding: 2rem 1.5rem;
+        min-height: calc(100vh - 140px);
+      }
+
+      .error-code {
+        margin-bottom: 0.5rem;
+      }
+
+      .error-title {
+        margin-bottom: 1rem;
+      }
+
+      .error-actions {
+        flex-direction: column;
+      }
+
+      .error-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .error-container {
+        padding: 1.5rem 1rem;
+      }
+
+      .error-decoration {
+        width: 200px;
+        height: 200px;
+      }
+    }
+  </style>
+</head>
+<body class="light-mode">
+  <!-- Header/Navbar -->
+  <header class="header">
+    <nav class="navbar">
+      <div class="nav-brand">
+        <h2>Achievement Management System</h2>
+      </div>
+      <ul class="nav-menu">
+        <li><a href="{{ url_for('home') }}">Home</a></li>
+        <li><a href="/#about">About</a></li>
+        <li><a href="/#features">Features</a></li>
+        <li><a href="/#contact">Contact</a></li>
+        {% if session.get('student_id') %}
+        <li><a href="{{ url_for('student-dashboard') }}">Dashboard</a></li>
+        {% elif session.get('teacher_id') %}
+        <li><a href="{{ url_for('teacher-dashboard') }}">Dashboard</a></li>
+        {% else %}
+        <li><a href="{{ url_for('student') }}">Student Login</a></li>
+        <li><a href="{{ url_for('teacher') }}">Teacher Login</a></li>
+        {% endif %}
+        <li><a href="#FAQ">FAQ</a></li>
+      </ul>
+      <div class="nav-toggle">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="error-container">
+      <div class="error-decoration"></div>
+      <div class="error-content">
+        <div class="error-code" role="presentation">404</div>
+        <h1 class="error-title">Page Not Found</h1>
+        <p class="error-message">
+          Oops! The page you're looking for doesn't exist.
+        </p>
+        <p class="error-description">
+          The page may have been removed, renamed, or the URL might be incorrect.
+          Let's get you back on track.
+        </p>
+        <div class="error-actions">
+          <a href="{{ url_for('home') }}" class="error-btn error-btn-primary">
+            <span class="error-icon">←</span> Back to Home
+          </a>
+          <button
+            class="error-btn error-btn-secondary"
+            onclick="window.history.back()"
+          >
+            <span class="error-icon">↺</span> Go Back
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>About Us</h3>
+        <p>
+          Achievement Management System helps students and teachers track
+          academic achievements in one place.
+        </p>
+      </div>
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="{{ url_for('home') }}">Home</a></li>
+          <li><a href="/#about">About</a></li>
+          <li><a href="/#features">Features</a></li>
+          <li><a href="/#contact">Contact</a></li>
+          <li><a href="{{ url_for('privacy_policy') }}">Privacy Policy</a></li>
+          <li><a href="{{ url_for('terms') }}">Terms &amp; Conditions</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Contact Info</h3>
+        <p>Email: info@achievement-system.com</p>
+        <p>Phone: +1 (123) 456-7890</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>
+        &copy; 2026 Achievement Management System. All rights reserved. Developed
+        at SRM Institute of Science and Technology.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Theme Toggle Button -->
+  <div class="toggle-container">
+    <button id="mode-toggle" class="theme-toggle">🌙</button>
+  </div>
+
+  <!--Scroll to Up button-->
+  <button id="scrollTopBtn" aria-label="Scroll to top" title="Scroll to top">
+    ↑
+  </button>
+
+  <script>
+    // Theme toggle functionality
+    document.addEventListener("DOMContentLoaded", function () {
+      const themeToggle = document.getElementById("mode-toggle");
+      const body = document.body;
+
+      // Check for saved theme preference
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "dark") {
+        body.classList.remove("light-mode");
+      } else {
+        body.classList.add("light-mode");
+      }
+
+      themeToggle.addEventListener("click", function () {
+        body.classList.toggle("light-mode");
+        const isLightMode = body.classList.contains("light-mode");
+        localStorage.setItem("theme", isLightMode ? "light" : "dark");
+
+        // Update icon
+        themeToggle.textContent = isLightMode ? "🌙" : "☀️";
+      });
+
+      // Set initial icon based on theme
+      const isLightMode = body.classList.contains("light-mode");
+      themeToggle.textContent = isLightMode ? "🌙" : "☀️";
+    });
+
+    // Mobile menu toggle
+    document
+      .querySelector(".nav-toggle")
+      .addEventListener("click", function () {
+        document.querySelector(".nav-menu").classList.toggle("active");
+      });
+
+    // Close mobile menu when a link is clicked
+    document.querySelectorAll(".nav-menu a").forEach((link) => {
+      link.addEventListener("click", () => {
+        document.querySelector(".nav-menu").classList.remove("active");
+      });
+    });
+
+    // Scroll-to-top button logic
+    const scrollBtn = document.getElementById("scrollTopBtn");
+
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > 300) {
+        scrollBtn.style.display = "block";
+      } else {
+        scrollBtn.style.display = "none";
+      }
+    });
+
+    scrollBtn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  </script>
+</body>
+</html>
