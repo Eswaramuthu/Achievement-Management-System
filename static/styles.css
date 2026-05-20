@@ -12,7 +12,7 @@
 }
 
 body.light-mode {
-  --bg-color: #f5f7fa;
+  --bg-color: white;
   --bg-gradient: linear-gradient(135deg, #ffffff 0%, #f0f4f8 100%);
   --glass-bg: rgba(255, 255, 255, 0.9);
   --text-color: #1a1a1a;
@@ -987,7 +987,7 @@ body {
   height: 48px;
   border-radius: 50%;
   border: none;
-  background-color:#cc0000;
+  background-color: #cc0000;
   color: #fff;
   font-size: 30px;
   cursor: pointer;
@@ -1000,7 +1000,7 @@ body {
 }
 
 #scrollTopBtn:hover {
-  background-color:#ff1c1c;
+  background-color: #ff1c1c;
   transform: translateY(-6px) scale(1.05);
   transform: scale(1.12);
   font-weight: bolder;
