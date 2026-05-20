@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -99,7 +100,7 @@
       text-decoration: none;
       letter-spacing: -0.5px;
     }
-    
+
     .auth-brand svg {
       width: 28px;
       height: 28px;
@@ -132,16 +133,24 @@
       justify-content: center;
       align-items: center;
       width: 100%;
-      max-width: 1100px;
+      max-width: 900px;
       margin: auto 0;
-      padding: 120px 20px 40px 20px; /* Space for absolute nav */
+      padding: 70px 16px 16px 16px;
+      /* Space for absolute nav */
       box-sizing: border-box;
       animation: fadeIn 0.5s ease-out;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .auth-container {
@@ -155,7 +164,7 @@
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
     }
-    
+
     body.light-mode .auth-container {
       box-shadow: 0 24px 48px rgba(0, 0, 0, 0.05);
     }
@@ -164,7 +173,7 @@
     .auth-sidebar {
       flex: 1;
       background: linear-gradient(135deg, rgba(255, 28, 28, 0.08) 0%, rgba(0, 0, 0, 0.2) 100%);
-      padding: 60px 40px;
+      padding: 30px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -172,7 +181,7 @@
       position: relative;
       overflow: hidden;
     }
-    
+
     body.light-mode .auth-sidebar {
       background: linear-gradient(135deg, rgba(212, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.02) 100%);
     }
@@ -202,11 +211,11 @@
     }
 
     .auth-quote p {
-      font-size: 1.4rem;
+      font-size: 1.05rem;
       font-weight: 300;
       color: var(--text-color);
-      line-height: 1.6;
-      margin-bottom: 2.5rem;
+      line-height: 1.4;
+      margin-bottom: 1rem;
     }
 
     .auth-quote-author {
@@ -216,8 +225,8 @@
     }
 
     .auth-quote-author .avatar {
-      width: 48px;
-      height: 48px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       background: rgba(255, 28, 28, 0.15);
       color: var(--primary-color);
@@ -225,7 +234,7 @@
       align-items: center;
       justify-content: center;
       font-weight: 600;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       border: 1px solid rgba(255, 28, 28, 0.3);
     }
 
@@ -235,7 +244,7 @@
       color: var(--text-color);
       font-weight: 600;
     }
-    
+
     .auth-quote-author .info span {
       font-size: 0.85rem;
       color: var(--text-secondary);
@@ -243,8 +252,9 @@
 
     /* ===== Form Section (Right Panel) ===== */
     .auth-form-section {
-      flex: 1.5; /* slightly wider for the grid */
-      padding: 60px 80px;
+      flex: 1.5;
+      /* slightly wider for the grid */
+      padding: 25px 40px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -252,33 +262,33 @@
     }
 
     .auth-header {
-      margin-bottom: 2.5rem;
+      margin-bottom: 1rem;
     }
 
     .auth-header h1 {
-      font-size: 2.25rem;
+      font-size: 1.5rem;
       font-weight: 700;
       color: var(--text-color);
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.25rem;
       letter-spacing: -0.5px;
     }
 
     .auth-header p {
       color: var(--text-secondary);
-      font-size: 1rem;
+      font-size: 0.85rem;
     }
 
     .error-message {
       background: rgba(255, 28, 28, 0.1);
       border: 1px solid rgba(255, 28, 28, 0.2);
       color: var(--primary-color);
-      padding: 14px 16px;
-      border-radius: 12px;
-      font-size: 0.9rem;
-      margin-bottom: 1.5rem;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      margin-bottom: 0.75rem;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       font-weight: 500;
     }
 
@@ -286,32 +296,33 @@
       background: rgba(16, 185, 129, 0.1);
       border: 1px solid rgba(16, 185, 129, 0.2);
       color: #10b981;
-      padding: 14px 16px;
-      border-radius: 12px;
-      font-size: 0.9rem;
-      margin-bottom: 1.5rem;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      margin-bottom: 0.75rem;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       font-weight: 500;
     }
 
     .auth-form .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1.25rem;
-      margin-bottom: 1.5rem;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
     }
 
     .auth-form .form-group {
-      margin-bottom: 0; /* overridden for grid */
+      margin-bottom: 0;
+      /* overridden for grid */
     }
 
     .auth-form label {
       display: block;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.25rem;
       color: var(--text-color);
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       font-weight: 500;
     }
 
@@ -324,15 +335,15 @@
     .auth-form input[type="tel"],
     .auth-form input[type="password"] {
       width: 100%;
-      padding: 14px 16px;
+      padding: 8px 12px;
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border-color);
-      border-radius: 12px;
+      border-radius: 8px;
       color: var(--text-color);
-      font-size: 1rem;
+      font-size: 0.9rem;
       transition: all 0.2s ease;
     }
-    
+
     body.light-mode .auth-form input[type="text"],
     body.light-mode .auth-form input[type="email"],
     body.light-mode .auth-form input[type="tel"],
@@ -347,7 +358,7 @@
       outline: none;
       background: transparent !important;
     }
-    
+
     body.light-mode .auth-form input:focus {
       background: #ffffff !important;
     }
@@ -355,23 +366,23 @@
     /* Select Styles */
     .auth-form select {
       width: 100%;
-      padding: 14px 16px;
+      padding: 8px 12px;
       background-color: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border-color);
-      border-radius: 12px;
+      border-radius: 8px;
       color: var(--text-color);
-      font-size: 1rem;
+      font-size: 0.9rem;
       transition: all 0.2s ease;
       appearance: none;
       -webkit-appearance: none;
       -moz-appearance: none;
-      background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+      background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
       background-repeat: no-repeat;
-      background-position: right 14px center;
-      background-size: 24px;
+      background-position: right 10px center;
+      background-size: 20px;
       cursor: pointer;
     }
-    
+
     body.light-mode .auth-form select {
       background-color: #ffffff;
       border-color: #e2e8f0;
@@ -384,7 +395,7 @@
       outline: none;
       background-color: transparent;
     }
-    
+
     body.light-mode .auth-form select:focus {
       background-color: #ffffff;
     }
@@ -409,11 +420,11 @@
       transition: color 0.2s;
       padding: 4px;
     }
-    
+
     .password-toggle-btn:hover {
       color: var(--text-color);
     }
-    
+
     .password-toggle-btn:focus {
       outline: none;
       color: var(--primary-color);
@@ -421,17 +432,17 @@
 
     .btn-submit {
       width: 100%;
-      padding: 14px;
+      padding: 10px;
       background: var(--primary-color);
       color: white;
       border: none;
-      border-radius: 12px;
-      font-size: 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
       box-shadow: 0 4px 12px rgba(255, 28, 28, 0.2);
-      margin-top: 1rem;
+      margin-top: 0.5rem;
     }
 
     .btn-submit:hover {
@@ -445,9 +456,9 @@
     }
 
     .auth-footer {
-      margin-top: 2rem;
+      margin-top: 1rem;
       text-align: center;
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       color: var(--text-secondary);
     }
 
@@ -476,7 +487,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       transition: all 0.3s ease;
       backdrop-filter: blur(10px);
       /* Use !important to override global fixed positioning */
@@ -493,29 +504,32 @@
     /* ===== Responsive Adjustments ===== */
     @media (max-width: 1024px) {
       .auth-form-section {
-        padding: 50px 60px;
+        padding: 20px 30px;
       }
+
       .auth-sidebar {
-        padding: 50px 40px;
+        padding: 20px;
       }
     }
 
     @media (max-width: 900px) {
       .auth-container {
         flex-direction: column;
-        max-width: 600px; /* Slightly wider for the form on mobile */
+        max-width: 600px;
+        /* Slightly wider for the form on mobile */
         margin: 0 auto;
       }
-      
+
       .auth-sidebar {
-        display: none; /* Streamlined mobile view */
+        display: none;
+        /* Streamlined mobile view */
       }
 
       .auth-form-section {
         padding: 40px;
         border-radius: 24px;
       }
-      
+
       .auth-nav {
         padding: 16px 20px;
       }
@@ -528,7 +542,7 @@
         width: 24px;
         height: 24px;
       }
-      
+
       .auth-wrapper {
         padding: 100px 16px 40px 16px;
       }
@@ -536,13 +550,14 @@
 
     @media (max-width: 600px) {
       .auth-form .form-grid {
-        grid-template-columns: 1fr; /* Single column on mobile */
+        grid-template-columns: 1fr;
+        /* Single column on mobile */
       }
-      
+
       .auth-form-section {
         padding: 40px 24px;
       }
-      
+
       .auth-header h1 {
         font-size: 1.75rem;
       }
@@ -554,21 +569,21 @@
   </style>
   <script>
     function validatePasswords(event) {
-        const password = document.getElementById("password").value;
-        const confirmPassword = document.getElementById("confirm-password").value;
-        const message = document.getElementById("password-message");
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirm-password").value;
+      const message = document.getElementById("password-message");
 
-        if (password !== confirmPassword) {
-            event.preventDefault(); // This stops form submission
-            message.textContent = "❌ Passwords do not match!";
-            message.style.color = "var(--primary-color)";
-            message.style.display = "block";
-            return false;
-        } else {
-            message.textContent = "";
-            message.style.display = "none";
-            return true;
-        }
+      if (password !== confirmPassword) {
+        event.preventDefault(); // This stops form submission
+        message.textContent = "❌ Passwords do not match!";
+        message.style.color = "var(--primary-color)";
+        message.style.display = "block";
+        return false;
+      } else {
+        message.textContent = "";
+        message.style.display = "none";
+        return true;
+      }
     }
   </script>
 </head>
@@ -578,17 +593,20 @@
   <div class="auth-nav">
     <a href="{{ url_for('home') }}" class="auth-brand">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor"/>
-        <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor" />
+        <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" />
+        <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" />
       </svg>
       <span>Achievement Management System</span>
     </a>
-    
+
     <div class="nav-actions">
       <a href="{{ url_for('student') }}" class="nav-back">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M12 19l-7-7 7-7" />
         </svg>
         Back to Login
       </a>
@@ -599,17 +617,19 @@
 
   <div class="auth-wrapper">
     <div class="auth-container">
-      
+
       <!-- Left Sidebar (Branding & Visuals) -->
       <div class="auth-sidebar">
         <div class="auth-quote auth-sidebar-content">
-          <p>"Begin your journey, showcase your achievements, and unlock new opportunities through your unified student profile."</p>
+          <p>"Begin your journey, showcase your achievements, and unlock new opportunities through your unified student
+            profile."</p>
           <div class="auth-quote-author">
             <div class="avatar">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <polyline points="16 11 18 13 22 9"/>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <polyline points="16 11 18 13 22 9" />
               </svg>
             </div>
             <div class="info">
@@ -629,7 +649,8 @@
 
         {% if error %}
         <div class="error-message">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10" />
             <line x1="12" y1="8" x2="12" y2="12" />
             <line x1="12" y1="16" x2="12.01" y2="16" />
@@ -640,7 +661,8 @@
 
         {% if success %}
         <div class="success-message">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
             <polyline points="22 4 12 14.01 9 11.01"></polyline>
           </svg>
@@ -650,32 +672,36 @@
 
         <form action="/student_new" method="POST" class="auth-form" onsubmit="return validatePasswords(event)">
           <div class="form-grid">
-            
+
             <div class="form-group">
               <label for="student_name">Full Name</label>
               <div class="input-wrapper">
-                <input autocomplete="off" autofocus type="text" name="student_name" id="student_name" placeholder="Enter your full name" required />
+                <input autocomplete="off" autofocus type="text" name="student_name" id="student_name"
+                  placeholder="Enter your full name" required />
               </div>
             </div>
 
             <div class="form-group">
               <label for="student_id">Student ID</label>
               <div class="input-wrapper">
-                <input autocomplete="off" type="text" name="student_id" id="student_id" placeholder="Enter your Student ID" required />
+                <input autocomplete="off" type="text" name="student_id" id="student_id"
+                  placeholder="Enter your Student ID" required />
               </div>
             </div>
 
             <div class="form-group">
               <label for="email">Email Address</label>
               <div class="input-wrapper">
-                <input autocomplete="off" type="email" name="email" id="email" placeholder="Enter your email" required />
+                <input autocomplete="off" type="email" name="email" id="email" placeholder="Enter your email"
+                  required />
               </div>
             </div>
 
             <div class="form-group">
               <label for="phone_number">Phone Number</label>
               <div class="input-wrapper">
-                <input autocomplete="off" type="tel" name="phone_number" id="phone_number" placeholder="Enter your phone number" required />
+                <input autocomplete="off" type="tel" name="phone_number" id="phone_number"
+                  placeholder="Enter your phone number" required />
               </div>
             </div>
 
@@ -707,10 +733,13 @@
             <div class="form-group">
               <label for="password">Password</label>
               <div class="input-wrapper">
-                <input autocomplete="off" type="password" name="password" id="password" placeholder="Create a password" required />
+                <input autocomplete="off" type="password" name="password" id="password" placeholder="Create a password"
+                  required />
                 <button type="button" class="password-toggle-btn" aria-label="Show password" data-target="password">
-                  <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                  <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
                   </svg>
                 </button>
               </div>
@@ -719,16 +748,21 @@
             <div class="form-group">
               <label for="confirm-password">Confirm Password</label>
               <div class="input-wrapper">
-                <input autocomplete="off" type="password" id="confirm-password" placeholder="Confirm your password" required />
-                <button type="button" class="password-toggle-btn" aria-label="Show password" data-target="confirm-password">
-                  <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                <input autocomplete="off" type="password" id="confirm-password" placeholder="Confirm your password"
+                  required />
+                <button type="button" class="password-toggle-btn" aria-label="Show password"
+                  data-target="confirm-password">
+                  <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
                   </svg>
                 </button>
               </div>
-              <small id="password-message" style="display: none; font-size: 0.85rem; margin-top: 8px; font-weight: 500;"></small>
+              <small id="password-message"
+                style="display: none; font-size: 0.85rem; margin-top: 8px; font-weight: 500;"></small>
             </div>
-            
+
           </div>
 
           <button type="submit" class="btn-submit">Register Account</button>
@@ -746,7 +780,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const toggleButtons = document.querySelectorAll('.password-toggle-btn');
-      
+
       const eyeIcon = `<svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
       const eyeOffIcon = `<svg class="eye-off-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
 
@@ -765,4 +799,5 @@
     });
   </script>
 </body>
+
 </html>
