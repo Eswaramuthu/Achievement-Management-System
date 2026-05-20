@@ -55,35 +55,53 @@
     <!-- Footer -->
     <footer class="footer">
       <div class="footer-content">
-        <div class="footer-section">
-          <h3>About Us</h3>
+        <section class="footer-section footer-brand" aria-labelledby="footer-brand-heading">
+          <span class="footer-kicker">Academic excellence tracker</span>
+          <h3 id="footer-brand-heading">Achievement Management System</h3>
           <p>
-            Achievement Management System helps students and teachers track
-            academic achievements in one place.
+            A focused platform for recording student milestones, managing
+            teacher submissions, and keeping academic achievements organized.
           </p>
-        </div>
-        <div class="footer-section">
-          <h3>Quick Links</h3>
-          <ul>
+          <div class="footer-actions" aria-label="Account shortcuts">
+            {% if session.get('student_id') %}
+            <a href="{{ url_for('student-dashboard') }}">Student Dashboard</a>
+            {% elif session.get('teacher_id') %}
+            <a href="{{ url_for('teacher-dashboard') }}">Teacher Dashboard</a>
+            {% else %}
+            <a href="{{ url_for('student') }}">Student Login</a>
+            <a href="{{ url_for('teacher') }}">Teacher Login</a>
+            {% endif %}
+          </div>
+        </section>
+        <nav class="footer-section" aria-labelledby="footer-links-heading">
+          <h3 id="footer-links-heading">Quick Links</h3>
+          <ul class="footer-links">
             <li><a href="{{ url_for('home') }}">Home</a></li>
             <li><a href="#about">About</a></li>
             <li><a href="#features">Features</a></li>
             <li><a href="#contact">Contact</a></li>
+            <li><a href="#FAQ">FAQ</a></li>
             <li><a href="{{ url_for('privacy_policy') }}">Privacy Policy</a></li>
             <li><a href="{{ url_for('terms') }}">Terms &amp; Conditions</a></li>
           </ul>
-        </div>
-        <div class="footer-section">
-          <h3>Contact Info</h3>
-          <p>Email: info@achievement-system.com</p>
-          <p>Phone: +1 (123) 456-7890</p>
-        </div>
+        </nav>
+        <section class="footer-section footer-contact-card" aria-labelledby="footer-contact-heading">
+          <h3 id="footer-contact-heading">Contact</h3>
+          <address class="footer-contact">
+            <span>Email</span>
+            <a href="mailto:info@achievement-system.com">info@achievement-system.com</a>
+            <span>Phone</span>
+            <a href="tel:+11234567890">+1 (123) 456-7890</a>
+            <span>Location</span>
+            <p>SRM Institute of Science and Technology</p>
+          </address>
+        </section>
       </div>
       <div class="footer-bottom">
         <p>
           &copy; 2026 Achievement Management System. All rights reserved.
-          Developed at SRM Institute of Science and Technology.
         </p>
+        <p>Developed at SRM Institute of Science and Technology.</p>
       </div>
     </footer>
 
