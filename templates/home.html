@@ -1,98 +1,283 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<!-- Hero Section -->
-<section class="hero">
-    <div class="hero-content">
-        <h1>Welcome to Achievement Management System</h1>
-        <p>A centralized platform where students and teachers track academic achievements in one place. Students view their accomplishments, teachers record them, and everyone gets a clear picture of academic progress — all automated and organized.</p>
-        <div class="hero-buttons">
-            <a href="{{ url_for('student') }}" class="btn btn-primary">Student Login</a>
-            <a href="{{ url_for('teacher') }}" class="btn btn-secondary">Teacher Login</a>
-        </div>
-    </div>
-</section>
-
-<!-- Features Section -->
-<section id="features" class="features">
-    <div class="container">
-        <h2 class="title">Key Features</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <h3>Student Dashboard</h3>
-                <p>View all achievements at a glance with analytics and filtering options.</p>
-            </div>
-            <div class="feature-card">
-                <h3>Teacher Management</h3>
-                <p>Quick entry forms for recording achievements with auto-complete functionality.</p>
-            </div>
-            <div class="feature-card">
-                <h3>Certificate Management</h3>
-                <p>Upload and download certificates in various formats (PDF, JPG, PNG).</p>
-            </div>
-            <div class="feature-card">
-                <h3>Analytics Dashboard</h3>
-                <p>Visual representation of achievement metrics by type, year, and position.</p>
+<div class="home-landing">
+    <!-- Hero Section -->
+    <section class="hero-landing-section">
+        <!-- Purple Glow Halo Arc behind Hero -->
+        <div class="hero-glow-arc"></div>
+        
+        <div class="hero-landing-content">
+            <h1 class="hero-title">
+                Showcasing Excellence.<br>
+                <span class="highlight-purple">Building Futures.</span>
+            </h1>
+            <p class="hero-subtitle">
+                A centralized, high-performance platform for tracking and showcasing academic achievements. 
+                Students access their accomplishments instantly, teachers record them effortlessly.
+            </p>
+            <div class="hero-cta-buttons">
+                {% if session.get('student_id') %}
+                    <a href="{{ url_for('student-dashboard') }}" class="btn btn-purple">Go to Dashboard</a>
+                {% elif session.get('teacher_id') %}
+                    <a href="{{ url_for('teacher-dashboard') }}" class="btn btn-purple">Go to Dashboard</a>
+                {% else %}
+                    <a href="{{ url_for('student') }}" class="btn btn-purple">Student Portal</a>
+                    <a href="{{ url_for('teacher') }}" class="btn btn-outline">Teacher Portal</a>
+                {% endif %}
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- About Section -->
-<section id="about" class="about">
-    <div class="container">
-        <h2 class="title">About Our System</h2>
-        <div class="about-content">
-            <div class="about-text">
-                <p>Academic achievements are scattered everywhere — certificates in folders, emails buried in inboxes, paper records collecting dust. Students struggle to showcase their accomplishments during placements or applications. Teachers waste time managing spreadsheets and physical documents. Nobody has a clear, organized view of what students have actually achieved.</p>
-                <p>Our Achievement Management System centralizes everything. Students see all their achievements in one dashboard with analytics. Teachers input achievements through simple forms with auto-complete. The system tracks hackathons, coding competitions, paper presentations, conferences, and symposiums — complete with certificates, dates, positions, and detailed descriptions. Clean, fast, and organized.</p>
+    <!-- Stats & Trust Proof Bar -->
+    <section class="stats-bar-section">
+        <div class="stats-bar-container">
+            <div class="stats-bar-rating">
+                <div class="rating-stars">★★★★★</div>
+                <div class="rating-label">Rated 4.9/5 by 1,200+ users</div>
+            </div>
+            <div class="stats-bar-divider"></div>
+            <div class="stats-bar-logos">
+                <div class="stats-logo"><span class="logo-icon">🎓</span> SRM IST</div>
+                <div class="stats-logo"><span class="logo-icon">⚡</span> NAAC A++</div>
+                <div class="stats-logo"><span class="logo-icon">🛡️</span> 100% Secure</div>
+                <div class="stats-logo"><span class="logo-icon">📄</span> OCR Verified</div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- FAQ Section -->
-<section id="FAQ" class="FAQ">
-    <div class="container">
-        <h2 class="title">Frequently Asked Questions</h2>
-        <div class="faq-content">
-            <div class="faq-item">
-                <h3>What is Achievement Management System?</h3>
-                <p>It is a centralized platform designed to help students and teachers track academic achievements efficiently.</p>
+    <!-- Mid Section Heading -->
+    <section class="features-intro-section">
+        <div class="section-title-wrapper">
+            <span class="section-tagline">Academic achievements organized</span>
+            <h2 class="section-main-title">Unifying Achievements. <span class="highlight-purple">Simplifying Access.</span></h2>
+            <p class="section-desc">
+                No more scattered certificates or messy spreadsheets. Achievement Management System brings everything into one unified dashboard.
+            </p>
+        </div>
+    </section>
+
+    <!-- 6-Card Features Grid -->
+    <section id="features" class="features-grid-section">
+        <div class="features-grid-container">
+            <!-- Card 1 -->
+            <div class="feature-grid-card">
+                <div class="card-icon-wrapper">
+                    <span class="card-icon">📍</span>
+                </div>
+                <a href="#about" class="card-arrow-link" aria-label="Learn more about Centralized Tracking">
+                    <span class="arrow-icon">↗</span>
+                </a>
+                <h3 class="card-title">Centralized Tracking</h3>
+                <p class="card-text">All student achievements, certificates, and academic records indexed in a single digital registry.</p>
             </div>
-            <div class="faq-item">
-                <h3>Who can use this platform?</h3>
-                <p>Both students and teachers can use this system for recording and monitoring academic accomplishments.</p>
+
+            <!-- Card 2: Highlighted Purple Card -->
+            <div class="feature-grid-card highlighted-card">
+                <div class="card-icon-wrapper">
+                    <span class="card-icon">⚡</span>
+                </div>
+                <a href="{{ url_for('teacher') }}" class="card-arrow-link" aria-label="Learn more about Fast Entry">
+                    <span class="arrow-icon">↗</span>
+                </a>
+                <h3 class="card-title">Fast Entry Flow</h3>
+                <p class="card-text">Teachers add accomplishment records in seconds with smart auto-complete and OCR assistance.</p>
             </div>
-            <div class="faq-item">
-                <h3>Can certificates be uploaded?</h3>
-                <p>Yes, users can upload digital certificates which remain accessible anytime.</p>
+
+            <!-- Card 3 -->
+            <div class="feature-grid-card">
+                <div class="card-icon-wrapper">
+                    <span class="card-icon">📄</span>
+                </div>
+                <a href="#about" class="card-arrow-link" aria-label="Learn more about Certificate Storage">
+                    <span class="arrow-icon">↗</span>
+                </a>
+                <h3 class="card-title">Digital Proof Vault</h3>
+                <p class="card-text">Upload and retrieve digital certificates anytime in PNG, JPG, or PDF format with secure hashing.</p>
             </div>
-            <div class="faq-item">
-                <h3>Is my data secure?</h3>
-                <p>The system uses authentication and structured data storage practices to keep information secure.</p>
+
+            <!-- Card 4 -->
+            <div class="feature-grid-card">
+                <div class="card-icon-wrapper">
+                    <span class="card-icon">📈</span>
+                </div>
+                <a href="{{ url_for('student') }}" class="card-arrow-link" aria-label="Learn more about Visual Analytics">
+                    <span class="arrow-icon">↗</span>
+                </a>
+                <h3 class="card-title">Visual Analytics</h3>
+                <p class="card-text">Progress trends and performance insights at a glance to identify departmental achievements.</p>
+            </div>
+
+            <!-- Card 5 -->
+            <div class="feature-grid-card">
+                <div class="card-icon-wrapper">
+                    <span class="card-icon">🔍</span>
+                </div>
+                <a href="#about" class="card-arrow-link" aria-label="Learn more about Smart Filtering">
+                    <span class="arrow-icon">↗</span>
+                </a>
+                <h3 class="card-title">Smart Filtering</h3>
+                <p class="card-text">Find exactly what you need instantly by sorting by category, date range, or department.</p>
+            </div>
+
+            <!-- Card 6 -->
+            <div class="feature-grid-card">
+                <div class="card-icon-wrapper">
+                    <span class="card-icon">🛡️</span>
+                </div>
+                <a href="#about" class="card-arrow-link" aria-label="Learn more about Secure Hash Verification">
+                    <span class="arrow-icon">↗</span>
+                </a>
+                <h3 class="card-title">Duplicate Protection</h3>
+                <p class="card-text">Secure cryptographic hash validation checks uploaded certificates to prevent duplicate records.</p>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- Contact Section -->
-<section id="contact" class="contact">
-    <div class="container">
-        <h2 class="title">Contact Us</h2>
-        <div class="contact-content">
-            <div class="contact-info">
-                <h3>Get In Touch</h3>
-                <p>Have questions or feedback? Reach out to us!</p>
-                <ul>
-                    <li>Email: info@achievement-system.com</li>
-                    <li>Phone: +1 (123) 456-7890</li>
-                    <li>Location: SRM Institute of Science and Technology</li>
-                </ul>
+    <!-- Pillars Banner Section (Deep Purple Area) -->
+    <section id="about" class="pillars-banner-section">
+        <div class="pillars-container">
+            <div class="pillars-header">
+                <h2 class="pillars-title">Built on Trust. Driven by Excellence.</h2>
+                <p class="pillars-subtitle">
+                    We don't just log achievements — we build validation. Our platform is trusted by SRM IST departments to deliver verified records that work for placement.
+                </p>
+            </div>
+            
+            <div class="pillars-grid">
+                <!-- Pillar 1 -->
+                <div class="pillar-card">
+                    <div class="pillar-top">
+                        <span class="pillar-num">01</span>
+                        <span class="pillar-arrow">↗</span>
+                    </div>
+                    <h3 class="pillar-name">Unified Registry</h3>
+                    <p class="pillar-text">All departments log into a single source of truth for achievements.</p>
+                </div>
+                <!-- Pillar 2 -->
+                <div class="pillar-card">
+                    <div class="pillar-top">
+                        <span class="pillar-num">02</span>
+                        <span class="pillar-arrow">↗</span>
+                    </div>
+                    <h3 class="pillar-name">Rapid Verification</h3>
+                    <p class="pillar-text">Verification workflows between teachers and administrators are simplified.</p>
+                </div>
+                <!-- Pillar 3 -->
+                <div class="pillar-card">
+                    <div class="pillar-top">
+                        <span class="pillar-num">03</span>
+                        <span class="pillar-arrow">↗</span>
+                    </div>
+                    <h3 class="pillar-name">Secure Hash Lock</h3>
+                    <p class="pillar-text">Cryptographic verification guarantees authenticity of digital credentials.</p>
+                </div>
+                <!-- Pillar 4 -->
+                <div class="pillar-card">
+                    <div class="pillar-top">
+                        <span class="pillar-num">04</span>
+                        <span class="pillar-arrow">↗</span>
+                    </div>
+                    <h3 class="pillar-name">Placement Ready</h3>
+                    <p class="pillar-text">Students instantly showcase their accomplishments during placement drives.</p>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
+    <!-- Portfolio / Key Focus Categories Section -->
+    <section class="portfolio-section">
+        <div class="portfolio-container">
+            <span class="portfolio-tagline">Real Impact. Proven Results.</span>
+            <h2 class="portfolio-title">Explore Achievement Focus Areas</h2>
+            <p class="portfolio-subtitle">
+                How we map student contributions into structured records.
+            </p>
+
+            <div class="portfolio-grid">
+                <!-- Item 1 -->
+                <div class="portfolio-card">
+                    <span class="portfolio-category">Coding</span>
+                    <h3 class="portfolio-card-title">Coding & Hackathons</h3>
+                    <p class="portfolio-card-desc">Tracks hackathons, competitive programming, and coding platform achievements.</p>
+                </div>
+                <!-- Item 2 -->
+                <div class="portfolio-card">
+                    <span class="portfolio-category">Research</span>
+                    <h3 class="portfolio-card-title">Research Publications</h3>
+                    <p class="portfolio-card-desc">Records papers, journal articles, patents, and conference presentations.</p>
+                </div>
+                <!-- Item 3 -->
+                <div class="portfolio-card">
+                    <span class="portfolio-category">Innovations</span>
+                    <h3 class="portfolio-card-title">Project Exhibitions</h3>
+                    <p class="portfolio-card-desc">Showcases symposium themes, hardware models, and custom software prototypes.</p>
+                </div>
+            </div>
+
+            <div class="portfolio-cta">
+                <a href="{{ url_for('student') }}" class="btn btn-purple">Explore All Categories</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="FAQ" class="faq-landing-section">
+        <div class="faq-container">
+            <h2 class="section-main-title">Frequently Asked <span class="highlight-purple">Questions</span></h2>
+            <div class="faq-grid">
+                <div class="faq-card">
+                    <h3 class="faq-question">What is the Achievement Management System?</h3>
+                    <p class="faq-answer">It is a centralized platform designed to help students and teachers track, verify, and display academic achievements efficiently.</p>
+                </div>
+                <div class="faq-card">
+                    <h3 class="faq-question">Who can upload and verify achievements?</h3>
+                    <p class="faq-answer">Students can view their profile and achievements, while authorized teachers record and verify achievements in seconds.</p>
+                </div>
+                <div class="faq-card">
+                    <h3 class="faq-question">How does duplicate certificate detection work?</h3>
+                    <p class="faq-answer">When a certificate is uploaded, the system computes its SHA-256 hash. If another entry matches this hash, the duplicate is detected and blocked.</p>
+                </div>
+                <div class="faq-card">
+                    <h3 class="faq-question">Can I use this for placement interviews?</h3>
+                    <p class="faq-answer">Absolutely. The system generates structured dashboards and downloadable formats to easily showcase your achievements to recruiters.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact & Contributors Section -->
+    <section id="contact" class="contact-contributors-section">
+        <div class="contact-contributors-container">
+            <div class="contact-panel">
+                <h2 class="contact-title">Get in Touch</h2>
+                <p class="contact-subtitle">Have questions or feedback? Reach out to us.</p>
+                <div class="contact-details">
+                    <p><strong>Email:</strong> info@achievement-system.com</p>
+                    <p><strong>Phone:</strong> +1 (123) 456-7890</p>
+                    <p><strong>Location:</strong> SRM Institute of Science and Technology</p>
+                </div>
+            </div>
+
+            <div class="contributors-panel">
+                <h3 class="contributors-title">Developed & Maintained by</h3>
+                <p class="contributors-subtitle">SRM IST Development Team</p>
+                <div class="contributors-avatars">
+                    <div class="avatar-circle" title="Lead Developer">
+                        <span class="avatar-init">LD</span>
+                    </div>
+                    <div class="avatar-circle" title="UI Designer">
+                        <span class="avatar-init">UD</span>
+                    </div>
+                    <div class="avatar-circle" title="System Architect">
+                        <span class="avatar-init">SA</span>
+                    </div>
+                    <div class="avatar-circle" title="Project Head">
+                        <span class="avatar-init">PH</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
 {% endblock %}

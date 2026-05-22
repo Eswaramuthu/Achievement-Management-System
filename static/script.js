@@ -1,10 +1,10 @@
 (function () {
   const stored = localStorage.getItem("theme");
-  const prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
-  const theme = stored || (prefersLight ? "light" : "dark");
-
-  if (theme === "light") {
+  // Default is dark mode, so only add light-mode if stored theme is "light"
+  if (stored === "light") {
     document.body.classList.add("light-mode");
+  } else {
+    document.body.classList.remove("light-mode");
   }
 })();
 
@@ -14,16 +14,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const getPreferredTheme = () => {
     const stored = localStorage.getItem("theme");
-    if (stored) return stored;
-    return window.matchMedia("(prefers-color-scheme: light)").matches
-      ? "light"
-      : "dark";
+    return stored || "dark";
   };
 
   const applyTheme = (theme) => {
     const isLight = theme === "light";
     document.body.classList.toggle("light-mode", isLight);
-    toggleButton.textContent = isLight ? "☀️" : "🌙";
+    toggleButton.textContent = isLight ? "🌙" : "☀️"; // 🌙 icon shows when in light mode (click to toggle to dark), ☀️ shows in dark mode
     toggleButton.setAttribute("aria-pressed", isLight);
   };
 

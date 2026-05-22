@@ -19,7 +19,15 @@
 
 
   </head>
-  <body class="light-mode">
+  <body>
+    <script>
+      (function () {
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme === "light") {
+          document.body.classList.add("light-mode");
+        }
+      })();
+    </script>
     <!-- Header/Navbar -->
     <header class="header">
       <nav class="navbar">
@@ -40,6 +48,9 @@
           <li><a href="{{ url_for('teacher') }}">Teacher Login</a></li>
           {% endif %}
           <li><a href="#FAQ">FAQ</a></li>
+          <li class="nav-theme-item">
+            <button id="mode-toggle" class="nav-theme-toggle" aria-label="Toggle theme" title="Toggle theme">🌙</button>
+          </li>
         </ul>
         <div class="nav-toggle">
           <span class="bar"></span>
@@ -105,10 +116,7 @@
       </div>
     </footer>
 
-    <!-- Theme Toggle Button -->
-    <div class="toggle-container">
-      <button id="mode-toggle" class="theme-toggle">🌙</button>
-    </div>
+
 
     <!--Scroll to Up button-->
     <button id="scrollTopBtn" aria-label="Scroll to top" title="Scroll to top">↑</button>
@@ -121,10 +129,10 @@
 
         // Check for saved theme preference
         const savedTheme = localStorage.getItem("theme");
-        if (savedTheme === "dark") {
-          body.classList.remove("light-mode");
-        } else {
+        if (savedTheme === "light") {
           body.classList.add("light-mode");
+        } else {
+          body.classList.remove("light-mode");
         }
 
         themeToggle.addEventListener("click", function () {
