@@ -69,7 +69,12 @@ export function signOutGoogle() {
     .then(() => {
       console.log("User signed out");
 
-      return fetch("/auth/logout", { method: "POST" })
+      return fetch("/auth/logout", {
+    method: "POST",
+    headers: {
+        "X-CSRFToken": document.querySelector('meta[name="csrf-token"]').content
+    }
+})
         .then(response => response.json())
         .catch(error => console.error("Logout error:", error));
     })
@@ -122,6 +127,9 @@ function sendUserToBackend(user) {
   user.getIdToken().then((token) => {
     fetch("/auth/google-login", {
       method: "POST",
+       headers: {
+        'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
+    },
       headers: {
         "Content-Type": "application/json",
       },

@@ -8,6 +8,7 @@ import datetime
 from datetime import timedelta
 from services.certificate_service import process_certificate
 from flask_wtf import CSRFProtect
+from flask_wtf.csrf import CSRFError
 
 try:
     from dotenv import load_dotenv
@@ -32,7 +33,7 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(16))
 app.permanent_session_lifetime = timedelta(days=30)
 
-# csrf = CSRFProtect(app)
+csrf = CSRFProtect(app)
 
 @app.context_processor
 def inject_firebase_config():
@@ -260,74 +261,19 @@ def init_db():
 
 
 
-# Call initialization function
-init_db()
+
 
 # Permission decorators for RBAC
 def login_required(f):
     """Decorator to check if user is logged in"""
     from functools import wraps
+
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not session.get("logged_in"):
             return redirect(url_for("home"))
         return f(*args, **kwargs)
-    return decorated_function
 
-def admin_required(f):
-    """Decorator to check if user is admin"""
-    from functools import wraps
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not session.get("logged_in") or not session.get("admin_id"):
-            return redirect(url_for("home"))
-        return f(*args, **kwargs)
-    return decorated_function
-
-def superadmin_required(f):
-    """Decorator to check if user is super admin"""
-    from functools import wraps
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not session.get("logged_in") or not session.get("admin_id") or not session.get("is_superuser"):
-            return redirect(url_for("admin_dashboard"))
-        return f(*args, **kwargs)
-    return decorated_function
-
-def student_required(f):
-    """Decorator to check if user is student"""
-    from functools import wraps
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not session.get("logged_in") or not session.get("student_id"):
-            return redirect(url_for("student"))
-        return f(*args, **kwargs)
-    return decorated_function
-
-def teacher_required(f):
-    """Decorator to check if user is teacher"""
-    from functools import wraps
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not session.get("logged_in") or not session.get("teacher_id"):
-            return redirect(url_for("teacher"))
-        return f(*args, **kwargs)
-    return decorated_function
-
-
-@app.context_processor
-def inject_csrf():
-    """Provide csrf_token() for templates that expect it (e.g. tests)."""
-    return {"csrf_token": lambda: ""}
-# Permission decorators for RBAC
-def login_required(f):
-    """Decorator to check if user is logged in"""
-    from functools import wraps
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not session.get("logged_in"):
-            return redirect(url_for("home"))
-        return f(*args, **kwargs)
     return decorated_function
 
 def admin_required(f):
@@ -375,6 +321,13 @@ def teacher_required(f):
 def page_not_found(error):
     """Handle 404 errors with custom template"""
     return render_template("404.html"), 404
+
+@app.errorhandler(CSRFError)
+def handle_csrf_error(e):
+    return render_template(
+        "csrf_error.html",
+        reason=e.description
+    ), 400
 
 
 @app.route("/")

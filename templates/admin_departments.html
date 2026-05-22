@@ -472,6 +472,9 @@
             
             fetch('{{ url_for("admin_add_department") }}', {
                 method: 'POST',
+                 headers: {
+        'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
+    },
                 body: formData
             })
             .then(response => response.json())
@@ -497,6 +500,9 @@
                 
                 fetch('{{ url_for("admin_delete_department") }}', {
                     method: 'POST',
+                     headers: {
+        'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
+    },
                     body: formData
                 })
                 .then(response => response.json())

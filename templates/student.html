@@ -653,6 +653,7 @@
         {% endif %}
 
         <form action="/student" method="post" class="auth-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <div class="form-group">
             <label for="sname">Student ID</label>
             <div class="input-wrapper">
