@@ -1372,7 +1372,10 @@ def teacher_new():
         teacher_dept = request.form.get("teacher_dept")
         teacher_code = request.form.get("teacher_code")
 
-        expected_code = os.environ.get("TEACHER_REGISTRATION_CODE", "TEACHER2024")
+        expected_code = os.environ.get("TEACHER_REGISTRATION_CODE")
+        if not expected_code:
+            return render_template("teacher_new_2.html", error="Teacher registration is not configured. Contact an administrator.")
+        
         if not teacher_code or teacher_code != expected_code:
             return render_template("teacher_new_2.html", error="Invalid Teacher Code provided.")
 
