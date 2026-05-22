@@ -1370,6 +1370,11 @@ def teacher_new():
         password = generate_password_hash(request.form.get("password"))
         teacher_gender = request.form.get("teacher_gender")
         teacher_dept = request.form.get("teacher_dept")
+        teacher_code = request.form.get("teacher_code")
+
+        expected_code = os.environ.get("TEACHER_REGISTRATION_CODE", "TEACHER2024")
+        if not teacher_code or teacher_code != expected_code:
+            return render_template("teacher_new_2.html", error="Invalid Teacher Code provided.")
 
         connection = sqlite3.connect(DB_PATH)
         cursor = connection.cursor()
