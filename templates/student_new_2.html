@@ -20,58 +20,6 @@
       padding: 0;
     }
 
-        function validatePasswords(event) {
-            const password = document.getElementById("password").value;
-            const confirmPassword = document.getElementById("confirm-password").value;
-            const message = document.getElementById("password-message");
-
-            console.log("Validating passwords...");
-
-            const strongPassword =
-                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
-
-            if (!strongPassword.test(password)) {
-                event.preventDefault();
-                message.textContent =
-                    "❌ Password must contain uppercase, lowercase, number, special character and minimum 8 characters.";
-                message.style.color = "red";
-                return false;
-            }
-
-            if (password !== confirmPassword) {
-                event.preventDefault(); // This stops form submission
-                message.textContent = "❌ Passwords do not match!";
-                message.style.color = "red";
-                console.log("Password validation failed - preventing submission");
-                return false;
-            } else {
-                message.textContent = "✅ Passwords match!";
-                message.style.color = "limegreen";
-                console.log("Password validation passed - allowing submission");
-                return true; // Explicitly return true to allow form submission
-            }
-        }
-    </script>
-    <style>
-        /* Additional styles to make select elements match input styling */
-        .input-box select {
-            width: 100%;
-            height: 45px;
-            padding-left: 15px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            background-color: rgba(255, 255, 255, 0.1);
-            color: var(--text-color);
-            transition: all 0.3s ease;
-            /* Remove default styling */
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            /* Add custom dropdown arrow for dark mode */
-            background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-        }
     .auth-nav {
       position: fixed;
       top: 0;
@@ -572,6 +520,20 @@
       const password = document.getElementById("password").value;
       const confirmPassword = document.getElementById("confirm-password").value;
       const message = document.getElementById("password-message");
+
+      console.log("Validating passwords...");
+
+      const strongPassword =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+
+      if (!strongPassword.test(password)) {
+        event.preventDefault();
+        message.textContent =
+          "❌ Password must contain uppercase, lowercase, number, special character and minimum 8 characters.";
+        message.style.color = "red";
+        message.style.display = "block";
+        return false;
+      }
 
       if (password !== confirmPassword) {
         event.preventDefault(); // This stops form submission
