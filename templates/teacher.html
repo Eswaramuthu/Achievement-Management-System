@@ -562,6 +562,7 @@
         {% endif %}
 
         <form action="/teacher" method="post" class="auth-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
           
           <div class="form-group">
