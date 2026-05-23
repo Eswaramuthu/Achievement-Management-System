@@ -22,22 +22,16 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(16))
 app.permanent_session_lifetime = timedelta(days=30)
 
-<<<<<<< HEAD
 csrf = CSRFProtect(app)
-=======
 # Session security configuration
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)
 app.config['SESSION_COOKIE_SECURE'] = os.environ.get('FLASK_ENV') == 'production'
->>>>>>> upstream/main
 
 @app.before_request
 def make_session_permanent():
     session.permanent = True
-
-# csrf = CSRFProtect(app)
-
 
 # ✅ Portable DB path (works on Windows/Linux/Vercel)
 DB_PATH = os.path.join(os.path.dirname(__file__), "ams.db")
@@ -339,20 +333,6 @@ def terms():
 @app.route("/privacy-policy")
 def privacy_policy():
     return render_template("privacy-policy.html")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 @app.route("/teacher-achievements", endpoint="teacher-achievements")
 def teacher_achievements():
