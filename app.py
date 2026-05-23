@@ -15,31 +15,21 @@ try:
 except ImportError:
     pass
 
-try:
-    from firebase_config import get_firebase_config
-    FIREBASE_AVAILABLE = True
-except ImportError:
-    get_firebase_config = None
-    FIREBASE_AVAILABLE = False
-
-# Default when Firebase is not configured (student page still renders)
-DEFAULT_FIREBASE_CONFIG = {
-    "apiKey": "", "authDomain": "", "databaseURL": "", "projectId": "",
-    "storageBucket": "", "messagingSenderId": "", "appId": "", "measurementId": "",
-}
-
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(16))
 app.permanent_session_lifetime = timedelta(days=30)
 
-# csrf = CSRFProtect(app)
+# Session security configuration
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)
+app.config['SESSION_COOKIE_SECURE'] = os.environ.get('FLASK_ENV') == 'production'
 
-@app.context_processor
-def inject_firebase_config():
-    if FIREBASE_AVAILABLE:
-        return dict(firebase_config=get_firebase_config())
-    else:
-        return dict(firebase_config=DEFAULT_FIREBASE_CONFIG)
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
+
+# csrf = CSRFProtect(app)
 
 
 # ✅ Portable DB path (works on Windows/Linux/Vercel)
@@ -379,8 +369,7 @@ def page_not_found(error):
 
 @app.route("/")
 def home():
-    firebase_config = get_firebase_config()
-    return render_template("home.html", firebase_config=firebase_config)
+    return render_template("home.html")
 
 
 @app.route("/terms")
@@ -412,9 +401,8 @@ def teacher_achievements():
 
 
 @app.route("/submit_achievements", methods=["GET", "POST"])
+@teacher_required
 def submit_achievements():
-    if not session.get("logged_in") or not session.get("teacher_id"):
-        return redirect(url_for("teacher"))
 
     teacher_id = session.get("teacher_id")
 
@@ -544,9 +532,8 @@ def submit_achievements():
 
 
 @app.route("/student-achievements", endpoint="student-achievements")
+@student_required
 def student_achievements():
-    if not session.get("logged_in"):
-        return redirect(url_for("student"))
 
     student_data = {
         "id": session.get("student_id"),
@@ -557,9 +544,8 @@ def student_achievements():
 
 
 @app.route("/student-dashboard", endpoint="student-dashboard")
+@student_required
 def student_dashboard():
-    if not session.get("logged_in"):
-        return redirect(url_for("student"))
 
     student_data = {
         "id": session.get("student_id"),
@@ -570,10 +556,8 @@ def student_dashboard():
 
 
 @app.route("/student/profile", endpoint="student-profile")
+@student_required
 def student_profile():
-    # Check if user is logged in
-    if not session.get('logged_in') or not session.get('student_id'):
-        return redirect(url_for('student'))
 
     # Get student ID from session
     student_id = session.get('student_id')
@@ -608,10 +592,8 @@ def student_profile():
 
 
 @app.route("/student/profile/edit", endpoint="student_profile_edit", methods=["POST"])
+@student_required
 def student_profile_edit():
-    # Check if user is logged in
-    if not session.get('logged_in') or not session.get('student_id'):
-        return redirect(url_for('student'))
     
     student_id = session.get('student_id')
     
@@ -732,9 +714,8 @@ def student_profile_edit():
 
 
 @app.route("/teacher-dashboard", endpoint="teacher-dashboard")
+@teacher_required
 def teacher_dashboard():
-    if not session.get("logged_in"):
-        return redirect(url_for("teacher"))
 
     teacher_id = session.get("teacher_id")
     teacher_data = {
@@ -831,9 +812,8 @@ def teacher_dashboard():
 
 
 @app.route("/all-achievements", endpoint="all-achievements")
+@teacher_required
 def all_achievements():
-    if not session.get("logged_in"):
-        return redirect(url_for("teacher"))
 
     teacher_id = session.get("teacher_id")
 
@@ -1321,6 +1301,20 @@ def admin_logout():
     session.clear()
     return redirect(url_for("admin_login"))
 
+@app.route("/student/logout")
+def student_logout():
+    """Clear student session and redirect to home"""
+    session.clear()
+    flash("You have been logged out successfully.", "info")
+    return redirect(url_for("home"))
+
+@app.route("/teacher/logout")
+def teacher_logout():
+    """Clear teacher session and redirect to home"""
+    session.clear()
+    flash("You have been logged out successfully.", "info")
+    return redirect(url_for("home"))
+
 
 # ==================== UPDATE EXISTING ROUTES FOR RBAC ====================
 
@@ -1328,7 +1322,6 @@ def admin_logout():
 @app.route("/student-new", methods=["GET", "POST"])
 @app.route("/student_new", methods=["GET", "POST"])
 def student_new():
-    firebase_config = get_firebase_config()
     
     if request.method == "POST":
         student_name = request.form.get("student_name")
@@ -1349,14 +1342,13 @@ def student_new():
             """, (student_name, student_id, email, phone_number, password, student_gender, student_dept, 0))
             connection.commit()
             return render_template("student_new_2.html", 
-                                 success="Registration submitted! Your account will be activated after admin approval.",
-                                 firebase_config=firebase_config)
+                                 success="Registration submitted! Your account will be activated after admin approval.")
         except sqlite3.Error as e:
-            return render_template("student_new_2.html", error=f"Database error: {e}", firebase_config=firebase_config)
+            return render_template("student_new_2.html", error=f"Database error: {e}")
         finally:
             connection.close()
 
-    return render_template("student_new_2.html", firebase_config=firebase_config)
+    return render_template("student_new_2.html")
 
 
 # Update teacher registration to require approval
@@ -1393,10 +1385,6 @@ def teacher_new():
 # Update student login to check approval status
 @app.route("/student", methods=["GET", "POST"])
 def student():
-    if FIREBASE_AVAILABLE:
-        firebase_config = get_firebase_config()
-    else:
-        firebase_config = DEFAULT_FIREBASE_CONFIG
     
     if request.method == "POST":
         student_id = request.form.get("sname")
@@ -1411,7 +1399,7 @@ def student():
         if student_data and check_password_hash(student_data[4], password):
             # Check if student is approved
             if not student_data[7]:  # is_approved is at index 7
-                return render_template("student.html", error="Your account is pending admin approval. Please wait for activation.", firebase_config=firebase_config)
+                return render_template("student.html", error="Your account is pending admin approval. Please wait for activation.")
             
             session["logged_in"] = True
             session["student_id"] = student_data[1]
@@ -1423,9 +1411,9 @@ def student():
                 
             return redirect(url_for("student-dashboard"))
         else:
-            return render_template("student.html", error="Invalid credentials. Please try again.", firebase_config=firebase_config)
+            return render_template("student.html", error="Invalid credentials. Please try again.")
 
-    return render_template("student.html", firebase_config=firebase_config)
+    return render_template("student.html")
 
 
 # Update teacher login to check approval status
