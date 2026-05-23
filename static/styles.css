@@ -1116,3 +1116,22 @@ body {
   transform: scale(1.12);
   font-weight: bolder;
 }
+
+/* 1. Base Default State (Dark Theme Variables) */
+:root {
+  --bg-color: #121214;
+  --text-color: #f1f5f9;
+  --glass-bg: rgba(30, 41, 59, 0.7);
+  --border-color: #334155;
+}
+/* 2. Overrides for when the script applies Light Mode */
+body.light-mode {
+  --bg-color: #f8fafc;
+  --text-color: #0f172a;
+  --glass-bg: #ffffff;
+  --border-color: #e2e8f0;
+}
+/* 3. Global transition handler for smooth visual switches */
+body {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}

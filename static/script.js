@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const applyTheme = (theme) => {
     const isLight = theme === "light";
     document.body.classList.toggle("light-mode", isLight);
-    toggleButton.textContent = isLight ? "☀️" : "🌙";
+    toggleButton.textContent = isLight ? "Light Mode ☀️" : "Dark Mode 🌙";
     toggleButton.setAttribute("aria-pressed", isLight);
   };
 
