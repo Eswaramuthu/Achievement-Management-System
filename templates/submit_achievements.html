@@ -41,13 +41,140 @@
           </div>
         </div>
 
-        <div class="button">
+        <div class="button" style="display:flex; gap:0.5rem; align-items:center;">
+          <!-- Preview button: uses type="button" so it does not submit the form immediately -->
+          <button id="previewBtn" type="button" class="btn-secondary">Preview</button>
           <input type="submit" value="Register Achievement">
         </div>
+      
+      <!-- Preview modal: hidden by default. It reads values from the original form and shows them to the user. -->
+      <div id="previewModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="previewTitle" hidden>
+        <div class="modal-content" role="document">
+          <h2 id="previewTitle">Preview Achievement</h2>
+          <div class="preview-body">
+            <p><strong>Student ID:</strong> <span id="previewStudentId">&nbsp;</span></p>
+            <p><strong>Certificate file:</strong> <span id="previewFileName">&nbsp;</span></p>
+          </div>
+          <div class="modal-actions" style="display:flex; gap:0.5rem; justify-content:flex-end; margin-top:1rem;">
+            <button id="editBtn" type="button" class="btn-secondary">Back to edit</button>
+            <button id="confirmBtn" type="button" class="btn-primary">Confirm & Submit</button>
+          </div>
+        </div>
+      </div>
       </form>
       {% endif %}
 
     </div>
   </div>
 </body>
+<!-- Lightweight styles for the preview modal (kept minimal to avoid changing existing styles) -->
+<style>
+  .modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.4);
+    padding: 1rem;
+    z-index: 9999;
+  }
+  .modal-content {
+    background: var(--card-bg, #fff);
+    color: var(--text-color, #111);
+    max-width: 480px;
+    width: 100%;
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  }
+  .preview-body p { margin: 0.5rem 0; }
+  /* Simple responsive tweak */
+  @media (max-width: 520px) {
+    .modal-content { padding: 0.75rem; }
+  }
+</style>
+
+<script>
+// Preview modal script: reads values from the existing form and shows them to the user.
+// The script does NOT change form fields or submit URL; it only intercepts the flow temporarily.
+document.addEventListener('DOMContentLoaded', function () {
+  var previewBtn = document.getElementById('previewBtn');
+  var previewModal = document.getElementById('previewModal');
+  var previewStudentId = document.getElementById('previewStudentId');
+  var previewFileName = document.getElementById('previewFileName');
+  var editBtn = document.getElementById('editBtn');
+  var confirmBtn = document.getElementById('confirmBtn');
+
+  // Find the form and its inputs by name (do not rename these fields)
+  var form = document.querySelector('form[action="/submit_achievements"]');
+  if (!form) {
+    // Fallback: pick the first form on the page
+    form = document.querySelector('form');
+  }
+  var studentInput = form.querySelector('input[name="student_id"]');
+  var fileInput = form.querySelector('input[type="file"][name="certificate"]');
+
+  // Helper to open the modal and populate values
+  function openPreview() {
+    // Populate Student ID
+    previewStudentId.textContent = studentInput && studentInput.value ? studentInput.value : '(none)';
+
+    // Populate filename: use File API if available and a file is selected
+    var fileName = '(none)';
+    if (fileInput && fileInput.files && fileInput.files.length > 0) {
+      fileName = fileInput.files[0].name;
+    }
+    previewFileName.textContent = fileName;
+
+    // Show modal (remove hidden attribute)
+    previewModal.removeAttribute('hidden');
+
+    // For accessibility: focus the first interactive element in the modal
+    editBtn.focus();
+  }
+
+  // Helper to close/hide the modal
+  function closePreview() {
+    previewModal.setAttribute('hidden', '');
+    // Return focus to the Preview button so keyboard users can continue
+    previewBtn.focus();
+  }
+
+  // When Preview is clicked, prevent form submission and show modal
+  previewBtn && previewBtn.addEventListener('click', function (e) {
+    e.preventDefault(); // ensure no submission
+    openPreview();
+  });
+
+  // Back to edit
+  editBtn && editBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    closePreview();
+  });
+
+  // Confirm and submit original form
+  confirmBtn && confirmBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    // Close modal first for a cleaner submit; then submit the original form
+    closePreview();
+    // Submit the original form normally. This preserves method, enctype, CSRF token, and file input.
+    form.submit();
+  });
+
+  // Allow closing modal with Escape key
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !previewModal.hasAttribute('hidden')) {
+      closePreview();
+    }
+  });
+
+  // Clicking outside modal-content closes the modal (but not clicks inside)
+  previewModal && previewModal.addEventListener('click', function (e) {
+    if (e.target === previewModal) {
+      closePreview();
+    }
+  });
+});
+</script>
 </html>
