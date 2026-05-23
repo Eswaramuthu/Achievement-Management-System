@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div style="max-width: 680px; margin: 60px auto; padding: 0 20px;">
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div style="
+          padding: 14px 18px;
+          margin-bottom: 20px;
+          border-radius: 10px;
+          font-weight: 500;
+          background: {{ '#d4edda' if category == 'success' else '#f8d7da' }};
+          color: {{ '#155724' if category == 'success' else '#721c24' }};
+          border: 1px solid {{ '#c3e6cb' if category == 'success' else '#f5c6cb' }};
+        ">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div style="background:#fff; border-radius:16px; box-shadow:0 4px 24px rgba(0,0,0,0.08); padding:40px;">
+    <h2 style="margin:0 0 6px; font-size:1.8rem; color:#1a1a2e;">Share Your Feedback</h2>
+    <p style="margin:0 0 28px; color:#666;">Help us improve the Achievement Management System.</p>
+
+    <form method="POST" action="/feedback">
+
+      <div style="margin-bottom:20px;">
+        <label style="display:block; font-weight:600; margin-bottom:8px; color:#333;">I am a <span style="color:red">*</span></label>
+        <div style="display:flex; gap:12px;">
+          {% for role in ['Student', 'Teacher'] %}
+          <label style="flex:1; display:flex; align-items:center; gap:10px; padding:12px 16px; border:2px solid #e0e0e0; border-radius:10px; cursor:pointer; font-weight:500;">
+            <input type="radio" name="role" value="{{ role }}" required style="accent-color:#4f46e5; width:18px; height:18px;">
+            {{ role }}
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <label style="display:block; font-weight:600; margin-bottom:8px; color:#333;">Name <span style="color:#999; font-weight:400;">(optional)</span></label>
+        <input type="text" name="name" placeholder="Your name" style="width:100%; padding:12px 14px; border:2px solid #e0e0e0; border-radius:10px; font-size:1rem; box-sizing:border-box; outline:none;" onfocus="this.style.borderColor='#4f46e5'" onblur="this.style.borderColor='#e0e0e0'">
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <label style="display:block; font-weight:600; margin-bottom:8px; color:#333;">Email <span style="color:#999; font-weight:400;">(optional, for follow-up)</span></label>
+        <input type="email" name="email" placeholder="your@email.com" style="width:100%; padding:12px 14px; border:2px solid #e0e0e0; border-radius:10px; font-size:1rem; box-sizing:border-box; outline:none;" onfocus="this.style.borderColor='#4f46e5'" onblur="this.style.borderColor='#e0e0e0'">
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <label style="display:block; font-weight:600; margin-bottom:8px; color:#333;">Feedback Type <span style="color:red">*</span></label>
+        <select name="feedback_type" required style="width:100%; padding:12px 14px; border:2px solid #e0e0e0; border-radius:10px; font-size:1rem; box-sizing:border-box; background:#fff; outline:none;" onfocus="this.style.borderColor='#4f46e5'" onblur="this.style.borderColor='#e0e0e0'">
+          <option value="" disabled selected>Select a type</option>
+          <option value="Bug Report">🐛 Bug Report</option>
+          <option value="Feature Request">✨ Feature Request</option>
+          <option value="General Feedback">💬 General Feedback</option>
+          <option value="Academic Concern">📚 Academic Concern</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <label style="display:block; font-weight:600; margin-bottom:8px; color:#333;">Message / Suggestion <span style="color:red">*</span></label>
+        <textarea name="message" rows="5" placeholder="Describe your feedback in detail..." required style="width:100%; padding:12px 14px; border:2px solid #e0e0e0; border-radius:10px; font-size:1rem; box-sizing:border-box; resize:vertical; outline:none;" onfocus="this.style.borderColor='#4f46e5'" onblur="this.style.borderColor='#e0e0e0'"></textarea>
+      </div>
+
+      <div style="margin-bottom:28px;">
+        <label style="display:block; font-weight:600; margin-bottom:8px; color:#333;">Overall Experience (1–5)</label>
+        <div style="display:flex; gap:8px;" id="star-rating">
+          {% for i in range(1, 6) %}
+          <label style="cursor:pointer; font-size:2rem; color:#ccc;" class="star-label">
+            <input type="radio" name="rating" value="{{ i }}" style="display:none;" class="star-input">★
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <button type="submit" style="width:100%; padding:14px; background:linear-gradient(135deg,#4f46e5,#7c3aed); color:#fff; border:none; border-radius:10px; font-size:1rem; font-weight:600; cursor:pointer;">
+        Submit Feedback
+      </button>
+
+    </form>
+  </div>
+</div>
+
+<script>
+  const stars = document.querySelectorAll('.star-label');
+  stars.forEach((star, index) => {
+    star.addEventListener('mouseover', () => {
+      stars.forEach((s, i) => s.style.color = i <= index ? '#f59e0b' : '#ccc');
+    });
+    star.addEventListener('mouseout', () => {
+      const checked = document.querySelector('.star-input:checked');
+      const checkedIndex = checked ? parseInt(checked.value) - 1 : -1;
+      stars.forEach((s, i) => s.style.color = i <= checkedIndex ? '#f59e0b' : '#ccc');
+    });
+    star.addEventListener('click', () => {
+      stars.forEach((s, i) => s.style.color = i <= index ? '#f59e0b' : '#ccc');
+    });
+  });
+</script>
+
+{% endblock %}

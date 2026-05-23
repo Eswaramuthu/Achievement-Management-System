@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div style="max-width: 1100px; margin: 40px auto; padding: 0 20px;">
+  <h2 style="font-size:1.8rem; margin-bottom:6px; color:#1a1a2e;">Feedback Submissions</h2>
+  <p style="color:#666; margin-bottom:28px;">All feedback submitted by students and teachers.</p>
+
+  {% if feedbacks %}
+  <div style="overflow-x:auto;">
+    <table style="width:100%; border-collapse:collapse; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.07);">
+      <thead>
+        <tr style="background:linear-gradient(135deg,#4f46e5,#7c3aed); color:#fff;">
+          <th style="padding:14px 16px; text-align:left;">#</th>
+          <th style="padding:14px 16px; text-align:left;">Role</th>
+          <th style="padding:14px 16px; text-align:left;">Name</th>
+          <th style="padding:14px 16px; text-align:left;">Email</th>
+          <th style="padding:14px 16px; text-align:left;">Type</th>
+          <th style="padding:14px 16px; text-align:left;">Message</th>
+          <th style="padding:14px 16px; text-align:left;">Rating</th>
+          <th style="padding:14px 16px; text-align:left;">Submitted</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for fb in feedbacks %}
+        <tr style="border-bottom:1px solid #f0f0f0; {% if loop.index is odd %}background:#fafafa;{% endif %}">
+          <td style="padding:12px 16px; color:#999;">{{ fb[0] }}</td>
+          <td style="padding:12px 16px;">
+            <span style="padding:4px 10px; border-radius:20px; font-size:0.8rem; font-weight:600; background:{{ '#dbeafe' if fb[1] == 'Student' else '#fef9c3' }}; color:{{ '#1d4ed8' if fb[1] == 'Student' else '#854d0e' }};">{{ fb[1] }}</span>
+          </td>
+          <td style="padding:12px 16px;">{{ fb[2] or '—' }}</td>
+          <td style="padding:12px 16px;">{{ fb[3] or '—' }}</td>
+          <td style="padding:12px 16px; font-weight:500;">{{ fb[4] }}</td>
+          <td style="padding:12px 16px; max-width:280px; color:#444;">{{ fb[5] }}</td>
+          <td style="padding:12px 16px; font-size:1.1rem;">
+            {% if fb[6] %}{% for i in range(fb[6]) %}⭐{% endfor %}{% else %}—{% endif %}
+          </td>
+          <td style="padding:12px 16px; color:#999; font-size:0.85rem;">{{ fb[7][:16] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div style="text-align:center; padding:60px; background:#fff; border-radius:16px; box-shadow:0 2px 12px rgba(0,0,0,0.07);">
+    <p style="font-size:1.2rem; color:#999;">No feedback submitted yet.</p>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}
