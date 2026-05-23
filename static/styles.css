@@ -105,6 +105,29 @@ body {
   outline: none;
 }
 
+.field-error {
+  display: block;
+  min-height: 1rem;
+  margin-top: 6px;
+  font-size: 0.82rem;
+  line-height: 1.2;
+  color: #ff7b7b;
+}
+
+.input-box input[aria-invalid="true"],
+.input-box select[aria-invalid="true"],
+.input-box textarea[aria-invalid="true"],
+.input-box input[type="file"][aria-invalid="true"] {
+  border-color: #ff6b6b !important;
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.15) !important;
+  background-color: rgba(255, 107, 107, 0.06) !important;
+}
+
+.input-box.has-error .details,
+.input-box .details[aria-invalid="true"] {
+  color: #ff9b9b;
+}
+
 /* Buttons */
 
 .button input,
@@ -699,6 +722,14 @@ body {
   font-size: 0.95rem;
 }
 
+.footer-note {
+  margin-top: 0.9rem;
+  padding-left: 0.95rem;
+  border-left: 3px solid rgba(255, 28, 28, 0.5);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
 .footer-actions {
   display: flex;
   flex-wrap: wrap;
@@ -764,6 +795,16 @@ body {
   font-style: normal;
 }
 
+.footer-contact-item {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.9rem 1rem;
+  margin-top: 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
 .footer-contact span {
   display: block;
   margin: 0 0 0.25rem;
@@ -775,6 +816,14 @@ body {
 
 .footer-contact span:not(:first-child) {
   margin-top: 1rem;
+}
+
+.footer-contact-item span {
+  margin: 0;
+}
+
+.footer-contact-item p {
+  margin: 0;
 }
 
 .footer-contact p {
@@ -809,6 +858,10 @@ body {
   font-size: 0.85rem;
 }
 
+.footer-bottom p:last-child {
+  text-align: right;
+}
+
 .footer-bottom p {
   margin: 0;
   line-height: 1.6;
@@ -830,6 +883,10 @@ body {
     padding-bottom: 1.5rem;
     border-right: 0;
     border-bottom: 1px solid var(--border-color);
+  }
+
+  .footer-bottom p:last-child {
+    text-align: left;
   }
 }
 
@@ -988,6 +1045,10 @@ body {
     align-items: center;
     text-align: center;
   }
+
+  .footer-bottom p:last-child {
+    text-align: center;
+  }
 }
 
 /* Stats Section */
@@ -1080,6 +1141,11 @@ body {
 
   .footer-section h3 {
     font-size: 1rem;
+  }
+
+  .footer-note {
+    padding-left: 0.8rem;
+    font-size: 0.82rem;
   }
 
   .footer-bottom {

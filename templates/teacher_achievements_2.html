@@ -7,27 +7,8 @@
   <title>Achievement Entry - Achievement Management System</title>
 
   <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
-
-  <script>
-    function toggleAchievementFields() {
-      const achievementType = document.getElementById("achievement-type").value;
-      const allFields = document.querySelectorAll('.achievement-specific-field');
-
-      // Hide all specific fields first
-      allFields.forEach(field => {
-        field.style.display = 'none';
-      });
-
-      // Show fields relevant to the selected achievement type
-      if (achievementType) {
-        const fieldsToShow = document.querySelectorAll(`.${achievementType}-field`);
-        fieldsToShow.forEach(field => {
-          field.style.display = 'block';
-        });
-      }
-    }
-  </script>
+  <script defer src="{{ url_for('static', filename = 'script.js') }}"></script>
+  <script defer src="{{ url_for('static', filename = 'js/achievement-form-validation.js') }}"></script>
 
   <style>
     /* Only include specific styles that aren't in the main CSS file */
@@ -125,18 +106,21 @@
   <div class="container achievement-container">
     <div class="title">Enter Student Achievement</div>
     <div class="content">
-      <form method="POST" action="{{ url_for('submit_achievements') }}" enctype="multipart/form-data">
+      <form method="POST" action="{{ url_for('submit_achievements') }}" enctype="multipart/form-data" novalidate data-validation-form="achievement-submission">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div class="user-details">
           <div class="input-box">
-            <span class="details">Student ID</span>
-            <input type="text" id="student-id" name="student_id" placeholder="Enter student ID (e.g., STU001)"
-              required />
+            <span class="details" id="student_id-label">Student ID</span>
+            <input type="text" id="student_id" name="student_id" placeholder="Enter student ID (e.g., STU001)"
+              required minlength="2" maxlength="20" autocomplete="off" aria-labelledby="student_id-label"
+              aria-describedby="student_id-error" />
+            <small class="field-error" id="student_id-error" aria-live="polite"></small>
           </div>
 
           <div class="input-box full-width">
-            <span class="details">Achievement Type</span>
-            <select id="achievement-type" name="achievement_type" onchange="toggleAchievementFields()" required>
+            <span class="details" id="achievement_type-label">Achievement Type</span>
+            <select id="achievement_type" name="achievement_type" onchange="toggleAchievementFields()" required
+              aria-labelledby="achievement_type-label" aria-describedby="achievement_type-error">
               <option value="">Select Achievement Type</option>
               <option value="symposium">Symposium</option>
               <option value="coding">Coding Competition</option>
@@ -146,23 +130,32 @@
               <option value="sql">SQL Query Event</option>
               <option value="other">Other</option>
             </select>
+            <small class="field-error" id="achievement_type-error" aria-live="polite"></small>
           </div>
 
           <div class="input-box">
-            <span class="details">Event Name</span>
-            <input type="text" name="event_name" placeholder="Enter event name" required />
+            <span class="details" id="event_name-label">Event Name</span>
+            <input type="text" id="event_name" name="event_name" placeholder="Enter event name" required
+              minlength="3" maxlength="100" aria-labelledby="event_name-label" aria-describedby="event_name-error" />
+            <small class="field-error" id="event_name-error" aria-live="polite"></small>
           </div>
           <div class="input-box">
-            <span class="details">Date of Achievement</span>
-            <input type="date" name="achievement_date" required />
+            <span class="details" id="achievement_date-label">Date of Achievement</span>
+            <input type="date" id="achievement_date" name="achievement_date" required
+              aria-labelledby="achievement_date-label" aria-describedby="achievement_date-error" />
+            <small class="field-error" id="achievement_date-error" aria-live="polite"></small>
           </div>
           <div class="input-box">
-            <span class="details">Organizer/Institution</span>
-            <input type="text" name="organizer" placeholder="Enter organizing institution" required />
+            <span class="details" id="organizer-label">Organizer/Institution</span>
+            <input type="text" id="organizer" name="organizer" placeholder="Enter organizing institution" required
+              minlength="2" maxlength="100" aria-labelledby="organizer-label" aria-describedby="organizer-error" />
+            <small class="field-error" id="organizer-error" aria-live="polite"></small>
           </div>
           <div class="input-box">
-            <span class="details">Position/Award</span>
-            <input type="text" name="position" placeholder="e.g., First Place, Participant" required />
+            <span class="details" id="position-label">Position/Award</span>
+            <input type="text" id="position" name="position" placeholder="e.g., First Place, Participant" required
+              maxlength="50" aria-labelledby="position-label" aria-describedby="position-error" />
+            <small class="field-error" id="position-error" aria-live="polite"></small>
           </div>
 
           <!-- Symposium specific fields -->
@@ -210,8 +203,10 @@
 
           <!-- Hackathon specific fields -->
           <div class="input-box achievement-specific-field hackathon-field" style="display: none;">
-            <span class="details">Team Size</span>
-            <input type="number" name="team_size" placeholder="Enter team size" min="1" />
+            <span class="details" id="team_size-label">Team Size</span>
+            <input type="number" id="team_size" name="team_size" placeholder="Enter team size" min="1"
+              step="1" inputmode="numeric" aria-labelledby="team_size-label" aria-describedby="team_size-error" />
+            <small class="field-error" id="team_size-error" aria-live="polite"></small>
           </div>
           <div class="input-box achievement-specific-field hackathon-field" style="display: none;">
             <span class="details">Project Title</span>
@@ -241,15 +236,19 @@
           </div>
 
           <div class="input-box full-width">
-            <span class="details">Achievement Description</span>
-            <textarea name="achievement_description"
-              placeholder="Enter detailed description of the achievement"></textarea>
+            <span class="details" id="achievement_description-label">Achievement Description</span>
+            <textarea id="achievement_description" name="achievement_description" maxlength="500"
+              placeholder="Enter detailed description of the achievement" aria-labelledby="achievement_description-label"
+              aria-describedby="achievement_description-error"></textarea>
+            <small class="field-error" id="achievement_description-error" aria-live="polite"></small>
           </div>
         </div>
 
         <div class="input-box full-width">
-          <span class="details">Upload Certificate/Proof</span>
-          <input type="file" name="certificate" accept=".pdf,.jpg,.jpeg,.png" />
+          <span class="details" id="certificate-label">Upload Certificate/Proof</span>
+          <input type="file" id="certificate" name="certificate" accept=".pdf,.jpg,.jpeg,.png"
+            aria-labelledby="certificate-label" aria-describedby="certificate-error" />
+          <small class="field-error" id="certificate-error" aria-live="polite"></small>
         </div>
 
         <div class="button">
