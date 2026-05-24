@@ -330,7 +330,20 @@
 
     window.addEventListener("scroll", () => {
       if (window.scrollY > 300) {
-        scrollBtn.style.display = "block";
+        scrollBtn.style.display = "flex"; // Changed to flex to support alignment styles
+        
+        // Prevent overlap with footer
+        const footer = document.querySelector(".footer");
+        if (footer) {
+          const footerRect = footer.getBoundingClientRect();
+          const windowHeight = window.innerHeight;
+          if (footerRect.top < windowHeight) {
+            const overlap = windowHeight - footerRect.top;
+            scrollBtn.style.bottom = (overlap + 20) + "px";
+          } else {
+            scrollBtn.style.bottom = "20px";
+          }
+        }
       } else {
         scrollBtn.style.display = "none";
       }
