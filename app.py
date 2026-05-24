@@ -529,7 +529,7 @@ def submit_achievements():
         except Exception as e:
             return render_template("teacher_achievements_2.html", error=f"Error: {str(e)}")
 
-    return render_template("submit_achievements.html")
+    return render_template("teacher_achievements_2.html")
 
 
 @app.route("/student-achievements", endpoint="student-achievements")
