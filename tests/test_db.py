@@ -6,7 +6,8 @@ def test_tables_exist():
 
     init_db()
 
-    conn = sqlite3.connect(app.config["DB_PATH"])
+    db_path = app.config.get("DB_PATH", getattr(app, "DB_PATH", None)) or __import__("app").DB_PATH
+    conn = sqlite3.connect(db_path)
     cur = conn.cursor()
 
     for table in ("student", "teacher", "achievements"):

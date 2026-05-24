@@ -3,6 +3,7 @@ from http import HTTPStatus
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
 import sqlite3
 import os
+import re
 import secrets
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -36,6 +37,11 @@ def make_session_permanent():
 
 # ✅ Portable DB path (works on Windows/Linux/Vercel)
 DB_PATH = os.path.join(os.path.dirname(__file__), "ams.db")
+
+
+def get_db_path():
+    """Return the configured database path for the application."""
+    return app.config.get("DB_PATH", DB_PATH)
 
 # Define upload folder path for certificates
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "uploads")
@@ -73,7 +79,7 @@ def add_profile_picture_column():
     Add profile_picture column to student table if it doesn't exist
     """
     try:
-        connection = sqlite3.connect(DB_PATH)
+        connection = sqlite3.connect(get_db_path())
         cursor = connection.cursor()
 
         # Check if profile_picture column exists in student table
@@ -106,7 +112,7 @@ def allowed_file(filename):
 # Initialize database on startup
 # Initialize database on startup
 def init_db():
-    connection = sqlite3.connect(DB_PATH)
+    connection = sqlite3.connect(get_db_path())
     cursor = connection.cursor()
 
     # Student table
@@ -460,7 +466,7 @@ def submit_achievements():
                     file.seek(0) # 2. Reset pointer so we can save it later
 
                     # 3. DB Check for existing Hash
-                    with sqlite3.connect(DB_PATH) as check_conn:
+                    with sqlite3.connect(get_db_path()) as check_conn:
                         cursor = check_conn.cursor()
                         cursor.execute("SELECT id FROM achievements WHERE certificate_hash = ?", (certificate_hash,))
                         if cursor.fetchone():
@@ -486,7 +492,7 @@ def submit_achievements():
             # -----------------------------
             # DATABASE INSERT
             # -----------------------------
-            with sqlite3.connect(DB_PATH) as connection:
+            with sqlite3.connect(get_db_path()) as connection:
                 cursor = connection.cursor()
                 ensure_achievements_schema(connection)
 
@@ -565,7 +571,7 @@ def student_profile():
     student_id = session.get('student_id')
     
     # Connect to database
-    connection = sqlite3.connect(DB_PATH)
+    connection = sqlite3.connect(get_db_path())
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
     
@@ -611,7 +617,7 @@ def student_profile_edit():
         confirm_password = request.form.get('confirm_password')
         
         # Connect to database
-        connection = sqlite3.connect(DB_PATH)
+        connection = sqlite3.connect(get_db_path())
         cursor = connection.cursor()
         
         # Get current student data
@@ -726,23 +732,87 @@ def teacher_dashboard():
         "dept": session.get("teacher_dept"),
     }
 
-    connection = sqlite3.connect(DB_PATH)
-    connection.row_factory = sqlite3.Row
-    cursor = connection.cursor()
+    with sqlite3.connect(get_db_path()) as connection:
+        connection.row_factory = sqlite3.Row
+        cursor = connection.cursor()
 
-    # ✅ Ensure schema exists so query never crashes
-    ensure_achievements_schema(connection)
+        # ✅ Ensure schema exists so query never crashes
+        ensure_achievements_schema(connection)
 
-    cursor.execute("SELECT COUNT(*) FROM achievements WHERE teacher_id = ?", (teacher_id,))
-    total_achievements = cursor.fetchone()[0]
+        cursor.execute("SELECT COUNT(*) FROM achievements WHERE teacher_id = ?", (teacher_id,))
+        total_achievements = cursor.fetchone()[0]
 
-    cursor.execute("SELECT COUNT(DISTINCT student_id) FROM achievements WHERE teacher_id = ?", (teacher_id,))
-    students_managed = cursor.fetchone()[0]
+        cursor.execute("SELECT COUNT(DISTINCT student_id) FROM achievements WHERE teacher_id = ?", (teacher_id,))
+        students_managed = cursor.fetchone()[0]
 
-    one_week_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime("%Y-%m-%d")
-    cursor.execute("SELECT COUNT(*) FROM achievements WHERE teacher_id = ? AND achievement_date >= ?",
-                   (teacher_id, one_week_ago))
-    this_week_count = cursor.fetchone()[0]
+        one_week_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime("%Y-%m-%d")
+        cursor.execute("SELECT COUNT(*) FROM achievements WHERE teacher_id = ? AND achievement_date >= ?",
+                       (teacher_id, one_week_ago))
+        this_week_count = cursor.fetchone()[0]
+
+        cursor.execute("""
+            SELECT a.id, a.student_id, s.student_name, a.achievement_type,
+                   a.event_name, a.achievement_date
+            FROM achievements a
+            JOIN student s ON a.student_id = s.student_id
+            WHERE a.teacher_id = ?
+            ORDER BY a.created_at DESC
+            LIMIT 5
+        """, (teacher_id,))
+        recent_entries = cursor.fetchall()
+
+        # ===============================
+        # BASIC STATS (required for dashboard)
+        # ===============================
+        stats = {
+            "total_achievements": total_achievements,
+            "students_managed": students_managed,
+            "this_week": this_week_count,
+        }
+
+        cursor.execute("""
+            SELECT student_id, COUNT(*) as total
+            FROM achievements
+            WHERE teacher_id = ?
+            GROUP BY student_id
+        """, (teacher_id,))
+        rows = cursor.fetchall()
+
+        top_students = []
+        avg_students = []
+        low_students = []
+
+        for r in rows:
+            sid = r["student_id"]
+            total = r["total"]
+
+            cursor.execute("SELECT student_name FROM student WHERE student_id = ?", (sid,))
+            name_row = cursor.fetchone()
+            name = name_row["student_name"] if name_row else sid
+
+            if total >= 5:
+                top_students.append((name, total))
+            elif total >= 2:
+                avg_students.append((name, total))
+            else:
+                low_students.append((name, total))
+
+        top_count = len(top_students)
+        avg_count = len(avg_students)
+        low_count = len(low_students)
+
+    return render_template(
+       "teacher_dashboard.html",
+        teacher=teacher_data,
+        stats=stats,
+        recent_entries=recent_entries,
+        top_students=top_students,
+        avg_students=avg_students,
+        low_students=low_students,
+        top_count=top_count,
+        avg_count=avg_count,
+        low_count=low_count
+       )
 
     cursor.execute("""
         SELECT a.id, a.student_id, s.student_name, a.achievement_type,
@@ -819,7 +889,7 @@ def all_achievements():
 
     teacher_id = session.get("teacher_id")
 
-    connection = sqlite3.connect(DB_PATH)
+    connection = sqlite3.connect(get_db_path())
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
 
@@ -848,7 +918,7 @@ def admin_login():
         admin_id = request.form.get("admin_id")
         password = request.form.get("password")
 
-        connection = sqlite3.connect(DB_PATH)
+        connection = sqlite3.connect(get_db_path())
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM admin WHERE admin_id = ?", (admin_id,))
         admin_data = cursor.fetchone()
@@ -870,7 +940,7 @@ def admin_login():
 @admin_required
 def admin_dashboard():
     """Admin dashboard with system statistics"""
-    connection = sqlite3.connect(DB_PATH)
+    connection = sqlite3.connect(get_db_path())
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
 
@@ -948,7 +1018,7 @@ def admin_users():
     user_type = request.args.get("type", "students")
     status = request.args.get("status", "all")
     
-    connection = sqlite3.connect(DB_PATH)
+    connection = sqlite3.connect(get_db_path())
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
 
@@ -1001,7 +1071,7 @@ def admin_approve_user():
 
     if user_type not in ["student", "teacher"]:
          return jsonify({"success": False, "error": "Invalid user type"}), HTTPStatus.BAD_REQUEST
-    connection = sqlite3.connect(DB_PATH)
+    connection = sqlite3.connect(get_db_path())
     cursor = connection.cursor()
 
     if action == "approve":
@@ -1027,7 +1097,7 @@ def admin_approve_user():
 @admin_required
 def admin_departments():
     """Manage departments"""
-    connection = sqlite3.connect(DB_PATH)
+    connection = sqlite3.connect(get_db_path())
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
 
@@ -1071,7 +1141,7 @@ def admin_add_department():
     if not dept_code or not dept_name:
         return jsonify({"success": False, "error": "Department code and name are required"}), HTTPStatus.BAD_REQUEST
 
-    connection = sqlite3.connect(DB_PATH)
+    connection = sqlite3.connect(get_db_path())
     cursor = connection.cursor()
 
     try:
@@ -1093,7 +1163,7 @@ def admin_delete_department():
     """Delete a department (super admin only)"""
     dept_id = request.form.get("dept_id")
 
-    connection = sqlite3.connect(DB_PATH)
+    connection = sqlite3.connect(get_db_path())
     cursor = connection.cursor()
 
     # Check if department is in use
@@ -1121,7 +1191,7 @@ def admin_delete_department():
 @admin_required
 def admin_categories():
     """Manage achievement categories"""
-    connection = sqlite3.connect(DB_PATH)
+    connection = sqlite3.connect(get_db_path())
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
 
@@ -1161,7 +1231,7 @@ def admin_add_category():
     if not category_code or not category_name:
         return jsonify({"success": False, "error": "Category code and name are required"}), HTTPStatus.BAD_REQUEST
 
-    connection = sqlite3.connect(DB_PATH)
+    connection = sqlite3.connect(get_db_path())
     cursor = connection.cursor()
 
     try:
@@ -1184,7 +1254,7 @@ def admin_export():
     """Export system data"""
     export_type = request.args.get("type", "students")
     
-    connection = sqlite3.connect(DB_PATH)
+    connection = sqlite3.connect(get_db_path())
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
 
@@ -1323,17 +1393,38 @@ def teacher_logout():
 @app.route("/student-new", methods=["GET", "POST"])
 @app.route("/student_new", methods=["GET", "POST"])
 def student_new():
-    
     if request.method == "POST":
-        student_name = request.form.get("student_name")
-        student_id = request.form.get("student_id")
-        email = request.form.get("email")
-        phone_number = request.form.get("phone_number")
-        password = generate_password_hash(request.form.get("password"))
-        student_gender = request.form.get("student_gender")
-        student_dept = request.form.get("student_dept")
+        student_name = request.form.get("student_name", "").strip()
+        student_id = request.form.get("student_id", "").strip()
+        email = request.form.get("email", "").strip()
+        phone_number = request.form.get("phone_number", "").strip()
+        raw_password = request.form.get("password", "")
+        student_gender = request.form.get("student_gender", "").strip()
+        student_dept = request.form.get("student_dept", "").strip()
 
-        connection = sqlite3.connect(DB_PATH)
+        if not all([student_name, student_id, email, phone_number, raw_password, student_gender, student_dept]):
+            return render_template("student_new_2.html", error="Please complete all registration fields.",
+                                   student_name=student_name, student_id=student_id,
+                                   email=email, phone_number=phone_number,
+                                   student_gender=student_gender, student_dept=student_dept)
+
+        if not re.match(r"^[0-9]{10}$", phone_number):
+            return render_template("student_new_2.html", 
+                                   error="Mobile number must contain exactly 10 digits and only numeric characters.",
+                                   student_name=student_name, student_id=student_id,
+                                   email=email, phone_number=phone_number,
+                                   student_gender=student_gender, student_dept=student_dept)
+
+        if not re.match(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$", raw_password):
+            return render_template("student_new_2.html", 
+                                   error="Password is too weak. Use at least 8 characters, including uppercase, lowercase, number, and special character.",
+                                   student_name=student_name, student_id=student_id,
+                                   email=email, phone_number=phone_number,
+                                   student_gender=student_gender, student_dept=student_dept)
+
+        password = generate_password_hash(raw_password)
+
+        connection = sqlite3.connect(get_db_path())
         cursor = connection.cursor()
 
         try:
@@ -1342,10 +1433,20 @@ def student_new():
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """, (student_name, student_id, email, phone_number, password, student_gender, student_dept, 0))
             connection.commit()
-            return render_template("student_new_2.html", 
-                                 success="Registration submitted! Your account will be activated after admin approval.")
+            return redirect(url_for("student", registration="success"))
+        except sqlite3.IntegrityError as e:
+            error_message = "Database error: duplicate entry detected. Please verify your Student ID and email."
+            if "UNIQUE" not in str(e).upper() and "PRIMARY" not in str(e).upper():
+                error_message = f"Database error: {e}"
+            return render_template("student_new_2.html", error=error_message,
+                                   student_name=student_name, student_id=student_id,
+                                   email=email, phone_number=phone_number,
+                                   student_gender=student_gender, student_dept=student_dept)
         except sqlite3.Error as e:
-            return render_template("student_new_2.html", error=f"Database error: {e}")
+            return render_template("student_new_2.html", error=f"Database error: {e}",
+                                   student_name=student_name, student_id=student_id,
+                                   email=email, phone_number=phone_number,
+                                   student_gender=student_gender, student_dept=student_dept)
         finally:
             connection.close()
 
@@ -1364,7 +1465,7 @@ def teacher_new():
         teacher_gender = request.form.get("teacher_gender")
         teacher_dept = request.form.get("teacher_dept")
 
-        connection = sqlite3.connect(DB_PATH)
+        connection = sqlite3.connect(get_db_path())
         cursor = connection.cursor()
 
         try:
@@ -1391,7 +1492,7 @@ def student():
         student_id = request.form.get("sname")
         password = request.form.get("password")
 
-        connection = sqlite3.connect(DB_PATH)
+        connection = sqlite3.connect(get_db_path())
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM student WHERE student_id = ?", (student_id,))
         student_data = cursor.fetchone()
@@ -1414,7 +1515,11 @@ def student():
         else:
             return render_template("student.html", error="Invalid credentials. Please try again.")
 
-    return render_template("student.html")
+    success = None
+    if request.args.get('registration') == 'success':
+        success = "Registration submitted! Your account will be activated after admin approval."
+
+    return render_template("student.html", success=success)
 
 
 # Update teacher login to check approval status
@@ -1424,7 +1529,7 @@ def teacher():
         teacher_id = request.form.get("tname")
         password = request.form.get("password")
 
-        connection = sqlite3.connect(DB_PATH)
+        connection = sqlite3.connect(get_db_path())
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM teacher WHERE teacher_id = ?", (teacher_id,))
         teacher_data = cursor.fetchone()
@@ -1464,7 +1569,7 @@ def api_get_achievement(achievement_id):
     """
     student_id = session.get("student_id")
     
-    connection = sqlite3.connect(DB_PATH)
+    connection = sqlite3.connect(get_db_path())
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
     
@@ -1513,7 +1618,7 @@ def verify_achievement(achievement_id):
     - Verification badge
     - Authenticity metadata
     """
-    connection = sqlite3.connect(DB_PATH)
+    connection = sqlite3.connect(get_db_path())
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
     
@@ -1562,7 +1667,7 @@ def export_achievement(achievement_id):
     """
     student_id = session.get("student_id")
     
-    connection = sqlite3.connect(DB_PATH)
+    connection = sqlite3.connect(get_db_path())
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
     
