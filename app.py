@@ -1,4 +1,3 @@
-
 from http import HTTPStatus
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
 import sqlite3
@@ -451,7 +450,7 @@ def submit_achievements():
 
                 if file and file.filename != "":
                     if not allowed_file(file.filename):
-                        return render_template("submit_achievements.html", error="Invalid file type.")
+                        return render_template("teacher_achievements_2.html", error="Invalid file type.")
 
                     # 1. Read bytes for hashing
                     file.seek(0) 
@@ -464,7 +463,7 @@ def submit_achievements():
                         cursor = check_conn.cursor()
                         cursor.execute("SELECT id FROM achievements WHERE certificate_hash = ?", (certificate_hash,))
                         if cursor.fetchone():
-                            return render_template("submit_achievements.html", 
+                            return render_template("teacher_achievements_2.html", 
                                                  error="Duplicate detected! This certificate is already registered.")
 
                     # 4. Save File if check passed
@@ -494,7 +493,7 @@ def submit_achievements():
                 cursor.execute("SELECT student_name FROM student WHERE student_id = ?", (student_id,))
                 student_row = cursor.fetchone()
                 if not student_row:
-                    return render_template("submit_achievements.html", error="Student ID not found.")
+                    return render_template("teacher_achievements_2.html", error="Student ID not found.")
                 
                 student_name = student_row[0]
 
@@ -522,15 +521,15 @@ def submit_achievements():
                 cursor.execute(query, params)
                 connection.commit()
 
-            return render_template("submit_achievements.html", 
+            return render_template("teacher_achievements_2.html", 
                                  success=f"Success! Achievement for {student_name} recorded.")
 
         except sqlite3.IntegrityError:
-            return render_template("submit_achievements.html", error="Database error: Duplicate certificate hash.")
+            return render_template("teacher_achievements_2.html", error="Database error: Duplicate certificate hash.")
         except Exception as e:
-            return render_template("submit_achievements.html", error=f"Error: {str(e)}")
+            return render_template("teacher_achievements_2.html", error=f"Error: {str(e)}")
 
-    return render_template("submit_achievements.html")
+    return render_template("teacher_achievements_2.html")
 
 
 @app.route("/student-achievements", endpoint="student-achievements")
@@ -1610,4 +1609,3 @@ if __name__ == "__main__":
     init_db()
     add_profile_picture_column()
     app.run(debug=True)
-
