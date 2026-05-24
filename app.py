@@ -203,7 +203,19 @@ def init_db():
             FOREIGN KEY (teacher_id) REFERENCES teacher(teacher_id)
         )
     """)
-
+# Feedback table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS feedback (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            role TEXT NOT NULL,
+            name TEXT,
+            email TEXT,
+            feedback_type TEXT NOT NULL,
+            message TEXT NOT NULL,
+            rating INTEGER,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
     # Insert default super admin if not exists
     cursor.execute("SELECT COUNT(*) FROM admin WHERE admin_id = 'superadmin'")
     if cursor.fetchone()[0] == 0:
@@ -1605,7 +1617,54 @@ def export_achievement(achievement_id):
         flash("Failed to generate export card. Please try again.", "danger")
         return redirect(url_for("student-achievements"))
 
+# ─── Feedback Routes ───────────────────────────────────────────────────────────
 
+@app.route("/feedback", methods=["GET", "POST"])
+def feedback():
+    if request.method == "POST":
+        role = request.form.get("role", "").strip()
+        name = request.form.get("name", "").strip()
+        email = request.form.get("email", "").strip()
+        feedback_type = request.form.get("feedback_type", "").strip()
+        message = request.form.get("message", "").strip()
+        rating = request.form.get("rating", None)
+
+        if not role or not feedback_type or not message:
+            flash("Please fill in all required fields.", "danger")
+            return redirect(url_for("feedback"))
+
+        try:
+            rating = int(rating) if rating else None
+        except ValueError:
+            rating = None
+
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO feedback (role, name, email, feedback_type, message, rating)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (role, name or None, email or None, feedback_type, message, rating))
+        conn.commit()
+        conn.close()
+
+        flash("Thank you for your feedback!", "success")
+        return redirect(url_for("feedback"))
+
+    return render_template("feedback.html")
+
+
+@app.route("/admin/feedback")
+def admin_feedback():
+    if session.get("admin_logged_in") != True:
+        return redirect(url_for("admin_login"))
+
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM feedback ORDER BY created_at DESC")
+    feedbacks = cursor.fetchall()
+    conn.close()
+
+    return render_template("admin_feedback.html", feedbacks=feedbacks)
 if __name__ == "__main__":
     init_db()
     add_profile_picture_column()
