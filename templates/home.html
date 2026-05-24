@@ -138,6 +138,15 @@
         <span>Student dashboards</span>
         <span>Teacher submissions</span>
         <span>Placement readiness</span>
+        <span>Hackathons</span>
+        <span>Coding competitions</span>
+        <span>Paper presentations</span>
+        <span>Conferences</span>
+        <span>Research symposiums</span>
+        <span>Certificates</span>
+        <span>Student dashboards</span>
+        <span>Teacher submissions</span>
+        <span>Placement readiness</span>
       </div>
     </section>
 
@@ -315,14 +324,62 @@
       </div>
     </section>
 
-    <section class="content-section final-cta" id="contact">
+    <section class="content-section" id="contact">
+      <div class="section-heading" data-reveal="up">
+        <p class="section-kicker">Contact us</p>
+        <h2>Get in touch.</h2>
+        <p class="section-copy">
+          Have questions or feedback? Reach out to us.
+        </p>
+      </div>
+
+      <div class="contact-grid">
+        <article class="contact-card" data-reveal="right">
+          <p class="contact-card-label">Get in touch</p>
+          <h3>We are happy to help with platform access and feedback.</h3>
+          <div class="contact-list">
+            <div>
+              <span>Email</span>
+              <a href="mailto:info@achievement-system.com">info@achievement-system.com</a>
+            </div>
+            <div>
+              <span>Phone</span>
+              <a href="tel:+11234567890">+1 (123) 456-7890</a>
+            </div>
+            <div>
+              <span>Location</span>
+              <p>SRM Institute of Science and Technology</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="contact-card accent" data-reveal="left">
+          <p class="contact-card-label">Academic excellence tracker</p>
+          <h3>Achievement Management System</h3>
+          <p>
+            A focused platform for recording student milestones, managing teacher
+            submissions, and keeping academic achievements organized.
+          </p>
+          <div class="contact-actions">
+            <a href="{{ url_for('student') }}" class="button button-secondary">
+              Student login
+            </a>
+            <a href="{{ url_for('teacher') }}" class="button button-primary">
+              Teacher login
+            </a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section final-cta" id="start">
       <div class="cta-card" data-reveal="up">
         <div>
           <p class="section-kicker">Start here</p>
-          <h2>Use the live system instead of redesigning your workflow around a mess.</h2>
+          <h2>Everything students achieve, organized in one reliable system.</h2>
           <p class="section-copy">
-            The public homepage now reflects the product better, and the student
-            and teacher portals stay on their original app routes.
+            Log in to manage records, track progress, and keep certificates easy
+            to access.
           </p>
         </div>
 
@@ -339,13 +396,44 @@
   </main>
 
   <footer class="landing-footer">
-    <div>
-      <strong>Achievement Management System</strong>
-      <p>Designed for cleaner records, quicker submission, and better student visibility.</p>
-    </div>
-    <div class="landing-footer-links">
-      <a href="{{ url_for('privacy_policy') }}">Privacy policy</a>
-      <a href="{{ url_for('terms') }}">Terms and conditions</a>
+    <div class="landing-footer-grid">
+      <section class="landing-footer-column">
+        <p class="section-kicker">Academic excellence tracker</p>
+        <strong>Achievement Management System</strong>
+        <p>
+          A focused platform for recording student milestones, managing teacher
+          submissions, and keeping academic achievements organized.
+        </p>
+        <div class="landing-footer-actions">
+          <a href="{{ url_for('student') }}">Student Login</a>
+          <a href="{{ url_for('teacher') }}">Teacher Login</a>
+        </div>
+      </section>
+
+      <section class="landing-footer-column">
+        <h3>Quick Links</h3>
+        <div class="landing-footer-links">
+          <a href="{{ url_for('home') }}">Home</a>
+          <a href="#about">About</a>
+          <a href="#features">Features</a>
+          <a href="#contact">Contact</a>
+          <a href="#faq">FAQ</a>
+          <a href="{{ url_for('privacy_policy') }}">Privacy Policy</a>
+          <a href="{{ url_for('terms') }}">Terms &amp; Conditions</a>
+        </div>
+      </section>
+
+      <section class="landing-footer-column">
+        <h3>Contact</h3>
+        <div class="landing-footer-contact">
+          <span>Email</span>
+          <a href="mailto:info@achievement-system.com">info@achievement-system.com</a>
+          <span>Phone</span>
+          <a href="tel:+11234567890">+1 (123) 456-7890</a>
+          <span>Location</span>
+          <p>SRM Institute of Science and Technology</p>
+        </div>
+      </section>
     </div>
   </footer>
 </div>
