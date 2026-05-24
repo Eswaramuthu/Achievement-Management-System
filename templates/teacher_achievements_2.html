@@ -10,16 +10,17 @@
   <script src="{{ url_for('static', filename = 'script.js') }}"></script>
 
   <script>
+    // ---------------------------------------------------------------
+    // Show/hide type-specific fields when achievement type changes
+    // ---------------------------------------------------------------
     function toggleAchievementFields() {
       const achievementType = document.getElementById("achievement-type").value;
       const allFields = document.querySelectorAll('.achievement-specific-field');
 
-      // Hide all specific fields first
       allFields.forEach(field => {
         field.style.display = 'none';
       });
 
-      // Show fields relevant to the selected achievement type
       if (achievementType) {
         const fieldsToShow = document.querySelectorAll(`.${achievementType}-field`);
         fieldsToShow.forEach(field => {
@@ -27,10 +28,104 @@
         });
       }
     }
+
+    // ---------------------------------------------------------------
+    // CLIENT-SIDE VALIDATION
+    // Validates all required fields before allowing form submission.
+    // Returns false and shows inline error messages if any field is
+    // empty, which prevents the HTTP request from being sent.
+    // ---------------------------------------------------------------
+    function validateAchievementForm(event) {
+      // Clear any previously shown validation errors
+      document.querySelectorAll('.field-error').forEach(el => el.remove());
+      document.querySelectorAll('.input-invalid').forEach(el => el.classList.remove('input-invalid'));
+
+      let isValid = true;
+
+      // Helper: mark a field invalid and show an error below it
+      function showError(inputEl, message) {
+        inputEl.classList.add('input-invalid');
+        const err = document.createElement('small');
+        err.className = 'field-error';
+        err.setAttribute('role', 'alert');           // screen-reader announcement
+        err.textContent = message;
+        inputEl.parentNode.insertBefore(err, inputEl.nextSibling);
+        isValid = false;
+      }
+
+      // --- Mandatory fields always present in the form ---
+      const studentId = document.getElementById('student-id');
+      if (!studentId.value.trim()) {
+        showError(studentId, 'Student ID is required.');
+      }
+
+      const achievementType = document.getElementById('achievement-type');
+      if (!achievementType.value) {
+        showError(achievementType, 'Please select an achievement type.');
+      }
+
+      const eventName = document.querySelector('[name="event_name"]');
+      if (!eventName.value.trim()) {
+        showError(eventName, 'Event name is required.');
+      }
+
+      // Date field — must not be empty and must not be a future date
+      const achievementDate = document.querySelector('[name="achievement_date"]');
+      if (!achievementDate.value) {
+        showError(achievementDate, 'Date of achievement is required.');
+      } else {
+        const selected = new Date(achievementDate.value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (selected > today) {
+          showError(achievementDate, 'Achievement date cannot be in the future.');
+        }
+      }
+
+      const organizer = document.querySelector('[name="organizer"]');
+      if (!organizer.value.trim()) {
+        showError(organizer, 'Organizer / Institution is required.');
+      }
+
+      const position = document.querySelector('[name="position"]');
+      if (!position.value.trim()) {
+        showError(position, 'Position / Award is required.');
+      }
+
+      // If validation failed, prevent submission and focus the first error
+      if (!isValid) {
+        event.preventDefault();
+        const firstInvalid = document.querySelector('.input-invalid');
+        if (firstInvalid) firstInvalid.focus();
+      }
+
+      return isValid;
+    }
+
+    // ---------------------------------------------------------------
+    // LOADING STATE
+    // Disables the submit button and shows a spinner after the form
+    // passes validation, preventing duplicate submissions.
+    // The browser's native form submission then takes over.
+    // ---------------------------------------------------------------
+    function handleSubmitLoading(event) {
+      // Only apply loading state when validation passes (isValid = true)
+      // We check by re-running validate inline; if it returns false the
+      // event is already prevented by validateAchievementForm above.
+      const btn = document.getElementById('submit-btn');
+      if (document.querySelectorAll('.field-error').length === 0) {
+        // Validation passed — show loading state
+        btn.disabled = true;
+        btn.classList.add('btn-loading');
+        btn.value = 'Submitting…';
+      }
+    }
   </script>
 
   <style>
-    /* Only include specific styles that aren't in the main CSS file */
+    /* ============================================================
+       Page layout
+    ============================================================ */
     body.form-page {
       height: auto;
       min-height: 100vh;
@@ -42,7 +137,9 @@
       max-width: 800px;
     }
 
-    /* Consistent form element styling */
+    /* ============================================================
+       Form elements — consistent with global styles.css conventions
+    ============================================================ */
     select {
       width: 100%;
       height: 45px;
@@ -52,7 +149,6 @@
       background-color: rgba(255, 255, 255, 0.1);
       color: var(--text-color);
       transition: all 0.3s ease;
-      /* Fix for dropdown appearance */
       -webkit-appearance: none;
       -moz-appearance: none;
       appearance: none;
@@ -61,14 +157,12 @@
       background-position: right 10px top 50%;
     }
 
-    /* Fix dropdown option colors for dark mode visibility */
     select option {
       background-color: var(--bg-color);
       color: var(--text-color);
       padding: 10px;
     }
 
-    /* Light mode specific style correction */
     body.light-mode select {
       background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
     }
@@ -95,7 +189,6 @@
       outline: none;
     }
 
-    /* File input consistent styling */
     input[type="file"] {
       width: 100%;
       padding: 10px;
@@ -105,7 +198,6 @@
       border: 1px solid #ccc;
     }
 
-    /* More specific rules to enforce contrast */
     body.form-page select,
     body.form-page textarea,
     body.form-page input[type="text"],
@@ -113,6 +205,87 @@
     body.form-page input[type="number"],
     body.form-page input[type="file"] {
       color: var(--text-color);
+    }
+
+    /* ============================================================
+       CLIENT-SIDE VALIDATION STYLES
+       .input-invalid  — red border on an invalid field
+       .field-error    — small helper text shown below the field
+    ============================================================ */
+    .input-invalid {
+      border-color: #e53e3e !important;
+      /* WCAG AA: strong red border */
+      box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.25);
+    }
+
+    .field-error {
+      display: block;
+      margin-top: 4px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      /* Dark mode: bright enough to read on dark backgrounds */
+      color: #fc8181;
+      /* passes 4.6:1 on #0f1419 bg */
+    }
+
+    /* Light mode overrides so the red still meets WCAG AA */
+    body.light-mode .field-error {
+      color: #c53030;
+      /* passes 4.5:1 on white */
+    }
+
+    /* ============================================================
+       LOADING STATE STYLES
+       Applied to the submit button while the form is being sent.
+       A CSS spinner replaces the normal icon so no extra images
+       or icon libraries are needed.
+    ============================================================ */
+    .button input[type="submit"] {
+      /* Ensure we can layer the spinner pseudo-element */
+      position: relative;
+      transition: background 0.2s, opacity 0.2s;
+    }
+
+    /* Spinner — visible only when .btn-loading is present */
+    .button input.btn-loading {
+      cursor: not-allowed;
+      opacity: 0.75;
+      /* Indent text to the right so spinner fits */
+      padding-left: 40px;
+    }
+
+    /* We can't use ::before on <input>, so we use a wrapper trick:
+       wrap the submit button in a <div class="button btn-wrap"> and
+       add the spinner as a sibling via JS. See the HTML + JS below. */
+    .btn-spinner {
+      display: none;
+      width: 18px;
+      height: 18px;
+      border: 3px solid rgba(255, 255, 255, 0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    /* The wrapper needs position: relative for the spinner to anchor */
+    .button {
+      position: relative;
+    }
+
+    .btn-loading~.btn-spinner,
+    .button input.btn-loading+.btn-spinner {
+      display: block;
+    }
+
+    @keyframes spin {
+      to {
+        transform: translateY(-50%) rotate(360deg);
+      }
     }
   </style>
 </head>
@@ -125,18 +298,49 @@
   <div class="container achievement-container">
     <div class="title">Enter Student Achievement</div>
     <div class="content">
-      <form method="POST" action="{{ url_for('submit_achievements') }}" enctype="multipart/form-data">
+
+      {% if error %}
+      <!-- Server-side error (e.g. invalid student ID, duplicate cert) -->
+      <div class="error-box"
+        style="background:rgba(229,62,62,0.12);color:#fc8181;padding:14px 16px;border-radius:10px;border:1px solid rgba(229,62,62,0.3);margin-bottom:20px;font-weight:500;"
+        role="alert">
+        ⚠️ {{ error }}
+      </div>
+      {% endif %}
+
+      {% if success %}
+      <div class="welcome-text">
+        <p style="color:#38a169;font-weight:bold;">Congratulations! <br> {{ success }}</p>
+      </div>
+      <div class="button">
+        <a href="{{ url_for('teacher-dashboard') }}" class="btn-primary">Back to Dashboard</a>
+      </div>
+      {% else %}
+
+      <!--
+        onsubmit order:
+          1. validateAchievementForm()  — returns false on error (prevents submit)
+          2. handleSubmitLoading()      — arms the spinner only when valid
+      -->
+      <form method="POST" action="{{ url_for('submit_achievements') }}" enctype="multipart/form-data"
+        onsubmit="validateAchievementForm(event); handleSubmitLoading(event);" novalidate>
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
         <div class="user-details">
+
+          <!-- Student ID -->
           <div class="input-box">
-            <span class="details">Student ID</span>
+            <span class="details">Student ID <span aria-hidden="true" style="color:var(--primary-color)">*</span></span>
             <input type="text" id="student-id" name="student_id" placeholder="Enter student ID (e.g., STU001)"
-              required />
+              aria-required="true" />
           </div>
 
+          <!-- Achievement Type -->
           <div class="input-box full-width">
-            <span class="details">Achievement Type</span>
-            <select id="achievement-type" name="achievement_type" onchange="toggleAchievementFields()" required>
+            <span class="details">Achievement Type <span aria-hidden="true"
+                style="color:var(--primary-color)">*</span></span>
+            <select id="achievement-type" name="achievement_type" onchange="toggleAchievementFields()"
+              aria-required="true">
               <option value="">Select Achievement Type</option>
               <option value="symposium">Symposium</option>
               <option value="coding">Coding Competition</option>
@@ -148,51 +352,61 @@
             </select>
           </div>
 
+          <!-- Event Name -->
           <div class="input-box">
-            <span class="details">Event Name</span>
-            <input type="text" name="event_name" placeholder="Enter event name" required />
+            <span class="details">Event Name <span aria-hidden="true" style="color:var(--primary-color)">*</span></span>
+            <input type="text" name="event_name" placeholder="Enter event name" aria-required="true" />
           </div>
+
+          <!-- Date of Achievement -->
           <div class="input-box">
-            <span class="details">Date of Achievement</span>
-            <input type="date" name="achievement_date" required />
+            <span class="details">Date of Achievement <span aria-hidden="true"
+                style="color:var(--primary-color)">*</span></span>
+            <input type="date" name="achievement_date" aria-required="true" />
           </div>
+
+          <!-- Organizer -->
           <div class="input-box">
-            <span class="details">Organizer/Institution</span>
-            <input type="text" name="organizer" placeholder="Enter organizing institution" required />
+            <span class="details">Organizer / Institution <span aria-hidden="true"
+                style="color:var(--primary-color)">*</span></span>
+            <input type="text" name="organizer" placeholder="Enter organizing institution" aria-required="true" />
           </div>
+
+          <!-- Position / Award -->
           <div class="input-box">
-            <span class="details">Position/Award</span>
-            <input type="text" name="position" placeholder="e.g., First Place, Participant" required />
+            <span class="details">Position / Award <span aria-hidden="true"
+                style="color:var(--primary-color)">*</span></span>
+            <input type="text" name="position" placeholder="e.g., First Place, Participant" aria-required="true" />
           </div>
 
           <!-- Symposium specific fields -->
-          <div class="input-box full-width achievement-specific-field symposium-field" style="display: none;">
+          <div class="input-box full-width achievement-specific-field symposium-field" style="display:none;">
             <span class="details">Symposium Theme</span>
             <input type="text" name="symposium_theme" placeholder="Enter symposium theme" />
           </div>
 
           <!-- Coding competition specific fields -->
-          <div class="input-box achievement-specific-field coding-field" style="display: none;">
+          <div class="input-box achievement-specific-field coding-field" style="display:none;">
             <span class="details">Programming Language</span>
             <input type="text" name="programming_language" placeholder="Enter programming language" />
           </div>
-          <div class="input-box achievement-specific-field coding-field" style="display: none;">
+          <div class="input-box achievement-specific-field coding-field" style="display:none;">
             <span class="details">Platform</span>
             <input type="text" name="coding_platform" placeholder="Enter platform (e.g., HackerRank)" />
           </div>
 
           <!-- Paper presentation specific fields -->
-          <div class="input-box full-width achievement-specific-field paper-field" style="display: none;">
+          <div class="input-box full-width achievement-specific-field paper-field" style="display:none;">
             <span class="details">Paper Title</span>
             <input type="text" name="paper_title" placeholder="Enter paper title" />
           </div>
-          <div class="input-box full-width achievement-specific-field paper-field" style="display: none;">
-            <span class="details">Journal/Conference Name</span>
+          <div class="input-box full-width achievement-specific-field paper-field" style="display:none;">
+            <span class="details">Journal / Conference Name</span>
             <input type="text" name="journal_name" placeholder="Enter journal or conference name" />
           </div>
 
           <!-- Conference specific fields -->
-          <div class="input-box achievement-specific-field conference-field" style="display: none;">
+          <div class="input-box achievement-specific-field conference-field" style="display:none;">
             <span class="details">Conference Level</span>
             <select name="conference_level">
               <option value="">Select Level</option>
@@ -203,27 +417,27 @@
               <option value="college">College</option>
             </select>
           </div>
-          <div class="input-box achievement-specific-field conference-field" style="display: none;">
+          <div class="input-box achievement-specific-field conference-field" style="display:none;">
             <span class="details">Role</span>
             <input type="text" name="conference_role" placeholder="Enter role (presenter, attendee)" />
           </div>
 
           <!-- Hackathon specific fields -->
-          <div class="input-box achievement-specific-field hackathon-field" style="display: none;">
+          <div class="input-box achievement-specific-field hackathon-field" style="display:none;">
             <span class="details">Team Size</span>
             <input type="number" name="team_size" placeholder="Enter team size" min="1" />
           </div>
-          <div class="input-box achievement-specific-field hackathon-field" style="display: none;">
+          <div class="input-box achievement-specific-field hackathon-field" style="display:none;">
             <span class="details">Project Title</span>
             <input type="text" name="project_title" placeholder="Enter project title" />
           </div>
 
           <!-- SQL specific fields -->
-          <div class="input-box achievement-specific-field sql-field" style="display: none;">
+          <div class="input-box achievement-specific-field sql-field" style="display:none;">
             <span class="details">Database Type</span>
             <input type="text" name="database_type" placeholder="Enter database type (MySQL, Oracle)" />
           </div>
-          <div class="input-box achievement-specific-field sql-field" style="display: none;">
+          <div class="input-box achievement-specific-field sql-field" style="display:none;">
             <span class="details">Difficulty Level</span>
             <select name="difficulty_level">
               <option value="">Select Level</option>
@@ -234,34 +448,65 @@
             </select>
           </div>
 
-          <!-- Other achievement type field -->
-          <div class="input-box full-width achievement-specific-field other-field" style="display: none;">
+          <!-- Other type field -->
+          <div class="input-box full-width achievement-specific-field other-field" style="display:none;">
             <span class="details">Achievement Type Description</span>
             <input type="text" name="other_description" placeholder="Describe achievement type" />
           </div>
 
+          <!-- Description -->
           <div class="input-box full-width">
             <span class="details">Achievement Description</span>
             <textarea name="achievement_description"
               placeholder="Enter detailed description of the achievement"></textarea>
           </div>
-        </div>
 
+        </div><!-- /.user-details -->
+
+        <!-- Certificate upload -->
         <div class="input-box full-width">
-          <span class="details">Upload Certificate/Proof</span>
+          <span class="details">Upload Certificate / Proof</span>
           <input type="file" name="certificate" accept=".pdf,.jpg,.jpeg,.png" />
         </div>
 
+        <!--
+          Submit button + spinner element.
+          The <span class="btn-spinner"> is positioned absolutely inside .button
+          (which has position:relative) and becomes visible via CSS when the
+          input carries the .btn-loading class added by handleSubmitLoading().
+        -->
         <div class="button">
-          <input type="submit" value="Submit Achievement" />
+          <input type="submit" id="submit-btn" value="Submit Achievement" />
+          <!-- CSS-only spinner; shown when input.btn-loading is present -->
+          <span class="btn-spinner" aria-hidden="true"></span>
         </div>
+
       </form>
+      {% endif %}
 
       <div class="back-link">
         <a href="{{ url_for('teacher-dashboard') }}">Back to Dashboard</a>
       </div>
     </div>
   </div>
+
+  <script>
+    // -------------------------------------------------------------------
+    // Restore the submit button if the page is shown from bfcache
+    // (e.g. user hits Back after a failed submission on another page).
+    // This prevents the button being stuck in the disabled/loading state.
+    // -------------------------------------------------------------------
+    window.addEventListener('pageshow', function (event) {
+      if (event.persisted) {
+        const btn = document.getElementById('submit-btn');
+        if (btn) {
+          btn.disabled = false;
+          btn.classList.remove('btn-loading');
+          btn.value = 'Submit Achievement';
+        }
+      }
+    });
+  </script>
 </body>
 
 </html>

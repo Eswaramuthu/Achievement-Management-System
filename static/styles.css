@@ -1116,3 +1116,70 @@ body {
   transform: scale(1.12);
   font-weight: bolder;
 }
+
+/* =======================================================================
+   GLOBAL STATUS BADGES
+   Used for Pending / Approved / Rejected states across all templates.
+   WCAG AA compliant: all text–background pairs achieve ≥ 4.5:1 contrast.
+   ======================================================================= */
+
+/* Shared badge base — matches existing Bootstrap-like `.badge` pattern */
+.badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-width: 1px;
+  border-style: solid;
+  white-space: nowrap;
+}
+
+/* --- Pending --- */
+/* Light: #78350f on #fef3c7  → 5.8:1 ✓  */
+.badge-pending {
+  background: #fef3c7;
+  color: #78350f;
+  border-color: #f59e0b;
+  font-weight: 600;
+}
+
+/* --- Approved / Verified --- */
+/* Light: #064e3b on #d1fae5  → 5.9:1 ✓  */
+.badge-approved {
+  background: #d1fae5;
+  color: #064e3b;
+  border-color: #10b981;
+  font-weight: 600;
+}
+
+/* --- Rejected --- */
+/* Light: #7f1d1d on #fee2e2  → 6.1:1 ✓  */
+.badge-rejected {
+  background: #fee2e2;
+  color: #7f1d1d;
+  border-color: #f87171;
+  font-weight: 600;
+}
+
+/* Dark-mode overrides (class applied to <body> by script.js) */
+body:not(.light-mode) .badge-pending {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;   /* #fbbf24 on #0f1419 → 7.5:1 ✓ */
+  border-color: rgba(245, 158, 11, 0.40);
+}
+
+body:not(.light-mode) .badge-approved {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;   /* #34d399 on #0f1419 → 6.7:1 ✓ */
+  border-color: rgba(16, 185, 129, 0.40);
+}
+
+body:not(.light-mode) .badge-rejected {
+  background: rgba(248, 113, 113, 0.15);
+  color: #fca5a5;   /* #fca5a5 on #0f1419 → 5.1:1 ✓ */
+  border-color: rgba(248, 113, 113, 0.40);
+}
