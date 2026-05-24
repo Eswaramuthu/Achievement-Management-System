@@ -1,4 +1,5 @@
 # tests/conftest.py
+import gc
 import os
 import tempfile
 import pytest
@@ -17,62 +18,39 @@ def test_app():
         'TESTING': True,
         'WTF_CSRF_ENABLED': False,
         'DATABASE': db_path,
+        'DB_PATH': db_path,
         'SQLALCHEMY_DATABASE_URI': f'sqlite:///{db_path}',
         'SECRET_KEY': 'test-secret-key',
     })
     app.jinja_env.globals['csrf_token'] = lambda: 'test-token'
 
-
-    # Create the test database and tables
+    # Create the test database and tables using the application's initialization logic
     with app.app_context():
-        # Initialize the database (this should create the tables)
+        init_db()
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
-        
-        # Create tables manually since we're in test mode
-        cursor.execute('''
-        CREATE TABLE IF NOT EXISTS student (
-            student_name TEXT NOT NULL,
-            student_id TEXT PRIMARY KEY,
-            email TEXT UNIQUE NOT NULL,
-            phone_number TEXT,
-            password TEXT NOT NULL,
-            student_gender TEXT,
-            student_dept TEXT
-        )''')
-        
-        cursor.execute('''
-        CREATE TABLE IF NOT EXISTS teacher (
-            teacher_name TEXT NOT NULL,
-            teacher_id TEXT PRIMARY KEY,
-            email TEXT UNIQUE NOT NULL,
-            phone_number TEXT,
-            password TEXT NOT NULL,
-            teacher_gender TEXT,
-            teacher_dept TEXT
-        )''')
-        
+
         # Add test data
         cursor.execute("""
             INSERT OR REPLACE INTO student (
                 student_name, student_id, email, phone_number, 
-                password, student_gender, student_dept
-            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                password, student_gender, student_dept, is_approved
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             'Test Student', 'S001', 'student@test.com', '1234567890',
-            generate_password_hash('password'), 'M', 'CSE'
+            generate_password_hash('password'), 'M', 'CSE', 1
         ))
-        
+
         cursor.execute("""
             INSERT OR REPLACE INTO teacher (
                 teacher_name, teacher_id, email, phone_number,
-                password, teacher_gender, teacher_dept
-            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                password, teacher_gender, teacher_dept, is_approved
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             'Test Teacher', 'T001', 'teacher@test.com', '0987654321',
-            generate_password_hash('password'), 'F', 'CSE'
+            generate_password_hash('password'), 'F', 'CSE', 1
         ))
-        
+
         conn.commit()
         conn.close()
     
@@ -80,6 +58,7 @@ def test_app():
 
     # Clean up the test database
     os.close(db_fd)
+    gc.collect()
     os.unlink(db_path)
 
 @pytest.fixture

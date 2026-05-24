@@ -18,40 +18,8 @@
       margin: 0;
       padding: 0;
     }
-
-        function validatePasswords(event) {
-            const password = document.getElementById("password").value;
-            const confirmPassword = document.getElementById("confirm-password").value;
-            const message = document.getElementById("password-message");
-
-            console.log("Validating passwords...");
-
-            const strongPassword =
-                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
-
-            if (!strongPassword.test(password)) {
-                event.preventDefault();
-                message.textContent =
-                    "❌ Password must contain uppercase, lowercase, number, special character and minimum 8 characters.";
-                message.style.color = "red";
-                return false;
-            }
-
-            if (password !== confirmPassword) {
-                event.preventDefault(); // This stops form submission
-                message.textContent = "❌ Passwords do not match!";
-                message.style.color = "red";
-                console.log("Password validation failed - preventing submission");
-                return false;
-            } else {
-                message.textContent = "✅ Passwords match!";
-                message.style.color = "limegreen";
-                console.log("Password validation passed - allowing submission");
-                return true; // Explicitly return true to allow form submission
-            }
-        }
-    </script>
-    <style>
+  </style>
+  <style>
         /* Additional styles to make select elements match input styling */
         .input-box select {
             width: 100%;
@@ -348,8 +316,35 @@
       background: transparent !important;
     }
     
+    .auth-form input.input-valid,
+    .auth-form select.input-valid {
+      border-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.14);
+    }
+
+    .auth-form input.input-invalid,
+    .auth-form select.input-invalid {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.14);
+    }
+
+    .validation-message {
+      display: none;
+      margin-top: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
     body.light-mode .auth-form input:focus {
       background: #ffffff !important;
+    }
+
+    .btn-submit:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+      background: var(--primary-color);
+      transform: none;
+      box-shadow: none;
     }
 
     /* Select Styles */
@@ -553,23 +548,88 @@
     }
   </style>
   <script>
-    function validatePasswords(event) {
-        const password = document.getElementById("password").value;
-        const confirmPassword = document.getElementById("confirm-password").value;
-        const message = document.getElementById("password-message");
+    const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+    const phoneRegex = /^[0-9]{10}$/;
 
-        if (password !== confirmPassword) {
-            event.preventDefault(); // This stops form submission
-            message.textContent = "❌ Passwords do not match!";
-            message.style.color = "var(--primary-color)";
-            message.style.display = "block";
-            return false;
-        } else {
-            message.textContent = "";
-            message.style.display = "none";
-            return true;
-        }
+    function setInputState(input, valid) {
+      input.classList.toggle('input-valid', valid);
+      input.classList.toggle('input-invalid', !valid);
     }
+
+    function updateValidationMessage(element, message, isValid) {
+      element.textContent = message;
+      element.style.color = isValid ? '#10b981' : '#ef4444';
+      element.style.display = message ? 'block' : 'none';
+    }
+
+    function validateFormFields() {
+      const form = document.querySelector('.auth-form');
+      const passwordInput = document.getElementById('password');
+      const confirmInput = document.getElementById('confirm-password');
+      const phoneInput = document.getElementById('phone_number');
+      const nameInput = document.getElementById('student_name');
+      const idInput = document.getElementById('student_id');
+      const emailInput = document.getElementById('email');
+      const genderInput = document.getElementById('student_gender');
+      const deptInput = document.getElementById('student_dept');
+      const passwordMessage = document.getElementById('password-message');
+      const phoneMessage = document.getElementById('phone-message');
+      const submitButton = document.getElementById('register-submit');
+
+      const nameValid = nameInput.value.trim().length > 0;
+      const idValid = idInput.value.trim().length > 0;
+      const emailValid = emailInput.value.trim().length > 0;
+      const genderValid = genderInput.value.trim().length > 0;
+      const deptValid = deptInput.value.trim().length > 0;
+      const phoneValid = phoneRegex.test(phoneInput.value.trim());
+      const passwordValid = strongPasswordRegex.test(passwordInput.value);
+      const passwordsMatch = passwordInput.value === confirmInput.value && confirmInput.value.length > 0;
+
+      setInputState(nameInput, nameValid);
+      setInputState(idInput, idValid);
+      setInputState(emailInput, emailValid);
+      setInputState(genderInput, genderValid);
+      setInputState(deptInput, deptValid);
+      setInputState(phoneInput, phoneValid);
+      setInputState(passwordInput, passwordValid);
+      setInputState(confirmInput, passwordsMatch);
+
+      if (!passwordValid && passwordInput.value.length > 0) {
+        updateValidationMessage(passwordMessage, 'Password must be at least 8 characters with uppercase, lowercase, number and special character.', false);
+      } else if (!passwordsMatch && confirmInput.value.length > 0) {
+        updateValidationMessage(passwordMessage, 'Passwords do not match.', false);
+      } else {
+        updateValidationMessage(passwordMessage, '', true);
+      }
+
+      if (!phoneValid && phoneInput.value.length > 0) {
+        updateValidationMessage(phoneMessage, 'Enter a valid 10-digit mobile number using only digits.', false);
+      } else {
+        updateValidationMessage(phoneMessage, '', true);
+      }
+
+      const formValid = nameValid && idValid && emailValid && genderValid && deptValid && phoneValid && passwordValid && passwordsMatch;
+      submitButton.disabled = !formValid;
+      return formValid;
+    }
+
+    function validatePasswords(event) {
+      const valid = validateFormFields();
+      if (!valid) {
+        event.preventDefault();
+        return false;
+      }
+      return true;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      validateFormFields();
+      const fields = document.querySelectorAll('#student_name, #student_id, #email, #phone_number, #password, #confirm-password, #student_gender, #student_dept');
+      fields.forEach(field => {
+        field.addEventListener('input', validateFormFields);
+        field.addEventListener('change', validateFormFields);
+      });
+    });
   </script>
 </head>
 
@@ -654,39 +714,40 @@
             <div class="form-group">
               <label for="student_name">Full Name</label>
               <div class="input-wrapper">
-                <input autocomplete="off" autofocus type="text" name="student_name" id="student_name" placeholder="Enter your full name" required />
+                <input autocomplete="off" autofocus type="text" name="student_name" id="student_name" placeholder="Enter your full name" value="{{ student_name | default('') }}" required />
               </div>
             </div>
 
             <div class="form-group">
               <label for="student_id">Student ID</label>
               <div class="input-wrapper">
-                <input autocomplete="off" type="text" name="student_id" id="student_id" placeholder="Enter your Student ID" required />
+                <input autocomplete="off" type="text" name="student_id" id="student_id" placeholder="Enter your Student ID" value="{{ student_id | default('') }}" required />
               </div>
             </div>
 
             <div class="form-group">
               <label for="email">Email Address</label>
               <div class="input-wrapper">
-                <input autocomplete="off" type="email" name="email" id="email" placeholder="Enter your email" required />
+                <input autocomplete="off" type="email" name="email" id="email" placeholder="Enter your email" value="{{ email | default('') }}" required />
               </div>
             </div>
 
             <div class="form-group">
               <label for="phone_number">Phone Number</label>
               <div class="input-wrapper">
-                <input autocomplete="off" type="tel" name="phone_number" id="phone_number" placeholder="Enter your phone number" required />
+                <input autocomplete="off" type="tel" name="phone_number" id="phone_number" placeholder="Enter your phone number" value="{{ phone_number | default('') }}" pattern="^[0-9]{10}$" maxlength="10" inputmode="numeric" required />
               </div>
+              <small id="phone-message" class="validation-message" style="display:none; font-size: 0.85rem; margin-top: 8px; font-weight: 500;"></small>
             </div>
 
             <div class="form-group">
               <label for="student_gender">Gender</label>
               <div class="input-wrapper">
                 <select name="student_gender" id="student_gender" required>
-                  <option disabled selected value="">Select Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
+                  <option disabled value="" {% if not student_gender %}selected{% endif %}>Select Gender</option>
+                  <option value="Male" {% if student_gender == 'Male' %}selected{% endif %}>Male</option>
+                  <option value="Female" {% if student_gender == 'Female' %}selected{% endif %}>Female</option>
+                  <option value="Other" {% if student_gender == 'Other' %}selected{% endif %}>Other</option>
                 </select>
               </div>
             </div>
@@ -695,11 +756,11 @@
               <label for="student_dept">Department</label>
               <div class="input-wrapper">
                 <select name="student_dept" id="student_dept" required>
-                  <option disabled selected value="">Select Department</option>
-                  <option value="CSE">CSE</option>
-                  <option value="CSE(E Tech)">CSE(E Tech)</option>
-                  <option value="ECE">ECE</option>
-                  <option value="MECH">MECH</option>
+                  <option disabled value="" {% if not student_dept %}selected{% endif %}>Select Department</option>
+                  <option value="CSE" {% if student_dept == 'CSE' %}selected{% endif %}>CSE</option>
+                  <option value="CSE(E Tech)" {% if student_dept == 'CSE(E Tech)' %}selected{% endif %}>CSE(E Tech)</option>
+                  <option value="ECE" {% if student_dept == 'ECE' %}selected{% endif %}>ECE</option>
+                  <option value="MECH" {% if student_dept == 'MECH' %}selected{% endif %}>MECH</option>
                 </select>
               </div>
             </div>
@@ -731,7 +792,7 @@
             
           </div>
 
-          <button type="submit" class="btn-submit">Register Account</button>
+          <button type="submit" id="register-submit" class="btn-submit" disabled>Register Account</button>
         </form>
 
         <div class="auth-footer">
