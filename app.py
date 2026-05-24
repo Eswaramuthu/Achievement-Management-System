@@ -207,7 +207,7 @@ def init_db():
     # Insert default super admin if not exists
     cursor.execute("SELECT COUNT(*) FROM admin WHERE admin_id = 'superadmin'")
     if cursor.fetchone()[0] == 0:
-        default_password = generate_password_hash("admin123")
+        default_password = generate_password_hash("admin123", method='pbkdf2:sha256')
         cursor.execute("""
             INSERT INTO admin (admin_name, admin_id, email, password, is_superuser)
             VALUES (?, ?, ?, ?, ?)
@@ -644,7 +644,7 @@ def student_profile_edit():
                 return redirect(url_for('student-profile'))
             
             # Hash new password
-            hashed_password = generate_password_hash(new_password)
+            hashed_password = generate_password_hash(new_password, method='pbkdf2:sha256')
         else:
             # Keep existing password
             hashed_password = student[4]
@@ -1329,7 +1329,7 @@ def student_new():
         student_id = request.form.get("student_id")
         email = request.form.get("email")
         phone_number = request.form.get("phone_number")
-        password = generate_password_hash(request.form.get("password"))
+        password = generate_password_hash(request.form.get("password"), method='pbkdf2:sha256')
         student_gender = request.form.get("student_gender")
         student_dept = request.form.get("student_dept")
 
@@ -1360,7 +1360,7 @@ def teacher_new():
         teacher_id = request.form.get("teacher_id")
         email = request.form.get("email")
         phone_number = request.form.get("phone_number")
-        password = generate_password_hash(request.form.get("password"))
+        password = generate_password_hash(request.form.get("password"),method='pbkdf2:sha256')
         teacher_gender = request.form.get("teacher_gender")
         teacher_dept = request.form.get("teacher_dept")
 
@@ -1610,4 +1610,3 @@ if __name__ == "__main__":
     init_db()
     add_profile_picture_column()
     app.run(debug=True)
-
