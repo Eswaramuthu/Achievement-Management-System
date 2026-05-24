@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -47,7 +48,7 @@
       text-decoration: none;
       letter-spacing: -0.5px;
     }
-    
+
     .auth-brand svg {
       width: 28px;
       height: 28px;
@@ -80,16 +81,24 @@
       justify-content: center;
       align-items: center;
       width: 100%;
-      max-width: 1100px;
+      max-width: 900px;
       margin: auto 0;
-      padding: 120px 20px 40px 20px; /* Space for absolute nav */
+      padding: 70px 16px 16px 16px;
+      /* Space for absolute nav */
       box-sizing: border-box;
       animation: fadeIn 0.5s ease-out;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .auth-container {
@@ -103,7 +112,7 @@
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
     }
-    
+
     body.light-mode .auth-container {
       box-shadow: 0 24px 48px rgba(0, 0, 0, 0.05);
     }
@@ -112,7 +121,7 @@
     .auth-sidebar {
       flex: 1;
       background: linear-gradient(135deg, rgba(255, 28, 28, 0.08) 0%, rgba(0, 0, 0, 0.2) 100%);
-      padding: 60px 40px;
+      padding: 30px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -120,7 +129,7 @@
       position: relative;
       overflow: hidden;
     }
-    
+
     body.light-mode .auth-sidebar {
       background: linear-gradient(135deg, rgba(212, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.02) 100%);
     }
@@ -150,11 +159,11 @@
     }
 
     .auth-quote p {
-      font-size: 1.4rem;
+      font-size: 1.05rem;
       font-weight: 300;
       color: var(--text-color);
-      line-height: 1.6;
-      margin-bottom: 2.5rem;
+      line-height: 1.4;
+      margin-bottom: 1rem;
     }
 
     .auth-quote-author {
@@ -164,8 +173,8 @@
     }
 
     .auth-quote-author .avatar {
-      width: 48px;
-      height: 48px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       background: rgba(255, 28, 28, 0.15);
       color: var(--primary-color);
@@ -173,7 +182,7 @@
       align-items: center;
       justify-content: center;
       font-weight: 600;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       border: 1px solid rgba(255, 28, 28, 0.3);
     }
 
@@ -183,7 +192,7 @@
       color: var(--text-color);
       font-weight: 600;
     }
-    
+
     .auth-quote-author .info span {
       font-size: 0.85rem;
       color: var(--text-secondary);
@@ -192,7 +201,7 @@
     /* ===== Form Section (Right Panel) ===== */
     .auth-form-section {
       flex: 1.2;
-      padding: 60px 80px;
+      padding: 25px 40px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -200,45 +209,45 @@
     }
 
     .auth-header {
-      margin-bottom: 2.5rem;
+      margin-bottom: 1rem;
     }
 
     .auth-header h1 {
-      font-size: 2.25rem;
+      font-size: 1.5rem;
       font-weight: 700;
       color: var(--text-color);
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.25rem;
       letter-spacing: -0.5px;
     }
 
     .auth-header p {
       color: var(--text-secondary);
-      font-size: 1rem;
+      font-size: 0.85rem;
     }
 
     .error-message {
       background: rgba(255, 28, 28, 0.1);
       border: 1px solid rgba(255, 28, 28, 0.2);
       color: var(--primary-color);
-      padding: 14px 16px;
-      border-radius: 12px;
-      font-size: 0.9rem;
-      margin-bottom: 1.5rem;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      margin-bottom: 0.75rem;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       font-weight: 500;
     }
 
     .auth-form .form-group {
-      margin-bottom: 1.5rem;
+      margin-bottom: 0.75rem;
     }
 
     .auth-form label {
       display: block;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.25rem;
       color: var(--text-color);
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       font-weight: 500;
     }
 
@@ -249,15 +258,15 @@
     .auth-form input[type="text"],
     .auth-form input[type="password"] {
       width: 100%;
-      padding: 14px 16px;
+      padding: 8px 12px;
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border-color);
-      border-radius: 12px;
+      border-radius: 8px;
       color: var(--text-color);
-      font-size: 1rem;
+      font-size: 0.9rem;
       transition: all 0.2s ease;
     }
-    
+
     body.light-mode .auth-form input[type="text"],
     body.light-mode .auth-form input[type="password"] {
       background: #ffffff;
@@ -271,7 +280,7 @@
       outline: none;
       background: transparent;
     }
-    
+
     body.light-mode .auth-form input[type="text"]:focus,
     body.light-mode .auth-form input[type="password"]:focus {
       background: #ffffff;
@@ -292,11 +301,11 @@
       transition: color 0.2s;
       padding: 4px;
     }
-    
+
     .password-toggle-btn:hover {
       color: var(--text-color);
     }
-    
+
     .password-toggle-btn:focus {
       outline: none;
       color: var(--primary-color);
@@ -306,8 +315,8 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 2rem;
-      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      font-size: 0.8rem;
     }
 
     .remember-me {
@@ -367,12 +376,12 @@
 
     .btn-submit {
       width: 100%;
-      padding: 14px;
+      padding: 10px;
       background: var(--primary-color);
       color: white;
       border: none;
-      border-radius: 12px;
-      font-size: 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
@@ -390,9 +399,9 @@
     }
 
     .auth-footer {
-      margin-top: 2rem;
+      margin-top: 1rem;
       text-align: center;
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       color: var(--text-secondary);
     }
 
@@ -421,7 +430,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       transition: all 0.3s ease;
       backdrop-filter: blur(10px);
       /* Use !important to override global fixed positioning */
@@ -438,10 +447,11 @@
     /* ===== Responsive Adjustments ===== */
     @media (max-width: 1024px) {
       .auth-form-section {
-        padding: 50px 60px;
+        padding: 20px 30px;
       }
+
       .auth-sidebar {
-        padding: 50px 40px;
+        padding: 20px;
       }
     }
 
@@ -451,16 +461,17 @@
         max-width: 500px;
         margin: 0 auto;
       }
-      
+
       .auth-sidebar {
-        display: none; /* Streamlined mobile view */
+        display: none;
+        /* Streamlined mobile view */
       }
 
       .auth-form-section {
         padding: 40px;
         border-radius: 24px;
       }
-      
+
       .auth-nav {
         padding: 16px 20px;
       }
@@ -473,7 +484,7 @@
         width: 24px;
         height: 24px;
       }
-      
+
       .auth-wrapper {
         padding: 100px 16px 40px 16px;
       }
@@ -483,15 +494,16 @@
       .auth-form-section {
         padding: 40px 24px;
       }
-      
+
       .auth-header h1 {
         font-size: 1.75rem;
       }
 
       .auth-brand span {
-        display: none; /* Hide text on very small screens, keep logo */
+        display: none;
+        /* Hide text on very small screens, keep logo */
       }
-      
+
       .auth-wrapper {
         padding: 80px 16px 40px 16px;
       }
@@ -504,17 +516,20 @@
   <div class="auth-nav">
     <a href="{{ url_for('home') }}" class="auth-brand">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor"/>
-        <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor" />
+        <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" />
+        <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" />
       </svg>
       <span>Achievement Management System</span>
     </a>
-    
+
     <div class="nav-actions">
       <a href="{{ url_for('home') }}" class="nav-back">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M12 19l-7-7 7-7" />
         </svg>
         Back to Home
       </a>
@@ -525,16 +540,18 @@
 
   <div class="auth-wrapper">
     <div class="auth-container">
-      
+
       <!-- Left Sidebar (Branding & Visuals) -->
       <div class="auth-sidebar">
-        
+
         <div class="auth-quote auth-sidebar-content">
-          <p>"Manage student progress, track achievements, and shape the future of education with a single, powerful administrative platform."</p>
+          <p>"Manage student progress, track achievements, and shape the future of education with a single, powerful
+            administrative platform."</p>
           <div class="auth-quote-author">
             <div class="avatar">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
               </svg>
             </div>
             <div class="info">
@@ -554,8 +571,11 @@
 
         {% if error %}
         <div class="error-message">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
           </svg>
           {{ error }}
         </div>
@@ -563,21 +583,26 @@
 
         <form action="/teacher" method="post" class="auth-form">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-          
+
           <div class="form-group">
             <label for="tname">Teacher ID</label>
             <div class="input-wrapper">
-              <input autocomplete="off" autofocus type="text" name="tname" id="tname" placeholder="e.g. TCH12345" required />
+              <input autocomplete="off" autofocus type="text" name="tname" id="tname" placeholder="e.g. TCH12345"
+                required />
             </div>
           </div>
 
           <div class="form-group">
             <label for="teacher-login-password">Password</label>
             <div class="input-wrapper">
-              <input autocomplete="off" type="password" name="password" id="teacher-login-password" placeholder="Enter your password" required />
-              <button type="button" class="password-toggle-btn" aria-label="Show password" data-target="teacher-login-password">
-                <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              <input autocomplete="off" type="password" name="password" id="teacher-login-password"
+                placeholder="Enter your password" required />
+              <button type="button" class="password-toggle-btn" aria-label="Show password"
+                data-target="teacher-login-password">
+                <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
                 </svg>
               </button>
             </div>
@@ -606,7 +631,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const toggleButtons = document.querySelectorAll('.password-toggle-btn');
-      
+
       const eyeIcon = `<svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
       const eyeOffIcon = `<svg class="eye-off-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
 
@@ -625,4 +650,5 @@
     });
   </script>
 </body>
+
 </html>
