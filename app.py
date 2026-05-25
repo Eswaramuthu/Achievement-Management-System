@@ -216,6 +216,9 @@ def init_db():
     # Insert default departments if not exists
     default_departments = [
         ("CSE", "Computer Science and Engineering"),
+        ("AI", "Artificial Intelligence"),
+        ("EE", "Electrical Engineering"),
+        ("CHEMICAL", "Chemical Engineering"),
         ("ECE", "Electronics and Communication Engineering"),
         ("EEE", "Electrical and Electronics Engineering"),
         ("MECH", "Mechanical Engineering"),
