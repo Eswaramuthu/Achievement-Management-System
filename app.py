@@ -10,6 +10,8 @@ import datetime
 from datetime import timedelta
 from services.certificate_service import process_certificate
 from flask_wtf import CSRFProtect
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 try:
     from dotenv import load_dotenv
@@ -26,6 +28,18 @@ app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)
 app.config['SESSION_COOKIE_SECURE'] = os.environ.get('FLASK_ENV') == 'production'
+
+# Initialize Limiter for brute-force protection
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://"
+)
+
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    return render_template("404.html", error_message=f"Too many requests. {e.description}"), 429
 
 @app.before_request
 def make_session_permanent():
@@ -842,6 +856,7 @@ def all_achievements():
 # ==================== ADMIN ROUTES ====================
 
 @app.route("/admin", methods=["GET", "POST"])
+@limiter.limit("5 per 15 minutes", methods=["POST"])
 def admin_login():
     """Admin login page"""
     if request.method == "POST":
@@ -1385,6 +1400,7 @@ def teacher_new():
 
 # Update student login to check approval status
 @app.route("/student", methods=["GET", "POST"])
+@limiter.limit("5 per 15 minutes", methods=["POST"])
 def student():
     
     if request.method == "POST":
@@ -1419,6 +1435,7 @@ def student():
 
 # Update teacher login to check approval status
 @app.route("/teacher", methods=["GET", "POST"])
+@limiter.limit("5 per 15 minutes", methods=["POST"])
 def teacher():
     if request.method == "POST":
         teacher_id = request.form.get("tname")

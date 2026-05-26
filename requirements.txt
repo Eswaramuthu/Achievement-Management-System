@@ -8,3 +8,4 @@ pytest-mock
 pytesseract
 Pillow
 qrcode[pil]
+Flask-Limiter==3.7.0
