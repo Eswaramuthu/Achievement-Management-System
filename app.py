@@ -371,7 +371,11 @@ def page_not_found(error):
 
 @app.route("/")
 def home():
-    return render_template("home.html")
+    if FIREBASE_AVAILABLE and get_firebase_config:
+        firebase_config = get_firebase_config()
+    else:
+        firebase_config = DEFAULT_FIREBASE_CONFIG
+    return render_template("home.html", firebase_config=firebase_config)
 
 
 @app.route("/terms")
@@ -382,19 +386,6 @@ def terms():
 @app.route("/privacy-policy")
 def privacy_policy():
     return render_template("privacy-policy.html")
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 @app.route("/teacher-achievements", endpoint="teacher-achievements")

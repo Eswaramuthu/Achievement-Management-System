@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -16,15 +16,17 @@
       rel="stylesheet"
     />
     <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
-
-
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
+    />
   </head>
   <body class="light-mode">
     <!-- Header/Navbar -->
     <header class="header">
       <nav class="navbar">
         <div class="nav-brand">
-          <h2>Achievement Management System</h2>
+          <h1>Achievement Management System</h1>
         </div>
         <ul class="nav-menu">
           <li><a href="{{ url_for('home') }}">Home</a></li>
@@ -36,8 +38,8 @@
           {% elif session.get('teacher_id') %}
           <li><a href="{{ url_for('teacher-dashboard') }}">Dashboard</a></li>
           {% else %}
-          <li><a href="{{ url_for('student') }}">Student Login</a></li>
-          <li><a href="{{ url_for('teacher') }}">Teacher Login</a></li>
+          <!-- <li><a href="{{ url_for('student') }}">Student Login</a></li>
+          <li><a href="{{ url_for('teacher') }}">Teacher Login</a></li> -->
           {% endif %}
           <li><a href="#FAQ">FAQ</a></li>
         </ul>
@@ -52,56 +54,94 @@
     <!-- Main Content -->
     <main class="main-content">{% block content %}{% endblock %}</main>
 
-    <!-- Footer -->
-    <footer class="footer">
-      <div class="footer-content">
-        <section class="footer-section footer-brand" aria-labelledby="footer-brand-heading">
-          <span class="footer-kicker">Academic excellence tracker</span>
-          <h3 id="footer-brand-heading">Achievement Management System</h3>
-          <p>
-            A focused platform for recording student milestones, managing
-            teacher submissions, and keeping academic achievements organized.
-          </p>
-          <div class="footer-actions" aria-label="Account shortcuts">
-            {% if session.get('student_id') %}
-            <a href="{{ url_for('student-dashboard') }}">Student Dashboard</a>
-            {% elif session.get('teacher_id') %}
-            <a href="{{ url_for('teacher-dashboard') }}">Teacher Dashboard</a>
-            {% else %}
-            <a href="{{ url_for('student') }}">Student Login</a>
-            <a href="{{ url_for('teacher') }}">Teacher Login</a>
-            {% endif %}
+    <!-- ===== FOOTER ===== -->
+    <footer class="site-footer">
+      <div class="footer-accent-line"></div>
+
+      <div class="footer-body">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <span class="footer-logo-dot"></span>
+            Achievement Management System
           </div>
-        </section>
-        <nav class="footer-section" aria-labelledby="footer-links-heading">
-          <h3 id="footer-links-heading">Quick Links</h3>
+          <p class="footer-tagline">
+            Helps students and teachers track
+            academic achievements in one place.
+          </p>
+          <div class="footer-socials">
+            <a href="#" class="footer-social-btn" aria-label="GitHub">
+              <i class="ti ti-brand-github"></i>
+            </a>
+
+            <a href="#" class="footer-social-btn" aria-label="Twitter">
+              <i class="ti ti-brand-x"></i>
+            </a>
+
+            <a href="#" class="footer-social-btn" aria-label="LinkedIn">
+              <i class="ti ti-brand-linkedin"></i>
+            </a>
+
+            <a href="#" class="footer-social-btn" aria-label="Discord">
+              <i class="ti ti-brand-discord"></i>
+            </a>
+          </div>
+        </div>
+
+        <nav class="footer-col" aria-label="Product links">
+          <p class="footer-col-label">Product</p>
           <ul class="footer-links">
-            <li><a href="{{ url_for('home') }}">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#features">Features</a></li>
-            <li><a href="#contact">Contact</a></li>
-            <li><a href="#FAQ">FAQ</a></li>
-            <li><a href="{{ url_for('privacy_policy') }}">Privacy Policy</a></li>
-            <li><a href="{{ url_for('terms') }}">Terms &amp; Conditions</a></li>
+            <li><a href="#">Features</a></li>
+            <li><a href="#">Dashboard</a></li>
+            <li><a href="#">Achievements</a></li>
+            <li><a href="#">Leaderboard</a></li>
+            <li><a href="#">Changelog</a></li>
           </ul>
         </nav>
-        <section class="footer-section footer-contact-card" aria-labelledby="footer-contact-heading">
-          <h3 id="footer-contact-heading">Contact</h3>
-          <address class="footer-contact">
-            <span>Email</span>
-            <a href="mailto:info@achievement-system.com">info@achievement-system.com</a>
-            <span>Phone</span>
-            <a href="tel:+11234567890">+1 (123) 456-7890</a>
-            <span>Location</span>
-            <p>SRM Institute of Science and Technology</p>
-          </address>
-        </section>
+
+        <nav class="footer-col" aria-label="Company links">
+          <p class="footer-col-label">Company</p>
+          <ul class="footer-links">
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </nav>
+
+        <div class="footer-col footer-contact-col">
+          <p class="footer-col-label">Contact</p>
+          <ul class="footer-contact-list">
+            <li>
+              <i class="ti ti-mail" aria-hidden="true"></i>
+              <span>info@achievement-system.com</span>
+            </li>
+            <li>
+              <i class="ti ti-map-pin" aria-hidden="true"></i>
+              <span>SRM Institute of Technology, Chennai, Tamil Nadu</span>
+            </li>
+            <li>
+              <i class="ti ti-clock" aria-hidden="true"></i>
+              <span>Mon–Fri, 9 AM – 6 PM IST</span>
+            </li>
+          </ul>
+        </div>
       </div>
+
+      <div class="footer-divider"></div>
+
       <div class="footer-bottom">
-        <p>
-          &copy; 2026 Achievement Management System. All rights reserved.
+        <p class="footer-copy">
+          &copy; 2026 <span class="footer-copy-brand">Achievement Management System</span>. All rights reserved.
         </p>
-        <p>Developed at SRM Institute of Science and Technology.</p>
+        <div class="footer-legal-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Cookies</a>
+        </div>
+        <button class="footer-back-top" id="backToTop" aria-label="Back to top">
+          ↑
+        </button>
       </div>
     </footer>
 
@@ -111,10 +151,11 @@
     </div>
 
     <!--Scroll to Up button-->
-    <button id="scrollTopBtn" aria-label="Scroll to top" title="Scroll to top">↑</button>
+    <!-- <button id="scrollTopBtn" aria-label="Scroll to top" title="Scroll to top">↑</button> -->
 
     <script>
-      // Theme toggle functionality
+      let lenis; // ← declared here so everything can access it
+
       document.addEventListener("DOMContentLoaded", function () {
         const themeToggle = document.getElementById("mode-toggle");
         const body = document.body;
@@ -131,16 +172,14 @@
           body.classList.toggle("light-mode");
           const isLightMode = body.classList.contains("light-mode");
           localStorage.setItem("theme", isLightMode ? "light" : "dark");
-
-          // Update icon
           themeToggle.textContent = isLightMode ? "🌙" : "☀️";
         });
 
-        // Set initial icon based on theme
         const isLightMode = body.classList.contains("light-mode");
         themeToggle.textContent = isLightMode ? "🌙" : "☀️";
 
-        const lenis = new Lenis({
+        lenis = new Lenis({
+          // ← no `const`, assigns to outer variable
           duration: 1.2,
           smoothWheel: true,
         });
@@ -149,22 +188,21 @@
           lenis.raf(time);
           requestAnimationFrame(raf);
         }
-
         requestAnimationFrame(raf);
 
         document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
           anchor.addEventListener("click", function (e) {
             e.preventDefault();
-
             const target = document.querySelector(this.getAttribute("href"));
-
             if (target) {
-              lenis.scrollTo(target, {
-                offset: -140, 
-                duration: 1.2,
-              });
+              lenis.scrollTo(target, { offset: -140, duration: 1.2 });
             }
           });
+        });
+
+        // ← back to top, inside DOMContentLoaded where lenis is available
+        document.getElementById("backToTop")?.addEventListener("click", () => {
+          lenis.scrollTo(0, { duration: 1.2 });
         });
       });
 
@@ -175,30 +213,10 @@
           document.querySelector(".nav-menu").classList.toggle("active");
         });
 
-        // Close mobile menu when a link is clicked
-        document.querySelectorAll('.nav-menu a').forEach(link => {
-            link.addEventListener('click', () => {
-                document.querySelector('.nav-menu').classList.remove('active');
-            });
+      document.querySelectorAll(".nav-menu a").forEach((link) => {
+        link.addEventListener("click", () => {
+          document.querySelector(".nav-menu").classList.remove("active");
         });
-
-      // Scroll-to-top button logic
-      const scrollBtn = document.getElementById("scrollTopBtn");
-
-      window.addEventListener("scroll", () => {
-        if (window.scrollY > 300) {
-          scrollBtn.style.display = "block";
-        } else {
-          scrollBtn.style.display = "none";
-        }
-      });
-
-      scrollBtn.addEventListener("click", () => {
-        if (typeof lenis !== "undefined") {
-          lenis.scrollTo(0, { duration: 1.2 });
-        } else {
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }
       });
     </script>
   </body>
