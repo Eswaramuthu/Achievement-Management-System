@@ -98,6 +98,19 @@
       background-color: rgba(255, 255, 255, 0.1);
       color: var(--text-color);
     }
+
+    /* Keep dropdowns readable in dark mode only */
+    body:not(.light-mode) .filter-options select,
+    body:not(.light-mode) .filter-options input {
+      background-color: #1f1f1f;
+      border-color: #4d4d4d;
+      color: #f5f5f5;
+    }
+
+    body:not(.light-mode) .filter-options select option {
+      background-color: #1f1f1f;
+      color: #f5f5f5;
+    }
     
     .achievement-list {
       margin-top: 20px;
