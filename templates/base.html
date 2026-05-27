@@ -28,8 +28,9 @@
         </div>
         <ul class="nav-menu">
           <li><a href="{{ url_for('home') }}">Home</a></li>
-          <li><a href="#about">About</a></li>
           <li><a href="#features">Features</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#FAQ">FAQ</a></li>
           <li><a href="#contact">Contact</a></li>
           {% if session.get('student_id') %}
           <li><a href="{{ url_for('student-dashboard') }}">Dashboard</a></li>
@@ -39,7 +40,6 @@
           <li><a href="{{ url_for('student') }}">Student Login</a></li>
           <li><a href="{{ url_for('teacher') }}">Teacher Login</a></li>
           {% endif %}
-          <li><a href="#FAQ">FAQ</a></li>
         </ul>
         <div class="nav-toggle">
           <span class="bar"></span>
@@ -77,8 +77,9 @@
           <h3 id="footer-links-heading">Quick Links</h3>
           <ul class="footer-links">
             <li><a href="{{ url_for('home') }}">Home</a></li>
-            <li><a href="#about">About</a></li>
             <li><a href="#features">Features</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#FAQ">FAQ</a></li>
             <li><a href="#contact">Contact</a></li>
             <li><a href="#FAQ">FAQ</a></li>
             <li><a href="{{ url_for('privacy_policy') }}">Privacy Policy</a></li>
