@@ -18,6 +18,7 @@ except ImportError:
     pass
 
 app = Flask(__name__)
+app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-this-in-prod')
 app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(16))
 app.permanent_session_lifetime = timedelta(days=30)
 
