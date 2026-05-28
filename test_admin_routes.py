@@ -16,7 +16,7 @@ def test_admin_login():
     print("Testing admin login...")
     
     # Test database connection
-    conn = sqlite3.connect('ams.db')
+    conn = sqlite3.connect(os.path.join(os.path.dirname(os.path.abspath(_ _file_ _)), 'ams.db'))
     cursor = conn.cursor()
     
     # Check if admin exists
