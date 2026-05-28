@@ -1,5 +1,5 @@
 
-from http import HTTPStatus
+
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
 import sqlite3
 import os
@@ -18,7 +18,7 @@ except ImportError:
     pass
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(16))
+app.secret_key = os.environ.get("SECRET_KEY" ,"dev-secret-key-change-me")
 app.permanent_session_lifetime = timedelta(days=30)
 
 # Session security configuration
@@ -38,7 +38,7 @@ def make_session_permanent():
 DB_PATH = os.path.join(os.path.dirname(__file__), "ams.db")
 
 # Define upload folder path for certificates
-UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "uploads")
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static" "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
