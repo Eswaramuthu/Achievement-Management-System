@@ -1,3 +1,5 @@
+
+from http import HTTPStatus
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
 import sqlite3
 import os
@@ -5,6 +7,7 @@ import secrets
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
+from datetime import timedelta
 from services.certificate_service import process_certificate
 from flask_wtf import CSRFProtect
 
@@ -14,30 +17,21 @@ try:
 except ImportError:
     pass
 
-try:
-    from firebase_config import get_firebase_config
-    FIREBASE_AVAILABLE = True
-except ImportError:
-    get_firebase_config = None
-    FIREBASE_AVAILABLE = False
-
-# Default when Firebase is not configured (student page still renders)
-DEFAULT_FIREBASE_CONFIG = {
-    "apiKey": "", "authDomain": "", "databaseURL": "", "projectId": "",
-    "storageBucket": "", "messagingSenderId": "", "appId": "", "measurementId": "",
-}
-
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(16))
+app.permanent_session_lifetime = timedelta(days=30)
+
+# Session security configuration
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)
+app.config['SESSION_COOKIE_SECURE'] = os.environ.get('FLASK_ENV') == 'production'
+
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
 
 # csrf = CSRFProtect(app)
-
-@app.context_processor
-def inject_firebase_config():
-    if FIREBASE_AVAILABLE:
-        return dict(firebase_config=get_firebase_config())
-    else:
-        return dict(firebase_config=DEFAULT_FIREBASE_CONFIG)
 
 
 # ✅ Portable DB path (works on Windows/Linux/Vercel)
@@ -368,11 +362,16 @@ def teacher_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+# Custom 404 Error Handler
+@app.errorhandler(HTTPStatus.NOT_FOUND)
+def page_not_found(error):
+    """Handle 404 errors with custom template"""
+    return render_template('404.html'), HTTPStatus.NOT_FOUND
+
 
 @app.route("/")
 def home():
-    firebase_config = get_firebase_config()
-    return render_template("home.html", firebase_config=firebase_config)
+    return render_template("home.html")
 
 
 @app.route("/terms")
@@ -404,9 +403,8 @@ def teacher_achievements():
 
 
 @app.route("/submit_achievements", methods=["GET", "POST"])
+@teacher_required
 def submit_achievements():
-    if not session.get("logged_in") or not session.get("teacher_id"):
-        return redirect(url_for("teacher"))
 
     teacher_id = session.get("teacher_id")
 
@@ -536,9 +534,8 @@ def submit_achievements():
 
 
 @app.route("/student-achievements", endpoint="student-achievements")
+@student_required
 def student_achievements():
-    if not session.get("logged_in"):
-        return redirect(url_for("student"))
 
     student_data = {
         "id": session.get("student_id"),
@@ -549,9 +546,8 @@ def student_achievements():
 
 
 @app.route("/student-dashboard", endpoint="student-dashboard")
+@student_required
 def student_dashboard():
-    if not session.get("logged_in"):
-        return redirect(url_for("student"))
 
     student_data = {
         "id": session.get("student_id"),
@@ -562,10 +558,8 @@ def student_dashboard():
 
 
 @app.route("/student/profile", endpoint="student-profile")
+@student_required
 def student_profile():
-    # Check if user is logged in
-    if not session.get('logged_in') or not session.get('student_id'):
-        return redirect(url_for('student'))
 
     # Get student ID from session
     student_id = session.get('student_id')
@@ -600,10 +594,8 @@ def student_profile():
 
 
 @app.route("/student/profile/edit", endpoint="student_profile_edit", methods=["POST"])
+@student_required
 def student_profile_edit():
-    # Check if user is logged in
-    if not session.get('logged_in') or not session.get('student_id'):
-        return redirect(url_for('student'))
     
     student_id = session.get('student_id')
     
@@ -724,9 +716,8 @@ def student_profile_edit():
 
 
 @app.route("/teacher-dashboard", endpoint="teacher-dashboard")
+@teacher_required
 def teacher_dashboard():
-    if not session.get("logged_in"):
-        return redirect(url_for("teacher"))
 
     teacher_id = session.get("teacher_id")
     teacher_data = {
@@ -823,9 +814,8 @@ def teacher_dashboard():
 
 
 @app.route("/all-achievements", endpoint="all-achievements")
+@teacher_required
 def all_achievements():
-    if not session.get("logged_in"):
-        return redirect(url_for("teacher"))
 
     teacher_id = session.get("teacher_id")
 
@@ -1010,8 +1000,7 @@ def admin_approve_user():
     action = request.form.get("action")  # "approve" or "reject"
 
     if user_type not in ["student", "teacher"]:
-        return jsonify({"success": False, "error": "Invalid user type"}), 400
-
+         return jsonify({"success": False, "error": "Invalid user type"}), HTTPStatus.BAD_REQUEST
     connection = sqlite3.connect(DB_PATH)
     cursor = connection.cursor()
 
@@ -1074,13 +1063,13 @@ def admin_departments():
 def admin_add_department():
     """Add a new department"""
     if not session.get("is_superuser"):
-        return jsonify({"success": False, "error": "Permission denied"}), 403
+        return jsonify({"success": False, "error": "Permission denied"}), HTTPStatus.FORBIDDEN
 
     dept_code = request.form.get("dept_code")
     dept_name = request.form.get("dept_name")
 
     if not dept_code or not dept_name:
-        return jsonify({"success": False, "error": "Department code and name are required"}), 400
+        return jsonify({"success": False, "error": "Department code and name are required"}), HTTPStatus.BAD_REQUEST
 
     connection = sqlite3.connect(DB_PATH)
     cursor = connection.cursor()
@@ -1092,10 +1081,10 @@ def admin_add_department():
         return jsonify({"success": True, "message": "Department added successfully"})
     except sqlite3.IntegrityError:
         connection.close()
-        return jsonify({"success": False, "error": "Department code already exists"}), 400
+        return jsonify({"success": False, "error": "Department code already exists"}), HTTPStatus.BAD_REQUEST
     except Exception as e:
         connection.close()
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
 
 
 @app.route("/admin/department/delete", methods=["POST"])
@@ -1116,7 +1105,7 @@ def admin_delete_department():
 
     if student_count > 0 or teacher_count > 0:
         connection.close()
-        return jsonify({"success": False, "error": "Cannot delete department that is in use"}), 400
+        return jsonify({"success": False, "error": "Cannot delete department that is in use"}), HTTPStatus.BAD_REQUEST
 
     try:
         cursor.execute("DELETE FROM departments WHERE id = ?", (dept_id,))
@@ -1125,7 +1114,7 @@ def admin_delete_department():
         return jsonify({"success": True, "message": "Department deleted successfully"})
     except Exception as e:
         connection.close()
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
 
 
 @app.route("/admin/categories")
@@ -1170,7 +1159,7 @@ def admin_add_category():
     description = request.form.get("description", "")
 
     if not category_code or not category_name:
-        return jsonify({"success": False, "error": "Category code and name are required"}), 400
+        return jsonify({"success": False, "error": "Category code and name are required"}), HTTPStatus.BAD_REQUEST
 
     connection = sqlite3.connect(DB_PATH)
     cursor = connection.cursor()
@@ -1183,10 +1172,10 @@ def admin_add_category():
         return jsonify({"success": True, "message": "Category added successfully"})
     except sqlite3.IntegrityError:
         connection.close()
-        return jsonify({"success": False, "error": "Category code already exists"}), 400
+        return jsonify({"success": False, "error": "Category code already exists"}), HTTPStatus.BAD_REQUEST
     except Exception as e:
         connection.close()
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
 
 
 @app.route("/admin/export")
@@ -1313,6 +1302,20 @@ def admin_logout():
     session.clear()
     return redirect(url_for("admin_login"))
 
+@app.route("/student/logout")
+def student_logout():
+    """Clear student session and redirect to home"""
+    session.clear()
+    flash("You have been logged out successfully.", "info")
+    return redirect(url_for("home"))
+
+@app.route("/teacher/logout")
+def teacher_logout():
+    """Clear teacher session and redirect to home"""
+    session.clear()
+    flash("You have been logged out successfully.", "info")
+    return redirect(url_for("home"))
+
 
 # ==================== UPDATE EXISTING ROUTES FOR RBAC ====================
 
@@ -1320,7 +1323,6 @@ def admin_logout():
 @app.route("/student-new", methods=["GET", "POST"])
 @app.route("/student_new", methods=["GET", "POST"])
 def student_new():
-    firebase_config = get_firebase_config()
     
     if request.method == "POST":
         student_name = request.form.get("student_name")
@@ -1341,14 +1343,13 @@ def student_new():
             """, (student_name, student_id, email, phone_number, password, student_gender, student_dept, 0))
             connection.commit()
             return render_template("student_new_2.html", 
-                                 success="Registration submitted! Your account will be activated after admin approval.",
-                                 firebase_config=firebase_config)
+                                 success="Registration submitted! Your account will be activated after admin approval.")
         except sqlite3.Error as e:
-            return render_template("student_new_2.html", error=f"Database error: {e}", firebase_config=firebase_config)
+            return render_template("student_new_2.html", error=f"Database error: {e}")
         finally:
             connection.close()
 
-    return render_template("student_new_2.html", firebase_config=firebase_config)
+    return render_template("student_new_2.html")
 
 
 # Update teacher registration to require approval
@@ -1385,10 +1386,6 @@ def teacher_new():
 # Update student login to check approval status
 @app.route("/student", methods=["GET", "POST"])
 def student():
-    if FIREBASE_AVAILABLE:
-        firebase_config = get_firebase_config()
-    else:
-        firebase_config = DEFAULT_FIREBASE_CONFIG
     
     if request.method == "POST":
         student_id = request.form.get("sname")
@@ -1403,17 +1400,21 @@ def student():
         if student_data and check_password_hash(student_data[4], password):
             # Check if student is approved
             if not student_data[7]:  # is_approved is at index 7
-                return render_template("student.html", error="Your account is pending admin approval. Please wait for activation.", firebase_config=firebase_config)
+                return render_template("student.html", error="Your account is pending admin approval. Please wait for activation.")
             
             session["logged_in"] = True
             session["student_id"] = student_data[1]
             session["student_name"] = student_data[0]
             session["student_dept"] = student_data[6]
+            
+            if request.form.get('remember'):
+                session.permanent = True
+                
             return redirect(url_for("student-dashboard"))
         else:
-            return render_template("student.html", error="Invalid credentials. Please try again.", firebase_config=firebase_config)
+            return render_template("student.html", error="Invalid credentials. Please try again.")
 
-    return render_template("student.html", firebase_config=firebase_config)
+    return render_template("student.html")
 
 
 # Update teacher login to check approval status
@@ -1438,11 +1439,171 @@ def teacher():
             session["teacher_id"] = teacher_data[1]
             session["teacher_name"] = teacher_data[0]
             session["teacher_dept"] = teacher_data[6]
+            
+            if request.form.get('remember'):
+                session.permanent = True
+                
             return redirect(url_for("teacher-dashboard"))
         else:
             return render_template("teacher.html", error="Invalid credentials. Please try again.")
 
     return render_template("teacher.html")
+
+
+# ==================== ACHIEVEMENT EXPORT ROUTES ====================
+
+@app.route("/api/achievement/<int:achievement_id>")
+@student_required
+def api_get_achievement(achievement_id):
+    """
+    API endpoint to fetch achievement data for export.
+    Only accessible to authenticated students.
+    Students can only access their own achievements.
+    
+    Returns: JSON with achievement details and QR code
+    """
+    student_id = session.get("student_id")
+    
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+    
+    # Fetch achievement with owner check
+    cursor.execute("""
+        SELECT a.*, s.student_name 
+        FROM achievements a
+        JOIN student s ON a.student_id = s.student_id
+        WHERE a.id = ? AND a.student_id = ?
+    """, (achievement_id, student_id))
+    
+    achievement = cursor.fetchone()
+    connection.close()
+    
+    if not achievement:
+        return jsonify({"error": "Achievement not found or access denied"}), HTTPStatus.NOT_FOUND
+    
+    try:
+        from utils.qr_handler import generate_qr_code, get_verification_url
+        
+        # Generate QR code
+        verification_url = get_verification_url(request.host, achievement_id)
+        qr_code_data = generate_qr_code(verification_url)
+        
+        # Convert row to dictionary
+        achievement_dict = dict(achievement)
+        achievement_dict["qr_code"] = qr_code_data
+        achievement_dict["verification_url"] = verification_url
+        
+        return jsonify(achievement_dict)
+        
+    except Exception as e:
+        print(f"Error generating QR code: {e}")
+        return jsonify({"error": "Failed to generate QR code"}), HTTPStatus.INTERNAL_SERVER_ERROR
+
+
+@app.route("/verify-achievement/<int:achievement_id>")
+def verify_achievement(achievement_id):
+    """
+    Public achievement verification page.
+    NO authentication required - anyone can verify an achievement by ID.
+    
+    Displays:
+    - Achievement details
+    - Student name and ID
+    - Verification badge
+    - Authenticity metadata
+    """
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+    
+    # Fetch achievement details
+    cursor.execute("""
+        SELECT a.*, s.student_name, s.student_id, s.student_dept
+        FROM achievements a
+        JOIN student s ON a.student_id = s.student_id
+        WHERE a.id = ?
+    """, (achievement_id,))
+    
+    achievement = cursor.fetchone()
+    connection.close()
+    
+    if not achievement:
+        return render_template("404.html"), HTTPStatus.NOT_FOUND
+    
+    # Format dates for display
+    issued_date = datetime.datetime.now().strftime("%B %d, %Y")
+    verified_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC")
+    
+    # Convert to dictionary for easier templating
+    achievement_data = dict(achievement)
+    
+    return render_template(
+        "verify_achievement.html",
+        achievement=achievement_data,
+        issued_date=issued_date,
+        verified_timestamp=verified_timestamp,
+        verification_url=request.url
+    )
+
+
+@app.route("/export-achievement/<int:achievement_id>")
+@student_required
+def export_achievement(achievement_id):
+    """
+    Generate and display the achievement export card.
+    Students can only export their own achievements.
+    
+    Renders an exportable card with:
+    - Achievement details
+    - Student information
+    - QR code linking to verification page
+    - Export controls (PNG/PDF download)
+    """
+    student_id = session.get("student_id")
+    
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+    
+    # Fetch achievement with ownership verification
+    cursor.execute("""
+        SELECT a.*, s.student_name, s.student_id
+        FROM achievements a
+        JOIN student s ON a.student_id = s.student_id
+        WHERE a.id = ? AND a.student_id = ?
+    """, (achievement_id, student_id))
+    
+    achievement = cursor.fetchone()
+    connection.close()
+    
+    if not achievement:
+        return render_template("404.html"), HTTPStatus.NOT_FOUND
+    
+    try:
+        from utils.qr_handler import generate_qr_code, get_verification_url
+        
+        # Generate QR code
+        verification_url = get_verification_url(request.host, achievement_id)
+        qr_code_data = generate_qr_code(verification_url)
+        
+        # Format dates
+        issued_date = datetime.datetime.now().strftime("%B %d, %Y")
+        
+        achievement_dict = dict(achievement)
+        
+        return render_template(
+            "achievement_export.html",
+            achievement=achievement_dict,
+            qr_code_data=qr_code_data,
+            verification_url=verification_url,
+            issued_date=issued_date
+        )
+        
+    except Exception as e:
+        print(f"Error generating export card: {e}")
+        flash("Failed to generate export card. Please try again.", "danger")
+        return redirect(url_for("student-achievements"))
 
 
 if __name__ == "__main__":

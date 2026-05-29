@@ -24,6 +24,17 @@
 
             console.log("Validating passwords...");
 
+            const strongPassword =
+                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+
+            if (!strongPassword.test(password)) {
+                event.preventDefault();
+                message.textContent =
+                    "❌ Password must contain uppercase, lowercase, number, special character and minimum 8 characters.";
+                message.style.color = "red";
+                return false;
+            }
+
             if (password !== confirmPassword) {
                 event.preventDefault(); // This stops form submission
                 message.textContent = "❌ Passwords do not match!";
