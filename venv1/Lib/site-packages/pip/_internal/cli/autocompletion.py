@@ -1,13 +1,11 @@
-"""Logic that powers autocompletion installed by ``pip completion``."""
-
-from __future__ import annotations
+"""Logic that powers autocompletion installed by ``pip completion``.
+"""
 
 import optparse
 import os
 import sys
-from collections.abc import Iterable
 from itertools import chain
-from typing import Any
+from typing import Any, Iterable, List, Optional
 
 from pip._internal.cli.main_parser import create_main_parser
 from pip._internal.commands import commands_dict, create_command
@@ -18,10 +16,6 @@ def autocomplete() -> None:
     """Entry Point for completion of main and subcommand options."""
     # Don't complete if user hasn't sourced bash_completion file.
     if "PIP_AUTO_COMPLETE" not in os.environ:
-        return
-    # Don't complete if autocompletion environment variables
-    # are not present
-    if not os.environ.get("COMP_WORDS") or not os.environ.get("COMP_CWORD"):
         return
     cwords = os.environ["COMP_WORDS"].split()[1:]
     cword = int(os.environ["COMP_CWORD"])
@@ -35,7 +29,7 @@ def autocomplete() -> None:
     options = []
 
     # subcommand
-    subcommand_name: str | None = None
+    subcommand_name: Optional[str] = None
     for word in cwords:
         if word in subcommands:
             subcommand_name = word
@@ -77,9 +71,8 @@ def autocomplete() -> None:
 
         for opt in subcommand.parser.option_list_all:
             if opt.help != optparse.SUPPRESS_HELP:
-                options += [
-                    (opt_str, opt.nargs) for opt_str in opt._long_opts + opt._short_opts
-                ]
+                for opt_str in opt._long_opts + opt._short_opts:
+                    options.append((opt_str, opt.nargs))
 
         # filter out previously specified options from available options
         prev_opts = [x.split("=")[0] for x in cwords[1 : cword - 1]]
@@ -103,12 +96,6 @@ def autocomplete() -> None:
             if option[1] and option[0][:2] == "--":
                 opt_label += "="
             print(opt_label)
-
-        # Complete sub-commands (unless one is already given).
-        if not any(name in cwords for name in subcommand.handler_map()):
-            for handler_name in subcommand.handler_map():
-                if handler_name.startswith(current):
-                    print(handler_name)
     else:
         # show main parser options only when necessary
 
@@ -130,8 +117,8 @@ def autocomplete() -> None:
 
 
 def get_path_completion_type(
-    cwords: list[str], cword: int, opts: Iterable[Any]
-) -> str | None:
+    cwords: List[str], cword: int, opts: Iterable[Any]
+) -> Optional[str]:
     """Get the type of path completion (``file``, ``dir``, ``path`` or None)
 
     :param cwords: same as the environmental variable ``COMP_WORDS``

@@ -1,5 +1,11 @@
+import sys
 from itertools import chain
-from typing import TYPE_CHECKING, Iterable, Optional, Literal
+from typing import TYPE_CHECKING, Iterable, Optional
+
+if sys.version_info >= (3, 8):
+    from typing import Literal
+else:
+    from pip._vendor.typing_extensions import Literal  # pragma: no cover
 
 from .constrain import Constrain
 from .jupyter import JupyterMixin
@@ -21,7 +27,7 @@ class Align(JupyterMixin):
         renderable (RenderableType): A console renderable.
         align (AlignMethod): One of "left", "center", or "right""
         style (StyleType, optional): An optional style to apply to the background.
-        vertical (Optional[VerticalAlignMethod], optional): Optional vertical align, one of "top", "middle", or "bottom". Defaults to None.
+        vertical (Optional[VerticalAlginMethod], optional): Optional vertical align, one of "top", "middle", or "bottom". Defaults to None.
         pad (bool, optional): Pad the right with spaces. Defaults to True.
         width (int, optional): Restrict contents to given width, or None to use default width. Defaults to None.
         height (int, optional): Set height of align renderable, or None to fit to contents. Defaults to None.
@@ -234,7 +240,6 @@ class VerticalCenter(JupyterMixin):
 
     Args:
         renderable (RenderableType): A renderable object.
-        style (StyleType, optional): An optional style to apply to the background. Defaults to None.
     """
 
     def __init__(

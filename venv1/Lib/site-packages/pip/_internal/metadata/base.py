@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import csv
 import email.message
 import functools
@@ -8,19 +6,26 @@ import logging
 import pathlib
 import re
 import zipfile
-from collections.abc import Collection, Container, Iterable, Iterator
 from typing import (
     IO,
+    TYPE_CHECKING,
     Any,
+    Collection,
+    Container,
+    Dict,
+    Iterable,
+    Iterator,
+    List,
     NamedTuple,
-    Protocol,
+    Optional,
+    Tuple,
     Union,
 )
 
 from pip._vendor.packaging.requirements import Requirement
 from pip._vendor.packaging.specifiers import InvalidSpecifier, SpecifierSet
-from pip._vendor.packaging.utils import NormalizedName, canonicalize_name
-from pip._vendor.packaging.version import Version
+from pip._vendor.packaging.utils import NormalizedName
+from pip._vendor.packaging.version import LegacyVersion, Version
 
 from pip._internal.exceptions import NoneMetadataError
 from pip._internal.locations import site_packages, user_site
@@ -32,9 +37,17 @@ from pip._internal.models.direct_url import (
 from pip._internal.utils.compat import stdlib_pkgs  # TODO: Move definition here.
 from pip._internal.utils.egg_link import egg_link_path_from_sys_path
 from pip._internal.utils.misc import is_local, normalize_path
+from pip._internal.utils.packaging import safe_extra
 from pip._internal.utils.urls import url_to_path
 
 from ._json import msg_to_json
+
+if TYPE_CHECKING:
+    from typing import Protocol
+else:
+    Protocol = object
+
+DistributionVersion = Union[LegacyVersion, Version]
 
 InfoPath = Union[str, pathlib.PurePath]
 
@@ -56,8 +69,8 @@ class BaseEntryPoint(Protocol):
 
 
 def _convert_installed_files_path(
-    entry: tuple[str, ...],
-    info: tuple[str, ...],
+    entry: Tuple[str, ...],
+    info: Tuple[str, ...],
 ) -> str:
     """Convert a legacy installed-files.txt path into modern RECORD path.
 
@@ -93,7 +106,7 @@ class RequiresEntry(NamedTuple):
 
 class BaseDistribution(Protocol):
     @classmethod
-    def from_directory(cls, directory: str) -> BaseDistribution:
+    def from_directory(cls, directory: str) -> "BaseDistribution":
         """Load the distribution from a metadata directory.
 
         :param directory: Path to a metadata directory, e.g. ``.dist-info``.
@@ -106,7 +119,7 @@ class BaseDistribution(Protocol):
         metadata_contents: bytes,
         filename: str,
         project_name: str,
-    ) -> BaseDistribution:
+    ) -> "BaseDistribution":
         """Load the distribution from the contents of a METADATA file.
 
         This is used to implement PEP 658 by generating a "shallow" dist object that can
@@ -119,7 +132,7 @@ class BaseDistribution(Protocol):
         raise NotImplementedError()
 
     @classmethod
-    def from_wheel(cls, wheel: Wheel, name: str) -> BaseDistribution:
+    def from_wheel(cls, wheel: "Wheel", name: str) -> "BaseDistribution":
         """Load the distribution from a given wheel.
 
         :param wheel: A concrete wheel definition.
@@ -133,13 +146,13 @@ class BaseDistribution(Protocol):
         raise NotImplementedError()
 
     def __repr__(self) -> str:
-        return f"{self.raw_name} {self.raw_version} ({self.location})"
+        return f"{self.raw_name} {self.version} ({self.location})"
 
     def __str__(self) -> str:
-        return f"{self.raw_name} {self.raw_version}"
+        return f"{self.raw_name} {self.version}"
 
     @property
-    def location(self) -> str | None:
+    def location(self) -> Optional[str]:
         """Where the distribution is loaded from.
 
         A string value is not necessarily a filesystem path, since distributions
@@ -153,7 +166,7 @@ class BaseDistribution(Protocol):
         raise NotImplementedError()
 
     @property
-    def editable_project_location(self) -> str | None:
+    def editable_project_location(self) -> Optional[str]:
         """The project location for editable distributions.
 
         This is the directory where pyproject.toml or setup.py is located.
@@ -175,7 +188,7 @@ class BaseDistribution(Protocol):
         return None
 
     @property
-    def installed_location(self) -> str | None:
+    def installed_location(self) -> Optional[str]:
         """The distribution's "installed" location.
 
         This should generally be a ``site-packages`` directory. This is
@@ -188,7 +201,7 @@ class BaseDistribution(Protocol):
         raise NotImplementedError()
 
     @property
-    def info_location(self) -> str | None:
+    def info_location(self) -> Optional[str]:
         """Location of the .[egg|dist]-info directory or file.
 
         Similarly to ``location``, a string value is not necessarily a
@@ -226,9 +239,7 @@ class BaseDistribution(Protocol):
         location = self.location
         if not location:
             return False
-        # XXX if the distribution is a zipped egg, location has a trailing /
-        # so we resort to pathlib.Path to check the suffix in a reliable way.
-        return pathlib.Path(location).suffix == ".egg"
+        return location.endswith(".egg")
 
     @property
     def installed_with_setuptools_egg_info(self) -> bool:
@@ -269,11 +280,7 @@ class BaseDistribution(Protocol):
         raise NotImplementedError()
 
     @property
-    def version(self) -> Version:
-        raise NotImplementedError()
-
-    @property
-    def raw_version(self) -> str:
+    def version(self) -> DistributionVersion:
         raise NotImplementedError()
 
     @property
@@ -285,7 +292,7 @@ class BaseDistribution(Protocol):
         return self.raw_name.replace("-", "_")
 
     @property
-    def direct_url(self) -> DirectUrl | None:
+    def direct_url(self) -> Optional[DirectUrl]:
         """Obtain a DirectUrl from this distribution.
 
         Returns None if the distribution has no `direct_url.json` metadata,
@@ -379,7 +386,15 @@ class BaseDistribution(Protocol):
     def _metadata_impl(self) -> email.message.Message:
         raise NotImplementedError()
 
-    @functools.cached_property
+    @functools.lru_cache(maxsize=1)
+    def _metadata_cached(self) -> email.message.Message:
+        # When we drop python 3.7 support, move this to the metadata property and use
+        # functools.cached_property instead of lru_cache.
+        metadata = self._metadata_impl()
+        self._add_egg_info_requires(metadata)
+        return metadata
+
+    @property
     def metadata(self) -> email.message.Message:
         """Metadata of distribution parsed from e.g. METADATA or PKG-INFO.
 
@@ -388,12 +403,10 @@ class BaseDistribution(Protocol):
         :raises NoneMetadataError: If the metadata file is available, but does
             not contain valid metadata.
         """
-        metadata = self._metadata_impl()
-        self._add_egg_info_requires(metadata)
-        return metadata
+        return self._metadata_cached()
 
     @property
-    def metadata_dict(self) -> dict[str, Any]:
+    def metadata_dict(self) -> Dict[str, Any]:
         """PEP 566 compliant JSON-serializable representation of METADATA or PKG-INFO.
 
         This should return an empty dict if the metadata file is unavailable.
@@ -404,7 +417,7 @@ class BaseDistribution(Protocol):
         return msg_to_json(self.metadata)
 
     @property
-    def metadata_version(self) -> str | None:
+    def metadata_version(self) -> Optional[str]:
         """Value of "Metadata-Version:" in distribution metadata, if available."""
         return self.metadata.get("Metadata-Version")
 
@@ -442,23 +455,15 @@ class BaseDistribution(Protocol):
         """
         raise NotImplementedError()
 
-    def iter_raw_dependencies(self) -> Iterable[str]:
-        """Raw Requires-Dist metadata."""
-        return self.metadata.get_all("Requires-Dist", [])
-
-    def iter_provided_extras(self) -> Iterable[NormalizedName]:
+    def iter_provided_extras(self) -> Iterable[str]:
         """Extras provided by this distribution.
 
         For modern .dist-info distributions, this is the collection of
         "Provides-Extra:" entries in distribution metadata.
-
-        The return value of this function is expected to be normalised names,
-        per PEP 685, with the returned value being handled appropriately by
-        `iter_dependencies`.
         """
         raise NotImplementedError()
 
-    def _iter_declared_entries_from_record(self) -> Iterator[str] | None:
+    def _iter_declared_entries_from_record(self) -> Optional[Iterator[str]]:
         try:
             text = self.read_text("RECORD")
         except FileNotFoundError:
@@ -466,7 +471,7 @@ class BaseDistribution(Protocol):
         # This extra Path-str cast normalizes entries.
         return (str(pathlib.Path(row[0])) for row in csv.reader(text.splitlines()))
 
-    def _iter_declared_entries_from_legacy(self) -> Iterator[str] | None:
+    def _iter_declared_entries_from_legacy(self) -> Optional[Iterator[str]]:
         try:
             text = self.read_text("installed-files.txt")
         except FileNotFoundError:
@@ -487,7 +492,7 @@ class BaseDistribution(Protocol):
             for p in paths
         )
 
-    def iter_declared_entries(self) -> Iterator[str] | None:
+    def iter_declared_entries(self) -> Optional[Iterator[str]]:
         """Iterate through file entries declared in this distribution.
 
         For modern .dist-info distributions, this is the files listed in the
@@ -532,11 +537,10 @@ class BaseDistribution(Protocol):
         """Get extras from the egg-info directory."""
         known_extras = {""}
         for entry in self._iter_requires_txt_entries():
-            extra = canonicalize_name(entry.extra)
-            if extra in known_extras:
+            if entry.extra in known_extras:
                 continue
-            known_extras.add(extra)
-            yield extra
+            known_extras.add(entry.extra)
+            yield entry.extra
 
     def _iter_egg_info_dependencies(self) -> Iterable[str]:
         """Get distribution dependencies from the egg-info directory.
@@ -552,11 +556,10 @@ class BaseDistribution(Protocol):
         all currently available PEP 517 backends, although not standardized.
         """
         for entry in self._iter_requires_txt_entries():
-            extra = canonicalize_name(entry.extra)
-            if extra and entry.marker:
-                marker = f'({entry.marker}) and extra == "{extra}"'
-            elif extra:
-                marker = f'extra == "{extra}"'
+            if entry.extra and entry.marker:
+                marker = f'({entry.marker}) and extra == "{safe_extra(entry.extra)}"'
+            elif entry.extra:
+                marker = f'extra == "{safe_extra(entry.extra)}"'
             elif entry.marker:
                 marker = entry.marker
             else:
@@ -580,14 +583,14 @@ class BaseEnvironment:
     """An environment containing distributions to introspect."""
 
     @classmethod
-    def default(cls) -> BaseEnvironment:
+    def default(cls) -> "BaseEnvironment":
         raise NotImplementedError()
 
     @classmethod
-    def from_paths(cls, paths: list[str] | None) -> BaseEnvironment:
+    def from_paths(cls, paths: Optional[List[str]]) -> "BaseEnvironment":
         raise NotImplementedError()
 
-    def get_distribution(self, name: str) -> BaseDistribution | None:
+    def get_distribution(self, name: str) -> Optional["BaseDistribution"]:
         """Given a requirement name, return the installed distributions.
 
         The name may not be normalized. The implementation must canonicalize
@@ -595,7 +598,7 @@ class BaseEnvironment:
         """
         raise NotImplementedError()
 
-    def _iter_distributions(self) -> Iterator[BaseDistribution]:
+    def _iter_distributions(self) -> Iterator["BaseDistribution"]:
         """Iterate through installed distributions.
 
         This function should be implemented by subclass, but never called

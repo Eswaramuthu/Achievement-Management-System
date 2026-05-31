@@ -1,10 +1,8 @@
-from __future__ import annotations
+from typing import Optional
 
 from pip._internal.models.format_control import FormatControl
 
 
-# TODO: This needs Python 3.10's improved slots support for dataclasses
-# to be converted into a dataclass.
 class SelectionPreferences:
     """
     Encapsulates the candidate selection preferences for downloading
@@ -27,9 +25,9 @@ class SelectionPreferences:
         self,
         allow_yanked: bool,
         allow_all_prereleases: bool = False,
-        format_control: FormatControl | None = None,
+        format_control: Optional[FormatControl] = None,
         prefer_binary: bool = False,
-        ignore_requires_python: bool | None = None,
+        ignore_requires_python: Optional[bool] = None,
     ) -> None:
         """Create a SelectionPreferences object.
 
