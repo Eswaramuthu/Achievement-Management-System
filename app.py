@@ -9,6 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 from datetime import timedelta
 from services.certificate_service import process_certificate
+from services.email_service import send_achievement_notification
 from flask_wtf import CSRFProtect
 
 try:
@@ -521,6 +522,34 @@ def submit_achievements():
 
                 cursor.execute(query, params)
                 connection.commit()
+
+                # -------------------------------------------------------
+                # EMAIL NOTIFICATION
+                # Send the student a notification after successful insert.
+                # Uses a separate query within the same open connection so
+                # we avoid an extra round-trip.
+                # The call is fire-and-forget: any SMTP failure is logged
+                # but never propagates to the teacher's response.
+                # -------------------------------------------------------
+                try:
+                    cursor.execute(
+                        "SELECT email FROM student WHERE student_id = ?",
+                        (student_id,)
+                    )
+                    email_row = cursor.fetchone()
+                    if email_row and email_row[0]:
+                        send_achievement_notification(
+                            student_email=email_row[0],
+                            student_name=student_name,
+                            event_name=event_name or "",
+                            achievement_type=achievement_type or "",
+                            position=position or "",
+                        )
+                except Exception as email_err:
+                    import logging
+                    logging.getLogger(__name__).warning(
+                        "Achievement notification email failed: %s", email_err
+                    )
 
             return render_template("submit_achievements.html", 
                                  success=f"Success! Achievement for {student_name} recorded.")
