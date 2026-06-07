@@ -14,6 +14,7 @@ class AchievementExporter {
     constructor() {
         this.cardElement = document.getElementById('achievement-card-export');
         this.downloadBtn = document.getElementById('btn-download');
+        this.linkedinBtn = document.getElementById('btn-linkedin');
         this.closeBtn = document.getElementById('btn-close');
         this.formatRadios = document.querySelectorAll('input[name="export-format"]');
         this.statusDiv = document.getElementById('export-status');
@@ -29,6 +30,9 @@ class AchievementExporter {
     initEventListeners() {
         if (this.downloadBtn) {
             this.downloadBtn.addEventListener('click', () => this.handleExport());
+        }
+        if (this.linkedinBtn) {
+            this.linkedinBtn.addEventListener('click', () => this.shareLinkedIn());
         }
         if (this.closeBtn) {
             this.closeBtn.addEventListener('click', () => this.handleClose());
@@ -214,10 +218,12 @@ class AchievementExporter {
 
         if (isLoading) {
             this.downloadBtn.disabled = true;
+            if (this.linkedinBtn) this.linkedinBtn.disabled = true;
             this.formatRadios.forEach(radio => radio.disabled = true);
             this.statusDiv.style.display = 'flex';
         } else {
             this.downloadBtn.disabled = false;
+            if (this.linkedinBtn) this.linkedinBtn.disabled = false;
             this.formatRadios.forEach(radio => radio.disabled = false);
             setTimeout(() => {
                 this.statusDiv.style.display = 'none';
@@ -265,6 +271,73 @@ class AchievementExporter {
         
         if (this.statusText) {
             this.statusText.textContent = message;
+        }
+    }
+
+    /**
+     * Share achievement on LinkedIn
+     * Copies a pre-formatted caption to clipboard and opens the share dialog
+     */
+    async shareLinkedIn() {
+        try {
+            // Retrieve details from DOM
+            const rawPosition = this.getAchievementMetadata('achievement-position');
+            const position = rawPosition === 'achievement' ? 'N/A' : rawPosition;
+            
+            const rawEventName = this.getAchievementMetadata('event-name-data');
+            const eventName = rawEventName === 'achievement' ? 'N/A' : rawEventName;
+            
+            const rawOrganizer = this.getAchievementMetadata('achievement-organizer');
+            const organizer = rawOrganizer === 'achievement' ? 'N/A' : rawOrganizer;
+            
+            const rawVerificationUrl = this.getAchievementMetadata('verify-url');
+            const verificationUrl = rawVerificationUrl === 'achievement' ? window.location.origin : rawVerificationUrl;
+
+            // Format caption text
+            const captionText = `I am thrilled to share my achievement! 🎖️ I secured ${position} in "${eventName}" organized by "${organizer}". Verify it here: ${verificationUrl}`;
+
+            // Try to copy to clipboard
+            let copied = false;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                try {
+                    await navigator.clipboard.writeText(captionText);
+                    copied = true;
+                } catch (clipErr) {
+                    console.warn('Clipboard write failed:', clipErr);
+                }
+            }
+
+            // Provide UI feedback
+            if (this.statusDiv) {
+                this.statusDiv.style.display = 'flex';
+                if (copied) {
+                    this.showSuccessMessage('Caption copied! Opening LinkedIn...');
+                } else {
+                    // Graceful fallback display
+                    this.showSuccessMessage('Opening LinkedIn...');
+                }
+                
+                // Reset status spinner/text after a delay
+                setTimeout(() => {
+                    this.statusDiv.style.display = 'none';
+                    // Reset styling to original states
+                    this.statusDiv.style.background = '';
+                    this.statusDiv.style.color = '';
+                    const spinner = this.statusDiv.querySelector('.status-spinner');
+                    if (spinner) {
+                        spinner.textContent = '⏳';
+                        spinner.style.animation = '';
+                    }
+                }, 3000);
+            }
+
+            // Open LinkedIn share dialog in a new tab
+            const shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(verificationUrl)}`;
+            window.open(shareUrl, '_blank');
+
+        } catch (error) {
+            console.error('LinkedIn share error:', error);
+            this.showErrorMessage(`Share failed: ${error.message}`);
         }
     }
 
