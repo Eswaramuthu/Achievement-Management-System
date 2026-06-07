@@ -41,10 +41,13 @@
           {% endif %}
           <li><a href="#FAQ">FAQ</a></li>
         </ul>
-        <div class="nav-toggle">
-          <span class="bar"></span>
-          <span class="bar"></span>
-          <span class="bar"></span>
+        <div class="nav-right">
+          <button id="mode-toggle" class="theme-toggle" aria-label="Toggle theme">🌙</button>
+          <div class="nav-toggle" aria-label="Toggle navigation">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+          </div>
         </div>
       </nav>
     </header>
@@ -105,10 +108,7 @@
       </div>
     </footer>
 
-    <!-- Theme Toggle Button -->
-    <div class="toggle-container">
-      <button id="mode-toggle" class="theme-toggle">🌙</button>
-    </div>
+
 
     <!--Scroll to Up button-->
     <button id="scrollTopBtn" aria-label="Scroll to top" title="Scroll to top">↑</button>
@@ -169,18 +169,21 @@
       });
 
       // Mobile menu toggle
-      document
-        .querySelector(".nav-toggle")
-        .addEventListener("click", function () {
-          document.querySelector(".nav-menu").classList.toggle("active");
-        });
+      const navToggle = document.querySelector(".nav-toggle");
+      const navMenu = document.querySelector(".nav-menu");
 
-        // Close mobile menu when a link is clicked
-        document.querySelectorAll('.nav-menu a').forEach(link => {
-            link.addEventListener('click', () => {
-                document.querySelector('.nav-menu').classList.remove('active');
-            });
-        });
+      navToggle.addEventListener("click", function () {
+        navMenu.classList.toggle("active");
+        navToggle.classList.toggle("active");
+      });
+
+      // Close mobile menu when a link is clicked
+      document.querySelectorAll('.nav-menu a').forEach(link => {
+          link.addEventListener('click', () => {
+              navMenu.classList.remove('active');
+              navToggle.classList.remove('active');
+          });
+      });
 
       // Scroll-to-top button logic
       const scrollBtn = document.getElementById("scrollTopBtn");

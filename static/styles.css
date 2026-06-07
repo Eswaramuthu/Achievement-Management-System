@@ -272,6 +272,31 @@ body {
   transition: 0.3s;
 }
 
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.navbar .nav-right {
+  position: absolute;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.nav-toggle.active .bar:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.nav-toggle.active .bar:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-toggle.active .bar:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
 /* Header offset to account for fixed navbar */
 .header {
   height: 140px;
@@ -833,15 +858,12 @@ body {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 992px) {
   .navbar {
     flex-direction: row;
-    /* Restore row layout for mobile */
     justify-content: space-between;
     height: 80px;
-    /* Restore original mobile height */
-    padding: 1rem 70px 1rem 1rem;
-    /* Increase right padding to clear fixed toggle */
+    padding: 0 2rem;
     align-items: center;
   }
 
@@ -853,18 +875,41 @@ body {
     margin-top: 80px;
   }
 
+  .nav-brand {
+    width: auto;
+    text-align: left;
+  }
+
+  .navbar .nav-right {
+    position: static;
+    transform: none;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .theme-toggle {
+    width: 42px;
+    height: 42px;
+    font-size: 1.2rem;
+  }
+
   .nav-menu {
     position: fixed;
     left: -100%;
     top: 80px;
-    /* Match header height */
+    height: calc(100vh - 80px);
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
     flex-direction: column;
     background-color: var(--bg-color);
     width: 100%;
     text-align: center;
-    transition: 0.3s;
+    transition: left 0.3s ease-in-out;
     padding: 2rem;
     gap: 1.5rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    border-top: 1px solid var(--border-color);
   }
 
   .nav-menu.active {
@@ -873,17 +918,6 @@ body {
 
   .nav-toggle {
     display: flex;
-  }
-
-  .toggle-container {
-    top: 15px;
-    right: 15px;
-  }
-
-  .theme-toggle {
-    width: 45px;
-    height: 45px;
-    font-size: 1.3rem;
   }
 
   .hero {
