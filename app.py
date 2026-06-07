@@ -36,6 +36,7 @@ def make_session_permanent():
 
 # ✅ Portable DB path (works on Windows/Linux/Vercel)
 DB_PATH = os.path.join(os.path.dirname(__file__), "ams.db")
+app.config["DB_PATH"] = DB_PATH
 
 # Define upload folder path for certificates
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "uploads")
