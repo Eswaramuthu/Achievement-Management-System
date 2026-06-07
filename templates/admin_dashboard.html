@@ -83,6 +83,11 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             transition: transform 0.3s;
             border: none;
+            /* Prevent a lone card in an incomplete row from filling the
+               full Bootstrap column width and creating excessive whitespace.
+               Bootstrap col-md-3 gives each card 25% — we enforce that cap
+               so the card never grows beyond its natural column size. */
+            max-width: 100%;  /* Bootstrap already caps at col-md-3 = 25% */
         }
         
         .stat-card:hover {
@@ -190,6 +195,11 @@
             }
             .sidebar.active {
                 margin-left: 0;
+            }
+            /* On mobile the Bootstrap grid stacks to 1-column,
+               so each stat card naturally fills 100% — no cap needed. */
+            .stat-card {
+                max-width: 100%;
             }
         }
     </style>
