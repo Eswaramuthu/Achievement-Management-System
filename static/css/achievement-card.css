@@ -570,3 +570,29 @@ body {
 .qr-code {
     background-color: white !important;
 }
+
+/* ========================= */
+/* LINKEDIN BUTTON STYLES */
+/* ========================= */
+
+.btn-linkedin {
+    background: #0077b5;
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 119, 181, 0.3);
+}
+
+.btn-linkedin:hover {
+    background: #006396;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 119, 181, 0.4);
+}
+
+.btn-linkedin:active {
+    transform: translateY(0);
+}
+
+.linkedin-icon {
+    display: inline-block;
+    vertical-align: middle;
+    fill: currentColor;
+}
