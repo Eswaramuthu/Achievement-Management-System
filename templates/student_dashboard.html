@@ -21,7 +21,8 @@
     }
     
     .stat-card {
-      flex: 1;
+      flex: 1 1 200px;   /* grow/shrink but never below 200 px */
+      max-width: calc(33.333% - 14px); /* max 1/3 width so lone card stays bounded */
       min-width: 200px;
       background: rgba(255, 0, 0, 0.1);
       border-radius: 10px;
@@ -79,7 +80,8 @@
     }
     
     .dashboard-action {
-      flex: 1;
+      flex: 1 1 250px;   /* grow/shrink but never below 250 px */
+      max-width: calc(33.333% - 14px); /* prevent a lone card stretching to full width */
       min-width: 250px;
       background: var(--glass-bg);
       border-radius: 15px;
@@ -141,8 +143,19 @@
     
     .recent-achievements {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      /* auto-fit collapses empty phantom columns so the last card
+         does not stretch across the full row when the row is incomplete.
+         auto-fill would leave invisible tracks that force the card to
+         fill 100% width. */
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      /* hard cap so a single surviving card never grows past one column width */
+      max-width: 100%;
       gap: 20px;
+    }
+
+    /* When only 1 card survives on the last row, stop it from filling the grid */
+    .recent-achievement {
+      max-width: 350px;
     }
     
     .recent-achievement {
@@ -150,6 +163,7 @@
       border-radius: 10px;
       padding: 15px;
       border: 1px solid var(--border-color);
+      max-width: 350px; /* duplicated from grid rule above for specificity safety */
     }
     
     .achievement-tag {
@@ -176,6 +190,17 @@
     @media (max-width: 768px) {
       .dashboard-stats {
         flex-direction: column;
+      }
+      /* On mobile remove the max-width caps so cards fill the full column */
+      .stat-card,
+      .dashboard-action {
+        max-width: 100%;
+      }
+      .recent-achievements {
+        grid-template-columns: 1fr;
+      }
+      .recent-achievement {
+        max-width: 100%;
       }
     }
 
