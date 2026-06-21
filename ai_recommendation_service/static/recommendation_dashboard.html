@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Achievement Recommendations</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-card-hover: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+            --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --gradient-2: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header */
+        .header {
+            background: var(--gradient-1);
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            border-radius: 0 0 30px 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        /* Search Section */
+        .search-section {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+        }
+        
+        .search-form {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .input-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+        
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+        
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Results */
+        .results {
+            display: none;
+        }
+        
+        /* Profile Card */
+        .profile-card {
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .avatar {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        .profile-info h2 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .profile-info p {
+            color: var(--text-secondary);
+        }
+        
+        .profile-stats {
+            display: flex;
+            gap: 30px;
+            margin-left: auto;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Career Paths */
+        .career-paths {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .career-path {
+            background: var(--bg-card);
+            padding: 15px 20px;
+            border-radius: 15px;
+            border: 1px solid var(--border);
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .career-path h4 {
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .confidence-bar {
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: var(--gradient-2);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        
+        /* Recommendations */
+        .section-title {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .recommendation-card {
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        
+        .recommendation-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+        
+        .rec-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .rec-type {
+            background: var(--primary);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .priority-high { background: var(--danger); }
+        .priority-medium { background: var(--warning); }
+        .priority-low { background: var(--success); }
+        
+        .rec-title {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        
+        .rec-reason {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .skill-gaps {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .skill-tag {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+        }
+        
+        .insight {
+            background: rgba(99, 102, 241, 0.1);
+            border-left: 3px solid var(--primary);
+            padding: 10px 15px;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        /* Alumni Section */
+        .alumni-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .alumni-card {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid var(--border);
+        }
+        
+        .alumni-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .alumni-avatar {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .similarity-badge {
+            background: var(--success);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            margin-left: auto;
+        }
+        
+        .alumni-role {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .alumni-tip {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 3px solid var(--success);
+            padding: 10px 15px;
+            font-size: 0.85rem;
+            border-radius: 0 5px 5px 0;
+            margin-top: 10px;
+        }
+        
+        /* Insights */
+        .insights {
+            margin-bottom: 30px;
+        }
+        
+        .insight-card {
+            background: var(--bg-card);
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .insight-icon {
+            font-size: 1.5rem;
+        }
+        
+        /* Error */
+        .error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.8rem; }
+            .profile-card { flex-direction: column; text-align: center; }
+            .profile-stats { margin-left: 0; }
+            .recommendations-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>🎯 AI Achievement Recommendations</h1>
+        <p>Personalized career guidance based on your achievement profile</p>
+    </header>
+    
+    <div class="container">
+        <section class="search-section">
+            <form class="search-form" id="searchForm">
+                <div class="input-group">
+                    <label for="studentId">Student ID</label>
+                    <input type="text" id="studentId" placeholder="Enter your Student ID" required>
+                </div>
+                <div class="input-group">
+                    <label for="careerGoal">Career Goal (Optional)</label>
+                    <select id="careerGoal">
+                        <option value="">Auto-detect from profile</option>
+                        <option value="Software Development">Software Development</option>
+                        <option value="Data Science">Data Science</option>
+                        <option value="Web Development">Web Development</option>
+                        <option value="Cybersecurity">Cybersecurity</option>
+                        <option value="DevOps/Cloud">DevOps/Cloud</option>
+                        <option value="Mobile Development">Mobile Development</option>
+                        <option value="Product Management">Product Management</option>
+                        <option value="Embedded Systems">Embedded Systems</option>
+                    </select>
+                </div>
+                <div class="input-group" style="display: flex; align-items: flex-end;">
+                    <button type="submit" class="btn btn-primary">Get Recommendations</button>
+                </div>
+            </form>
+        </section>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Analyzing your profile...</p>
+        </div>
+        
+        <div class="error" id="error">
+            <p>❌ <span id="errorMessage">Student not found. Please check your ID.</span></p>
+        </div>
+        
+        <div class="results" id="results">
+            <!-- Profile Card -->
+            <div class="profile-card" id="profileCard">
+                <div class="avatar" id="avatar">S</div>
+                <div class="profile-info">
+                    <h2 id="studentName">Student Name</h2>
+                    <p id="studentDetails">ID: XXX | Department: XXX</p>
+                </div>
+                <div class="profile-stats">
+                    <div class="stat">
+                        <div class="stat-value" id="totalAchievements">0</div>
+                        <div class="stat-label">Achievements</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="skillCount">0</div>
+                        <div class="stat-label">Skills</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Career Paths -->
+            <h3 class="section-title">📊 Predicted Career Paths</h3>
+            <div class="career-paths" id="careerPaths"></div>
+            
+            <!-- Insights -->
+            <h3 class="section-title">💡 Insights</h3>
+            <div class="insights" id="insights"></div>
+            
+            <!-- Recommendations -->
+            <h3 class="section-title">🎯 Personalized Recommendations</h3>
+            <div class="recommendations-grid" id="recommendations"></div>
+            
+            <!-- Similar Alumni -->
+            <h3 class="section-title">👥 Similar Successful Alumni</h3>
+            <div class="alumni-grid" id="alumni"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Get student ID from URL if provided
+        const urlParams = new URLSearchParams(window.location.search);
+        const studentIdParam = urlParams.get('student_id');
+        if (studentIdParam) {
+            document.getElementById('studentId').value = studentIdParam;
+        }
+        
+        document.getElementById('searchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const studentId = document.getElementById('studentId').value.trim();
+            const careerGoal = document.getElementById('careerGoal').value;
+            
+            if (!studentId) return;
+            
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+            
+            try {
+                let url = `/api/recommendations/${encodeURIComponent(studentId)}`;
+                if (careerGoal) {
+                    url += `?career_goal=${encodeURIComponent(careerGoal)}`;
+                }
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Failed to get recommendations');
+                }
+                
+                const data = await response.json();
+                displayResults(data);
+                
+            } catch (error) {
+                document.getElementById('errorMessage').textContent = error.message;
+                document.getElementById('error').style.display = 'block';
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        });
+        
+        function displayResults(data) {
+            // Profile
+            document.getElementById('avatar').textContent = data.student_name[0] || 'S';
+            document.getElementById('studentName').textContent = data.student_name;
+            document.getElementById('studentDetails').textContent = 
+                `ID: ${data.student_id} | Department: ${data.department}`;
+            document.getElementById('totalAchievements').textContent = data.total_achievements;
+            document.getElementById('skillCount').textContent = data.skills.length;
+            
+            // Career Paths
+            const careerPathsHtml = data.predicted_career_paths.map(path => `
+                <div class="career-path">
+                    <h4>${path.career_path}</h4>
+                    <p>${path.confidence}% match • ${path.matching_alumni} alumni</p>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" style="width: ${path.confidence}%"></div>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('careerPaths').innerHTML = careerPathsHtml;
+            
+            // Insights
+            const insightIcons = { tip: '💡', warning: '⚠️', match: '🎯' };
+            const insightsHtml = data.insights.map(insight => `
+                <div class="insight-card">
+                    <span class="insight-icon">${insightIcons[insight.type] || '📌'}</span>
+                    <span>${insight.message}</span>
+                </div>
+            `).join('');
+            document.getElementById('insights').innerHTML = insightsHtml;
+            
+            // Recommendations
+            const recsHtml = data.recommendations.map(rec => `
+                <div class="recommendation-card">
+                    <div class="rec-header">
+                        <span class="rec-type">${rec.type}</span>
+                        <span class="rec-type priority-${rec.priority}">${rec.priority.toUpperCase()}</span>
+                    </div>
+                    <h4 class="rec-title">${rec.suggestion}</h4>
+                    <p class="rec-reason">${rec.reason}</p>
+                    ${rec.skill_gap.length > 0 ? `
+                        <div class="skill-gaps">
+                            <strong>Skills to develop:</strong>
+                            ${rec.skill_gap.map(s => `<span class="skill-tag">${s}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                    ${rec.statistical_insight ? `
+                        <div class="insight">📊 ${rec.statistical_insight}</div>
+                    ` : ''}
+                    ${rec.similar_alumni ? `
+                        <div class="insight">👤 ${rec.similar_alumni}</div>
+                    ` : ''}
+                    <p style="margin-top: 10px; font-size: 0.85rem; color: var(--text-secondary);">
+                        Your current count: ${rec.your_current_count} ${rec.type.toLowerCase()}(s)
+                    </p>
+                </div>
+            `).join('');
+            document.getElementById('recommendations').innerHTML = recsHtml;
+            
+            // Alumni
+            const alumniHtml = data.similar_alumni.map(alumni => `
+                <div class="alumni-card">
+                    <div class="alumni-header">
+                        <div class="alumni-avatar">${alumni.name[0]}</div>
+                        <div>
+                            <strong>${alumni.name}</strong>
+                            <p class="alumni-role">${alumni.role}</p>
+                        </div>
+                        <span class="similarity-badge">${alumni.similarity}% match</span>
+                    </div>
+                    <p style="font-size: 0.9rem; margin-bottom: 5px;">⏱️ Placed in ${alumni.placement_time}</p>
+                    <div class="alumni-tip">💬 "${alumni.tips}"</div>
+                </div>
+            `).join('');
+            document.getElementById('alumni').innerHTML = alumniHtml;
+            
+            document.getElementById('results').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
