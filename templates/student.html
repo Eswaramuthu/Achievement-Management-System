@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Student Login - Achievement Management System</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
+ <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}?v=1" />
 
   <script src="{{ url_for('static', filename = 'script.js') }}"></script>
   <style>    /* ===== Theme Toggle (Top Right) ===== */
@@ -16,60 +16,67 @@
       width: 42px;
       height: 42px;
       border-radius: 50%;
-      border: none;
+      border: none;}
   <script src="{{ url_for('static', filename = 'script.js') }}" defer></script>
   <style>
     /* =========================================
        Modern Auth Layout Overrides
        ========================================= */
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 0;
-    }
+  :root {
+  --primary-color: #ff1c1c;
+  --primary-hover: #e01515;
+  --bg-color: #050505;
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --text-color: #ffffff;
+  --text-secondary: #94a3b8;
+}
+
+/* Base resets */
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: var(--bg-color);
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--text-color);
+}
 
     .auth-nav {
-      position: fixed;
-      top: 0;
-      left: 0;
+     
       width: 100%;
       padding: 16px 40px;
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
       z-index: 9999;
-      box-sizing: border-box;
+      
       background: var(--glass-bg);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border-color);
       box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
     }
-
-    .auth-brand {
+  
+  .auth-brand {
       display: flex;
       align-items: center;
       gap: 12px;
-      font-size: 1.25rem;
+      font-size: 2.5rem;
       font-weight: 700;
-      color: var(--text-color);
+      color: white;
       text-decoration: none;
       letter-spacing: -0.5px;
+      margin-left:100px;
     }
+   
 
-    .auth-brand svg {
-      width: 28px;
-      height: 28px;
-      color: var(--primary-color);
-    }
 
     .nav-actions {
       display: flex;
       align-items: center;
-      gap: 24px;
+      gap: 30px;
+      padding-left:25px;
     }
 
     .nav-back {
@@ -92,8 +99,7 @@
       justify-content: center;
       align-items: center;
       width: 100%;
-      max-width: 1100px;
-      margin: auto 0;
+      
       padding: 120px 20px 40px 20px;
       /* Space for absolute nav */
       box-sizing: border-box;
@@ -219,7 +225,7 @@
       background: var(--bg-color);
     }
 
-    .auth-header {
+    .auth-header {  
       margin-bottom: 2.5rem;
     }
 
@@ -522,6 +528,8 @@
         padding: 80px 16px 40px 16px;
       }
     }
+
+
   </style>
 </head>
 
@@ -529,26 +537,15 @@
   <!-- Professional Navbar -->
   <div class="auth-nav">
     <a href="{{ url_for('home') }}" class="auth-brand">
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor" />
-        <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-          stroke-linejoin="round" />
-        <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-          stroke-linejoin="round" />
-      </svg>
       <span>Achievement Management System</span>
     </a>
 
     <div class="nav-actions">
       <a href="{{ url_for('home') }}" class="nav-back">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 12H5M12 19l-7-7 7-7" />
-        </svg>
-        Back to Home
+       
+        <u>Back to Home</u>
       </a>
-      <!-- Theme Toggle -->
-      <button id="mode-toggle" class="theme-toggle" title="Toggle theme"></button>
+    
     </div>
   </div>
 
