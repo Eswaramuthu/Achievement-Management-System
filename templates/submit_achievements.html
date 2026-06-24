@@ -1,53 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Submit Achievements</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </head>
+
 <body>
   <div class="toggle-container">
     <button id="mode-toggle">Dark Mode 🌙</button>
   </div>
 
   {% if error %}
-      <div class="error-box" style="background-color: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; border: 1px solid #ef9a9a; margin-bottom: 20px; text-align: center; font-weight: bold;">
-        ⚠️ {{ error }}
-      </div>
-      {% endif %}
-
-      {% if success %}
-      <div class="welcome-text">
-        <p style="color: #2e7d32; font-weight: bold;">Congratulations! <br> {{ success }}</p>
-      </div>
-      <div class="button">
-        <a href="/teacher-dashboard" class="btn-primary">Back to Dashboard</a>
-      </div>
-      {% else %}
-
-      <form action="/submit_achievements" method="POST" enctype="multipart/form-data">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        
-        <div class="user-details">
-          <div class="input-box">
-            <span class="details">Student ID</span>
-            <input type="text" name="student_id" placeholder="Enter Student ID" required>
-          </div>
-          <div class="input-box">
-            <span class="details">Certificate File</span>
-            <input type="file" name="certificate" required>
-          </div>
-        </div>
-
-        <div class="button">
-          <input type="submit" value="Register Achievement">
-        </div>
-      </form>
-      {% endif %}
-
-    </div>
+  <div class="error-box"
+    style="background-color: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; border: 1px solid #ef9a9a; margin-bottom: 20px; text-align: center; font-weight: bold;">
+    ⚠️ {{ error }}
   </div>
+  {% endif %}
+
+  {% if success %}
+  <div class="welcome-text">
+    <p style="color: #2e7d32; font-weight: bold;">
+      Congratulations! <br> {{ success }}
+    </p>
+  </div>
+  <div class="button">
+    <a href="/teacher-dashboard" class="btn-primary">Back to Dashboard</a>
+  </div>
+  {% else %}
+
+  <form action="/submit_achievements" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <div class="user-details">
+      <div class="input-box">
+        <span class="details">Student ID</span>
+        <input type="text" name="student_id" placeholder="Enter Student ID" required>
+      </div>
+
+      <div class="input-box">
+        <span class="details">Certificate File</span>
+        <input type="file" name="certificate" required>
+      </div>
+    </div>
+
+    <div class="button" style="display:flex; gap:0.5rem; align-items:center;">
+      <button id="previewBtn" type="button" class="btn-secondary">Preview</button>
+      <input type="submit" value="Register Achievement">
+    </div>
+
+    <!-- Preview modal -->
+    <div id="previewModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="previewTitle" hidden>
+      <div class="modal-content" role="document">
+        <h2 id="previewTitle">Preview Achievement</h2>
+
+        <div class="preview-body">
+          <p><strong>Student ID:</strong> <span id="previewStudentId">&nbsp;</span></p>
+          <p><strong>Certificate file:</strong> <span id="previewFileName">&nbsp;</span></p>
+        </div>
+
+        <div class="modal-actions" style="display:flex; gap:0.5rem; justify-content:flex-end; margin-top:1rem;">
+          <button id="editBtn" type="button" class="btn-secondary">Back to edit</button>
+          <button id="confirmBtn" type="button" class="btn-primary">Confirm & Submit</button>
+        </div>
+      </div>
+    </div>
+
+  </form>
+  {% endif %}
+
+  <style>
+    .modal:not([hidden]) {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 1rem;
+      z-index: 9999;
+    }
+
+    .modal-content {
+      background: var(--card-bg, #fff);
+      color: var(--text-color, #111);
+      max-width: 480px;
+      width: 100%;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .preview-body p {
+      margin: 0.5rem 0;
+    }
+
+    @media (max-width: 520px) {
+      .modal-content {
+        padding: 0.75rem;
+      }
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const previewBtn = document.getElementById('previewBtn');
+      const previewModal = document.getElementById('previewModal');
+      const previewStudentId = document.getElementById('previewStudentId');
+      const previewFileName = document.getElementById('previewFileName');
+      const editBtn = document.getElementById('editBtn');
+      const confirmBtn = document.getElementById('confirmBtn');
+
+      let form = document.querySelector('form[action="/submit_achievements"]') ||
+                 document.querySelector('form');
+
+      let studentInput = form ? form.querySelector('input[name="student_id"]') : null;
+      let fileInput = form ? form.querySelector('input[type="file"][name="certificate"]') : null;
+
+      function openPreview() {
+        previewStudentId.textContent = studentInput?.value || '(none)';
+
+        let fileName = '(none)';
+        if (fileInput?.files?.length) {
+          fileName = fileInput.files[0].name;
+        }
+        previewFileName.textContent = fileName;
+
+        previewModal.removeAttribute('hidden');
+        editBtn.focus();
+      }
+
+      function closePreview() {
+        previewModal.setAttribute('hidden', '');
+        previewBtn.focus();
+      }
+
+      previewBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        openPreview();
+      });
+
+      editBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        closePreview();
+      });
+
+      confirmBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        closePreview();
+        form.submit();
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !previewModal.hasAttribute('hidden')) {
+          closePreview();
+        }
+      });
+
+      previewModal?.addEventListener('click', (e) => {
+        if (e.target === previewModal) {
+          closePreview();
+        }
+      });
+    });
+  </script>
+
 </body>
 </html>
