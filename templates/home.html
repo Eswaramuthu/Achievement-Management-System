@@ -1,98 +1,440 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="landing-shell">
+  <div class="landing-progress" id="landing-progress" aria-hidden="true"></div>
 
-<!-- Hero Section -->
-<section class="hero">
-    <div class="hero-content">
-        <h1>Welcome to Achievement Management System</h1>
-        <p>A centralized platform where students and teachers track academic achievements in one place. Students view their accomplishments, teachers record them, and everyone gets a clear picture of academic progress — all automated and organized.</p>
-        <div class="hero-buttons">
-            <a href="{{ url_for('student') }}" class="btn btn-primary">Student Login</a>
-            <a href="{{ url_for('teacher') }}" class="btn btn-secondary">Teacher Login</a>
+  <header class="landing-header" id="top">
+    <nav class="landing-nav">
+      <a href="{{ url_for('home') }}" class="landing-brand" aria-label="Achievement Management System home">
+        <span class="landing-brand-mark">A</span>
+        <span class="landing-brand-copy">
+          <strong>Achievement MS</strong>
+          <small>SRM academic records</small>
+        </span>
+      </a>
+
+      <button
+        class="landing-menu-toggle"
+        id="landing-menu-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="landing-menu"
+      >
+        Menu
+      </button>
+
+      <div class="landing-menu" id="landing-menu">
+        <a href="#about">About</a>
+        <a href="#features">Features</a>
+        <a href="#workflow">Workflow</a>
+        <a href="#faq">FAQ</a>
+        <a href="{{ url_for('student') }}" class="landing-link-soft">Student login</a>
+        <a href="{{ url_for('teacher') }}" class="landing-link-strong">Teacher portal</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero-section">
+      <div class="hero-copy" data-reveal="up">
+        <p class="section-kicker">Academic achievement platform for SRM IST</p>
+        <h1>
+          Every certificate, competition, and milestone
+          <em>kept in one clear system.</em>
+        </h1>
+        <p class="hero-text">
+          Achievement Management System gives students a polished academic record
+          and gives teachers a faster way to log it. No scattered files. No
+          spreadsheet cleanup. Just structured data that is ready when it matters.
+        </p>
+
+        <div class="hero-actions">
+          <a href="{{ url_for('student') }}" class="button button-primary">
+            Student login
+          </a>
+          <a href="{{ url_for('teacher') }}" class="button button-secondary">
+            Open teacher portal
+          </a>
         </div>
-    </div>
-</section>
 
-<!-- Features Section -->
-<section id="features" class="features">
-    <div class="container">
-        <h2 class="title">Key Features</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <h3>Student Dashboard</h3>
-                <p>View all achievements at a glance with analytics and filtering options.</p>
-            </div>
-            <div class="feature-card">
-                <h3>Teacher Management</h3>
-                <p>Quick entry forms for recording achievements with auto-complete functionality.</p>
-            </div>
-            <div class="feature-card">
-                <h3>Certificate Management</h3>
-                <p>Upload and download certificates in various formats (PDF, JPG, PNG).</p>
-            </div>
-            <div class="feature-card">
-                <h3>Analytics Dashboard</h3>
-                <p>Visual representation of achievement metrics by type, year, and position.</p>
-            </div>
+        <div class="hero-stats">
+          <article class="stat-card" data-reveal="up">
+            <span class="stat-value" data-count="3200">0</span>
+            <span class="stat-label">students onboarded</span>
+          </article>
+          <article class="stat-card" data-reveal="up">
+            <span class="stat-value" data-count="12000">0</span>
+            <span class="stat-label">achievement records organized</span>
+          </article>
+          <article class="stat-card" data-reveal="up">
+            <span class="stat-value" data-count="8900">0</span>
+            <span class="stat-label">supporting certificates stored</span>
+          </article>
         </div>
-    </div>
-</section>
+      </div>
 
-<!-- About Section -->
-<section id="about" class="about">
-    <div class="container">
-        <h2 class="title">About Our System</h2>
-        <div class="about-content">
-            <div class="about-text">
-                <p>Academic achievements are scattered everywhere — certificates in folders, emails buried in inboxes, paper records collecting dust. Students struggle to showcase their accomplishments during placements or applications. Teachers waste time managing spreadsheets and physical documents. Nobody has a clear, organized view of what students have actually achieved.</p>
-                <p>Our Achievement Management System centralizes everything. Students see all their achievements in one dashboard with analytics. Teachers input achievements through simple forms with auto-complete. The system tracks hackathons, coding competitions, paper presentations, conferences, and symposiums — complete with certificates, dates, positions, and detailed descriptions. Clean, fast, and organized.</p>
-            </div>
+      <div class="hero-panel" data-reveal="left">
+        <div class="hero-panel-bar">
+          <span>Live activity</span>
+          <span class="status-pill">Verified entries</span>
         </div>
-    </div>
-</section>
 
-<!-- FAQ Section -->
-<section id="FAQ" class="FAQ">
-    <div class="container">
-        <h2 class="title">Frequently Asked Questions</h2>
-        <div class="faq-content">
-            <div class="faq-item">
-                <h3>What is Achievement Management System?</h3>
-                <p>It is a centralized platform designed to help students and teachers track academic achievements efficiently.</p>
+        <div class="activity-feed" id="activity-feed">
+          <article class="activity-card is-active">
+            <div>
+              <h3>National Hackathon 2025</h3>
+              <p>Arjun Kumar · CSE · First place</p>
             </div>
-            <div class="faq-item">
-                <h3>Who can use this platform?</h3>
-                <p>Both students and teachers can use this system for recording and monitoring academic accomplishments.</p>
+            <span>Approved</span>
+          </article>
+          <article class="activity-card">
+            <div>
+              <h3>IEEE Conference Publication</h3>
+              <p>Priya Sharma · ECE · Paper uploaded</p>
             </div>
-            <div class="faq-item">
-                <h3>Can certificates be uploaded?</h3>
-                <p>Yes, users can upload digital certificates which remain accessible anytime.</p>
+            <span>Recorded</span>
+          </article>
+          <article class="activity-card">
+            <div>
+              <h3>State Coding Championship</h3>
+              <p>Rahul Singh · IT · Runner-up finish</p>
             </div>
-            <div class="faq-item">
-                <h3>Is my data secure?</h3>
-                <p>The system uses authentication and structured data storage practices to keep information secure.</p>
-            </div>
+            <span>Synced</span>
+          </article>
         </div>
-    </div>
-</section>
 
-<!-- Contact Section -->
-<section id="contact" class="contact">
-    <div class="container">
-        <h2 class="title">Contact Us</h2>
-        <div class="contact-content">
-            <div class="contact-info">
-                <h3>Get In Touch</h3>
-                <p>Have questions or feedback? Reach out to us!</p>
-                <ul>
-                    <li>Email: info@achievement-system.com</li>
-                    <li>Phone: +1 (123) 456-7890</li>
-                    <li>Location: SRM Institute of Science and Technology</li>
-                </ul>
-            </div>
+        <div class="dashboard-preview">
+          <div class="preview-card">
+            <p class="preview-label">Student view</p>
+            <h3>Personal record, placement-ready</h3>
+            <ul>
+              <li>Filter achievements by year, type, and outcome</li>
+              <li>Download certificate proofs without searching email threads</li>
+              <li>Track growth across competitions and publications</li>
+            </ul>
+          </div>
+          <div class="preview-card accent">
+            <p class="preview-label">Teacher workflow</p>
+            <h3>Fast entry with less admin drag</h3>
+            <ul>
+              <li>Search students quickly and submit in one pass</li>
+              <li>Attach proof files during the same workflow</li>
+              <li>Keep department records consistent and searchable</li>
+            </ul>
+          </div>
         </div>
-    </div>
-</section>
+      </div>
+    </section>
 
+    <section class="signal-strip" aria-label="Achievement categories">
+      <div class="signal-track">
+        <span>Hackathons</span>
+        <span>Coding competitions</span>
+        <span>Paper presentations</span>
+        <span>Conferences</span>
+        <span>Research symposiums</span>
+        <span>Certificates</span>
+        <span>Student dashboards</span>
+        <span>Teacher submissions</span>
+        <span>Placement readiness</span>
+        <span>Hackathons</span>
+        <span>Coding competitions</span>
+        <span>Paper presentations</span>
+        <span>Conferences</span>
+        <span>Research symposiums</span>
+        <span>Certificates</span>
+        <span>Student dashboards</span>
+        <span>Teacher submissions</span>
+        <span>Placement readiness</span>
+      </div>
+    </section>
+
+    <section class="content-section" id="about">
+      <div class="section-heading" data-reveal="up">
+        <p class="section-kicker">Why it matters</p>
+        <h2>The system fixes the boring part of academic excellence.</h2>
+        <p class="section-copy">
+          The strongest student records usually fail because they are scattered.
+          This platform turns achievement data into something departments can trust
+          and students can actually use.
+        </p>
+      </div>
+
+      <div class="story-grid">
+        <article class="story-card muted" data-reveal="right">
+          <p class="story-label">Before</p>
+          <h3>Records lived in too many places.</h3>
+          <p>
+            Certificates sat in drives, inboxes, and phones. Teachers managed
+            parallel spreadsheets. Students often had the achievement but not the
+            clean proof set needed for placements, internships, or scholarship
+            applications.
+          </p>
+        </article>
+
+        <article class="story-card" data-reveal="left">
+          <p class="story-label">After</p>
+          <h3>One platform, clearer accountability.</h3>
+          <p>
+            Each entry is tied to the student, achievement type, date, position,
+            and proof file. That means easier audits, better reporting, and a much
+            more useful dashboard for everyone involved.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section feature-section" id="features">
+      <div class="section-heading" data-reveal="up">
+        <p class="section-kicker">What the product does well</p>
+        <h2>Built around real campus workflows, not showcase fluff.</h2>
+      </div>
+
+      <div class="feature-grid">
+        <article class="feature-card" data-reveal="up">
+          <p class="feature-tag">Students</p>
+          <h3>Personal dashboard</h3>
+          <p>
+            View everything in one place with filters for year, achievement type,
+            rank, and event category.
+          </p>
+        </article>
+        <article class="feature-card" data-reveal="up">
+          <p class="feature-tag">Teachers</p>
+          <h3>Structured entry flow</h3>
+          <p>
+            Add records faster with a cleaner form flow and room for certificates
+            in the same submission path.
+          </p>
+        </article>
+        <article class="feature-card" data-reveal="up">
+          <p class="feature-tag">Proof</p>
+          <h3>Certificate hub</h3>
+          <p>
+            Keep PDFs and images attached to the record so students can retrieve
+            them when applications and placement rounds begin.
+          </p>
+        </article>
+        <article class="feature-card" data-reveal="up">
+          <p class="feature-tag">Analytics</p>
+          <h3>Department visibility</h3>
+          <p>
+            Spot which events, categories, and outcomes are growing without
+            rebuilding reports from scratch every semester.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section" id="workflow">
+      <div class="section-heading" data-reveal="up">
+        <p class="section-kicker">Workflow</p>
+        <h2>A cleaner record from submission to student access.</h2>
+      </div>
+
+      <div class="workflow-grid">
+        <article class="workflow-step" data-reveal="right">
+          <span>01</span>
+          <h3>Teacher records the achievement</h3>
+          <p>
+            Search the student, select the category, add date, result, notes, and
+            upload proof in one route.
+          </p>
+        </article>
+        <article class="workflow-step" data-reveal="right">
+          <span>02</span>
+          <h3>The system organizes the record</h3>
+          <p>
+            Entries are stored with structure so dashboards, filters, and future
+            reporting become dependable.
+          </p>
+        </article>
+        <article class="workflow-step" data-reveal="right">
+          <span>03</span>
+          <h3>Students access a usable portfolio</h3>
+          <p>
+            Students sign in to review their academic footprint and download proof
+            when they need to present it.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section faq-section" id="faq">
+      <div class="section-heading" data-reveal="up">
+        <p class="section-kicker">FAQ</p>
+        <h2>Questions people actually ask.</h2>
+      </div>
+
+      <div class="faq-list">
+        <article class="faq-item" data-reveal="up">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span>Who uses the platform?</span>
+            <span class="faq-plus">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>
+              Students use it to view and download their academic records. Teachers
+              use it to submit and maintain structured achievement data.
+            </p>
+          </div>
+        </article>
+
+        <article class="faq-item" data-reveal="up">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span>What kinds of achievements can be tracked?</span>
+            <span class="faq-plus">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>
+              Hackathons, coding contests, paper presentations, conferences,
+              symposiums, awards, and any other category the institution wants to
+              keep visible.
+            </p>
+          </div>
+        </article>
+
+        <article class="faq-item" data-reveal="up">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span>Can supporting certificates be stored too?</span>
+            <span class="faq-plus">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>
+              Yes. The system supports certificate uploads alongside the record so
+              proof stays connected to the achievement.
+            </p>
+          </div>
+        </article>
+
+        <article class="faq-item" data-reveal="up">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span>Why is this better than keeping spreadsheets?</span>
+            <span class="faq-plus">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>
+              It reduces duplicate entry, makes proofs easier to retrieve, and
+              gives students and staff a single source of truth instead of several
+              disconnected files.
+            </p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section" id="contact">
+      <div class="section-heading" data-reveal="up">
+        <p class="section-kicker">Contact us</p>
+        <h2>Get in touch.</h2>
+        <p class="section-copy">
+          Have questions or feedback? Reach out to us.
+        </p>
+      </div>
+
+      <div class="contact-grid">
+        <article class="contact-card" data-reveal="right">
+          <p class="contact-card-label">Get in touch</p>
+          <h3>We are happy to help with platform access and feedback.</h3>
+          <div class="contact-list">
+            <div>
+              <span>Email</span>
+              <a href="mailto:info@achievement-system.com">info@achievement-system.com</a>
+            </div>
+            <div>
+              <span>Phone</span>
+              <a href="tel:+11234567890">+1 (123) 456-7890</a>
+            </div>
+            <div>
+              <span>Location</span>
+              <p>SRM Institute of Science and Technology</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="contact-card accent" data-reveal="left">
+          <p class="contact-card-label">Academic excellence tracker</p>
+          <h3>Achievement Management System</h3>
+          <p>
+            A focused platform for recording student milestones, managing teacher
+            submissions, and keeping academic achievements organized.
+          </p>
+          <div class="contact-actions">
+            <a href="{{ url_for('student') }}" class="button button-secondary">
+              Student login
+            </a>
+            <a href="{{ url_for('teacher') }}" class="button button-primary">
+              Teacher login
+            </a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section final-cta" id="start">
+      <div class="cta-card" data-reveal="up">
+        <div>
+          <p class="section-kicker">Start here</p>
+          <h2>Everything students achieve, organized in one reliable system.</h2>
+          <p class="section-copy">
+            Log in to manage records, track progress, and keep certificates easy
+            to access.
+          </p>
+        </div>
+
+        <div class="cta-actions">
+          <a href="{{ url_for('student') }}" class="button button-primary">
+            Go to student login
+          </a>
+          <a href="{{ url_for('teacher') }}" class="button button-secondary">
+            Go to teacher portal
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="landing-footer">
+    <div class="landing-footer-grid">
+      <section class="landing-footer-column">
+        <p class="section-kicker">Academic excellence tracker</p>
+        <strong>Achievement Management System</strong>
+        <p>
+          A focused platform for recording student milestones, managing teacher
+          submissions, and keeping academic achievements organized.
+        </p>
+        <div class="landing-footer-actions">
+          <a href="{{ url_for('student') }}">Student Login</a>
+          <a href="{{ url_for('teacher') }}">Teacher Login</a>
+        </div>
+      </section>
+
+      <section class="landing-footer-column">
+        <h3>Quick Links</h3>
+        <div class="landing-footer-links">
+          <a href="{{ url_for('home') }}">Home</a>
+          <a href="#about">About</a>
+          <a href="#features">Features</a>
+          <a href="#contact">Contact</a>
+          <a href="#faq">FAQ</a>
+          <a href="{{ url_for('privacy_policy') }}">Privacy Policy</a>
+          <a href="{{ url_for('terms') }}">Terms &amp; Conditions</a>
+        </div>
+      </section>
+
+      <section class="landing-footer-column">
+        <h3>Contact</h3>
+        <div class="landing-footer-contact">
+          <span>Email</span>
+          <a href="mailto:info@achievement-system.com">info@achievement-system.com</a>
+          <span>Phone</span>
+          <a href="tel:+11234567890">+1 (123) 456-7890</a>
+          <span>Location</span>
+          <p>SRM Institute of Science and Technology</p>
+        </div>
+      </section>
+    </div>
+  </footer>
+</div>
 {% endblock %}

@@ -1,12 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" {% if request.endpoint == 'home' %}data-theme="light"{% endif %}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      {% if title %}{{ title }}{% else %}Achievement Management System{% endif
-      %}
+      {% if title %}{{ title }}{% else %}Achievement Management System{% endif %}
     </title>
+
+    {% if request.endpoint == 'home' %}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/landing-page.css') }}"
+    />
+    {% else %}
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='styles.css') }}"
@@ -16,11 +28,11 @@
       rel="stylesheet"
     />
     <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
-
-
+    {% endif %}
   </head>
-  <body class="light-mode">
-    <!-- Header/Navbar -->
+
+  <body class="{% if request.endpoint == 'home' %}landing-page{% else %}light-mode{% endif %}">
+    {% if request.endpoint != 'home' %}
     <header class="header">
       <nav class="navbar">
         <div class="nav-brand">
@@ -49,13 +61,20 @@
       </nav>
     </header>
 
-    <!-- Main Content -->
-    <main class="main-content">{% block content %}{% endblock %}</main>
+    <main class="main-content">
+    {% endif %}
 
-    <!-- Footer -->
+    {% block content %}{% endblock %}
+
+    {% if request.endpoint != 'home' %}
+    </main>
+
     <footer class="footer">
       <div class="footer-content">
-        <section class="footer-section footer-brand" aria-labelledby="footer-brand-heading">
+        <section
+          class="footer-section footer-brand"
+          aria-labelledby="footer-brand-heading"
+        >
           <span class="footer-kicker">Academic excellence tracker</span>
           <h3 id="footer-brand-heading">Achievement Management System</h3>
           <p>
@@ -85,11 +104,16 @@
             <li><a href="{{ url_for('terms') }}">Terms &amp; Conditions</a></li>
           </ul>
         </nav>
-        <section class="footer-section footer-contact-card" aria-labelledby="footer-contact-heading">
+        <section
+          class="footer-section footer-contact-card"
+          aria-labelledby="footer-contact-heading"
+        >
           <h3 id="footer-contact-heading">Contact</h3>
           <address class="footer-contact">
             <span>Email</span>
-            <a href="mailto:info@achievement-system.com">info@achievement-system.com</a>
+            <a href="mailto:info@achievement-system.com"
+              >info@achievement-system.com</a
+            >
             <span>Phone</span>
             <a href="tel:+11234567890">+1 (123) 456-7890</a>
             <span>Location</span>
@@ -98,28 +122,24 @@
         </section>
       </div>
       <div class="footer-bottom">
-        <p>
-          &copy; 2026 Achievement Management System. All rights reserved.
-        </p>
+        <p>&copy; 2026 Achievement Management System. All rights reserved.</p>
         <p>Developed at SRM Institute of Science and Technology.</p>
       </div>
     </footer>
 
-    <!-- Theme Toggle Button -->
     <div class="toggle-container">
-      <button id="mode-toggle" class="theme-toggle">🌙</button>
+      <button id="mode-toggle" class="theme-toggle">Moon</button>
     </div>
 
-    <!--Scroll to Up button-->
-    <button id="scrollTopBtn" aria-label="Scroll to top" title="Scroll to top">↑</button>
+    <button id="scrollTopBtn" aria-label="Scroll to top" title="Scroll to top">
+      ^
+    </button>
 
     <script>
-      // Theme toggle functionality
       document.addEventListener("DOMContentLoaded", function () {
         const themeToggle = document.getElementById("mode-toggle");
         const body = document.body;
 
-        // Check for saved theme preference
         const savedTheme = localStorage.getItem("theme");
         if (savedTheme === "dark") {
           body.classList.remove("light-mode");
@@ -131,14 +151,12 @@
           body.classList.toggle("light-mode");
           const isLightMode = body.classList.contains("light-mode");
           localStorage.setItem("theme", isLightMode ? "light" : "dark");
-
-          // Update icon
-          themeToggle.textContent = isLightMode ? "🌙" : "☀️";
+          themeToggle.textContent = isLightMode ? "Moon" : "Sun";
         });
 
-        // Set initial icon based on theme
-        const isLightMode = body.classList.contains("light-mode");
-        themeToggle.textContent = isLightMode ? "🌙" : "☀️";
+        themeToggle.textContent = body.classList.contains("light-mode")
+          ? "Moon"
+          : "Sun";
 
         const lenis = new Lenis({
           duration: 1.2,
@@ -160,7 +178,7 @@
 
             if (target) {
               lenis.scrollTo(target, {
-                offset: -140, 
+                offset: -140,
                 duration: 1.2,
               });
             }
@@ -168,29 +186,22 @@
         });
       });
 
-      // Mobile menu toggle
       document
         .querySelector(".nav-toggle")
         .addEventListener("click", function () {
           document.querySelector(".nav-menu").classList.toggle("active");
         });
 
-        // Close mobile menu when a link is clicked
-        document.querySelectorAll('.nav-menu a').forEach(link => {
-            link.addEventListener('click', () => {
-                document.querySelector('.nav-menu').classList.remove('active');
-            });
+      document.querySelectorAll(".nav-menu a").forEach((link) => {
+        link.addEventListener("click", () => {
+          document.querySelector(".nav-menu").classList.remove("active");
         });
+      });
 
-      // Scroll-to-top button logic
       const scrollBtn = document.getElementById("scrollTopBtn");
 
       window.addEventListener("scroll", () => {
-        if (window.scrollY > 300) {
-          scrollBtn.style.display = "block";
-        } else {
-          scrollBtn.style.display = "none";
-        }
+        scrollBtn.style.display = window.scrollY > 300 ? "block" : "none";
       });
 
       scrollBtn.addEventListener("click", () => {
@@ -201,5 +212,13 @@
         }
       });
     </script>
+    {% endif %}
+
+    {% if request.endpoint == 'home' %}
+    <script
+      defer
+      src="{{ url_for('static', filename='js/landing-page.js') }}"
+    ></script>
+    {% endif %}
   </body>
 </html>
