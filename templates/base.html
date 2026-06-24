@@ -62,6 +62,9 @@
             A focused platform for recording student milestones, managing
             teacher submissions, and keeping academic achievements organized.
           </p>
+          <p class="footer-note">
+            Built to keep achievement data clear, searchable, and easy to verify.
+          </p>
           <div class="footer-actions" aria-label="Account shortcuts">
             {% if session.get('student_id') %}
             <a href="{{ url_for('student-dashboard') }}">Student Dashboard</a>
@@ -88,12 +91,18 @@
         <section class="footer-section footer-contact-card" aria-labelledby="footer-contact-heading">
           <h3 id="footer-contact-heading">Contact</h3>
           <address class="footer-contact">
-            <span>Email</span>
-            <a href="mailto:info@achievement-system.com">info@achievement-system.com</a>
-            <span>Phone</span>
-            <a href="tel:+11234567890">+1 (123) 456-7890</a>
-            <span>Location</span>
-            <p>SRM Institute of Science and Technology</p>
+            <div class="footer-contact-item">
+              <span>Email</span>
+              <a href="mailto:info@achievement-system.com">info@achievement-system.com</a>
+            </div>
+            <div class="footer-contact-item">
+              <span>Phone</span>
+              <a href="tel:+11234567890">+1 (123) 456-7890</a>
+            </div>
+            <div class="footer-contact-item">
+              <span>Location</span>
+              <p>SRM Institute of Science and Technology</p>
+            </div>
           </address>
         </section>
       </div>

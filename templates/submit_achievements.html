@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Submit Achievements</title>
   <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+  <script defer src="{{ url_for('static', filename = 'script.js') }}"></script>
+  <script defer src="{{ url_for('static', filename = 'js/achievement-form-validation.js') }}"></script>
 </head>
 <body>
   <div class="toggle-container">
@@ -27,17 +28,22 @@
       </div>
       {% else %}
 
-      <form action="/submit_achievements" method="POST" enctype="multipart/form-data">
+      <form action="/submit_achievements" method="POST" enctype="multipart/form-data" novalidate data-validation-form="achievement-submission-simple">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         
         <div class="user-details">
           <div class="input-box">
-            <span class="details">Student ID</span>
-            <input type="text" name="student_id" placeholder="Enter Student ID" required>
+            <span class="details" id="student_id-label">Student ID</span>
+            <input type="text" id="student_id" name="student_id" placeholder="Enter Student ID" required
+              minlength="2" maxlength="20" autocomplete="off" aria-labelledby="student_id-label"
+              aria-describedby="student_id-error">
+            <small class="field-error" id="student_id-error" aria-live="polite"></small>
           </div>
           <div class="input-box">
-            <span class="details">Certificate File</span>
-            <input type="file" name="certificate" required>
+            <span class="details" id="certificate-label">Certificate File</span>
+            <input type="file" id="certificate" name="certificate" required accept=".pdf,.jpg,.jpeg,.png"
+              aria-labelledby="certificate-label" aria-describedby="certificate-error">
+            <small class="field-error" id="certificate-error" aria-live="polite"></small>
           </div>
         </div>
 
