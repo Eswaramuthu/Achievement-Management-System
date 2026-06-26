@@ -56,20 +56,20 @@
     <footer class="footer">
       <div class="footer-content">
         <section class="footer-section footer-brand" aria-labelledby="footer-brand-heading">
-          <span class="footer-kicker">Academic excellence tracker</span>
           <h3 id="footer-brand-heading">Achievement Management System</h3>
+          <span class="footer-kicker">Academic excellence tracker</span>
           <p>
             A focused platform for recording student milestones, managing
             teacher submissions, and keeping academic achievements organized.
           </p>
           <div class="footer-actions" aria-label="Account shortcuts">
             {% if session.get('student_id') %}
-            <a href="{{ url_for('student-dashboard') }}">Student Dashboard</a>
+            <a href="{{ url_for('student-dashboard') }}" class="cta-student">Student Dashboard</a>
             {% elif session.get('teacher_id') %}
-            <a href="{{ url_for('teacher-dashboard') }}">Teacher Dashboard</a>
+            <a href="{{ url_for('teacher-dashboard') }}" class="cta-teacher">Teacher Dashboard</a>
             {% else %}
-            <a href="{{ url_for('student') }}">Student Login</a>
-            <a href="{{ url_for('teacher') }}">Teacher Login</a>
+            <a href="{{ url_for('student') }}" class="cta-student">Student Login</a>
+            <a href="{{ url_for('teacher') }}" class="cta-teacher">Teacher Login</a>
             {% endif %}
           </div>
         </section>
@@ -187,7 +187,20 @@
 
       window.addEventListener("scroll", () => {
         if (window.scrollY > 300) {
-          scrollBtn.style.display = "block";
+          scrollBtn.style.display = "flex"; // Changed to flex to support alignment styles
+          
+          // Prevent overlap with footer
+          const footer = document.querySelector(".footer");
+          if (footer) {
+            const footerRect = footer.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
+            if (footerRect.top < windowHeight) {
+              const overlap = windowHeight - footerRect.top;
+              scrollBtn.style.bottom = (overlap + 20) + "px";
+            } else {
+              scrollBtn.style.bottom = "20px";
+            }
+          }
         } else {
           scrollBtn.style.display = "none";
         }
