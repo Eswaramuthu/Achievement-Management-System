@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Student Registration</title>
   <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
-  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
+  <script src="{{ url_for('static', filename = 'script.js') }}" defer></script>
   <script>
     function validatePasswords(event) {
     const password = document.getElementById("password").value;
@@ -29,7 +29,7 @@
   }
   </script>
 </head>
-<body>
+<body class="light-mode">
   <div class="toggle-container">
     <button id="mode-toggle">Dark Mode 🌙</button>
   </div>

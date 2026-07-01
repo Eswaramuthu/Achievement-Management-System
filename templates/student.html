@@ -7,16 +7,6 @@
   <title>Student Login - Achievement Management System</title>
   <link rel="stylesheet" href="{{ url_for('static', filename = 'styles.css') }}" />
 
-  <script src="{{ url_for('static', filename = 'script.js') }}"></script>
-  <style>    /* ===== Theme Toggle (Top Right) ===== */
-    .theme-toggle {
-      position: fixed;
-      top: 16px;
-      right: 20px;
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      border: none;
   <script src="{{ url_for('static', filename = 'script.js') }}" defer></script>
   <style>
     /* =========================================
@@ -525,7 +515,7 @@
   </style>
 </head>
 
-<body>
+<body class="light-mode">
   <!-- Professional Navbar -->
   <div class="auth-nav">
     <a href="{{ url_for('home') }}" class="auth-brand">
