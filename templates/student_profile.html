@@ -319,6 +319,7 @@
             
             <div id="editMode" class="edit-form">
                 <form method="POST" action="{{ url_for('student_profile_edit') }}" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="profile-picture-upload">
                         <img src="{{ profile_picture_url or url_for('static', filename='images/default-profile.svg') }}" 
                              alt="Profile Picture Preview" class="profile-picture-preview" id="profilePicturePreview">

@@ -649,6 +649,7 @@
         {% endif %}
 
         <form action="/student_new" method="POST" class="auth-form" onsubmit="return validatePasswords(event)">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <div class="form-grid">
             
             <div class="form-group">

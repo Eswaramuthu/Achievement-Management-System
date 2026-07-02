@@ -435,6 +435,9 @@
                 
                 fetch('{{ url_for("admin_approve_user") }}', {
                     method: 'POST',
+                     headers: {
+        'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
+    },
                     body: formData
                 })
                 .then(response => response.json())
@@ -461,6 +464,9 @@
                 
                 fetch('{{ url_for("admin_approve_user") }}', {
                     method: 'POST',
+                     headers: {
+        'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
+    },
                     body: formData
                 })
                 .then(response => response.json())

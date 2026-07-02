@@ -92,6 +92,7 @@
                     {% endwith %}
                     
                     <form method="POST" action="{{ url_for('admin_login') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <div class="mb-3">
                             <label for="admin_id" class="form-label">Admin ID</label>
                             <input type="text" class="form-control" id="admin_id" name="admin_id" required>
